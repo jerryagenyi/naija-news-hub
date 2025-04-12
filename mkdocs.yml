@@ -1,5 +1,5 @@
-site_name: Naija News Hub Guide
-site_description: Personal learning and reference guide for the Naija News Hub project
+site_name: Naija News Hub
+site_description: Nigerian News Aggregation & Analysis Platform
 site_author: Jeremiah Agenyi
 site_url: https://jerryagenyi.github.io/naija-news-hub/
 
@@ -15,10 +15,10 @@ theme:
     - navigation.sections
     - navigation.expand
     - navigation.top
-    - search.highlight
     - search.suggest
-    - search.share
-    - toc.integrate
+    - search.highlight
+    - content.tabs.link
+    - content.code.annotate
   palette:
     - scheme: default
       primary: indigo
@@ -35,9 +35,15 @@ theme:
 
 nav:
   - Home: index.md
-  - Project Journey:
-    - Original Concept: guide/original-idea.md
-    - Issue Tracking: guide/issue-tracking-guide.md
+  - Project Overview:
+    - Original Concept: docs/original-idea.md
+    - Product Requirements: docs/prd.md
+  - Development:
+    - Documentation Guide: docs/documentation-guide.md
+    - Project Management: docs/pm/
+    - Development Guide: docs/dev/
+  - App Documentation: docs/app/
+  - User Guide: docs/guide/
 
 markdown_extensions:
   - admonition

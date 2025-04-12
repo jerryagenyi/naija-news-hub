@@ -9,9 +9,9 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from src.database.connection import get_db
-from src.database.models import Website
-from src.api.schemas.website import WebsiteCreate, WebsiteResponse, WebsiteUpdate
+from src.database_management.connection import get_db
+from src.database_management.models import Website
+from src.api_endpoints.schemas.website import WebsiteCreate, WebsiteResponse, WebsiteUpdate
 
 # Configure logging
 logging.basicConfig(

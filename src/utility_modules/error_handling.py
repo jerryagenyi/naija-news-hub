@@ -7,9 +7,9 @@ import traceback
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError, Error as PlaywrightError
 from sqlalchemy.exc import SQLAlchemyError
 
-from src.utils.enums import ErrorType, ErrorSeverity
-from src.database.models import ScrapingJob, ErrorLog
-from src.database.connection import get_db
+from src.utility_modules.enums import ErrorType, ErrorSeverity
+from src.database_management.models import ScrapingJob, ErrorLog
+from src.database_management.connection import get_db
 
 class ScrapingError(Exception):
     """Base exception for scraping errors."""
@@ -54,7 +54,7 @@ class ScrapingErrorHandler:
         """Handle an error by logging it and updating the job status."""
         error_type = ScrapingErrorHandler.determine_error_type(error)
         severity = ScrapingErrorHandler.determine_severity(error_type)
-        
+
         # Create error log
         error_log = ErrorLog(
             job_id=job.id,
@@ -71,7 +71,7 @@ class ScrapingErrorHandler:
         if severity == ErrorSeverity.CRITICAL:
             job.status = "failed"
             job.end_time = datetime.utcnow()
-        
+
         job.error_count += 1
 
         # Save to database
@@ -85,7 +85,7 @@ class ScrapingErrorHandler:
         """Get a summary of errors for a specific job."""
         with get_db() as db:
             errors = db.query(ErrorLog).filter(ErrorLog.job_id == job_id).all()
-            
+
             summary = {
                 "total_errors": len(errors),
                 "by_type": {},
@@ -97,11 +97,11 @@ class ScrapingErrorHandler:
                 # Count by type
                 error_type = error.error_type.value
                 summary["by_type"][error_type] = summary["by_type"].get(error_type, 0) + 1
-                
+
                 # Count by severity
                 severity = error.severity.value
                 summary["by_severity"][severity] = summary["by_severity"].get(severity, 0) + 1
-                
+
                 # Count unresolved critical errors
                 if error.severity == ErrorSeverity.CRITICAL and not error.resolved_at:
                     summary["unresolved_critical"] += 1
@@ -128,4 +128,4 @@ class BrowserErrorHandler:
                 "3. Restart the browser instance\n"
                 "4. Check for any browser console errors"
             )
-        return "No specific recovery actions available for this error type." 
+        return "No specific recovery actions available for this error type."

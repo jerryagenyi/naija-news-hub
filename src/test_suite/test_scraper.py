@@ -8,8 +8,8 @@ import pytest
 import asyncio
 from unittest.mock import patch, MagicMock
 
-from src.scraper.url_discovery import discover_urls, is_valid_article_url
-from src.scraper.article_extractor import extract_article
+from src.web_scraper.url_discovery import discover_urls, is_valid_article_url
+from src.web_scraper.article_extractor import extract_article
 
 def test_is_valid_article_url():
     """Test the is_valid_article_url function."""

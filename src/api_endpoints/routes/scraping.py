@@ -9,10 +9,10 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 
-from src.database.connection import get_db
-from src.database.models import ScrapingJob, Website
-from src.api.schemas.scraping import ScrapingJobResponse, ScrapingJobCreate
-from src.scraper.main import scrape_website, scrape_all_websites
+from src.database_management.connection import get_db
+from src.database_management.models import ScrapingJob, Website
+from src.api_endpoints.schemas.scraping import ScrapingJobResponse, ScrapingJobCreate
+from src.web_scraper.main import scrape_website, scrape_all_websites
 
 # Configure logging
 logging.basicConfig(

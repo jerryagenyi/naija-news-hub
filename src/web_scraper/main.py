@@ -7,9 +7,9 @@ This module provides the main entry point for the scraper.
 import logging
 from typing import List, Dict, Any, Optional
 
-from src.database.connection import SessionLocal
-from src.services import ArticleService
-from src.database.repositories import WebsiteRepository, ScrapingRepository
+from src.database_management.connection import SessionLocal
+from src.service_layer import ArticleService
+from src.database_management.repositories import WebsiteRepository, ScrapingRepository
 
 # Configure logging
 logging.basicConfig(

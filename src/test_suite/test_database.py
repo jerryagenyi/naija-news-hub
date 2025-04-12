@@ -9,7 +9,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from src.database.models import Base, Website, Article, Category, ArticleCategory, ScrapingJob
+from src.database_management.models import Base, Website, Article, Category, ArticleCategory, ScrapingJob
 
 # Create an in-memory SQLite database for testing
 SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"

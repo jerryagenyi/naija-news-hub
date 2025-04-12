@@ -22,7 +22,7 @@ from src.database_management.models import ScrapingJob, ErrorLog
 @pytest.fixture
 def mock_db():
     """Create a mock database session."""
-    with patch('src.utils.error_handling.get_db') as mock:
+    with patch('src.utility_modules.error_handling.get_db') as mock:
         db_session = MagicMock()
         mock.return_value.__enter__.return_value = db_session
         yield db_session
@@ -72,13 +72,13 @@ def test_recovery_actions(error_handler):
     assert "Check browser configuration" in actions
     assert "Verify page load conditions" in actions
     assert "Review and resolve before next run" in actions
-    
+
     # Test network error recovery actions
     actions = error_handler._get_recovery_actions(ErrorType.NETWORK_ERROR, ErrorSeverity.MEDIUM)
     assert "Retry with exponential backoff" in actions
     assert "Check network connectivity" in actions
     assert "Verify proxy settings if used" in actions
-    
+
     # Test database error recovery actions
     actions = error_handler._get_recovery_actions(ErrorType.DATABASE_ERROR, ErrorSeverity.CRITICAL)
     assert "Check database connection" in actions
@@ -110,7 +110,7 @@ def test_error_handling(mock_db):
         if isinstance(args[0], ErrorLog):
             error_log = args[0]
             break
-    
+
     assert error_log is not None
     assert error_log.error_type == ErrorType.BROWSER
     assert error_log.severity == ErrorSeverity.HIGH
@@ -213,10 +213,10 @@ def test_browser_error_handler():
     assert "Retry with increased timeout" in error_info["recovery_actions"]
     assert "Check network connectivity" in error_info["recovery_actions"]
     assert "Verify page load conditions" in error_info["recovery_actions"]
-    
+
     # Test generic browser error handling
     error_info = BrowserErrorHandler.handle_browser_error(Exception("Browser error"))
     assert error_info["error_type"] == "browser_error"
     assert "Check browser configuration" in error_info["recovery_actions"]
     assert "Verify page load conditions" in error_info["recovery_actions"]
-    assert "Review error logs for patterns" in error_info["recovery_actions"] 
+    assert "Review error logs for patterns" in error_info["recovery_actions"]

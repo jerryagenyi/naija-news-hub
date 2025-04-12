@@ -3,6 +3,11 @@ site_description: Personal learning and reference guide for the Naija News Hub p
 site_author: Jeremiah Agenyi
 site_url: https://jerryagenyi.github.io/naija-news-hub/
 
+# GitHub Pages configuration
+repo_name: jerryagenyi/naija-news-hub
+repo_url: https://github.com/jerryagenyi/naija-news-hub
+edit_uri: edit/main/docs/
+
 theme:
   name: material
   features:
@@ -14,6 +19,19 @@ theme:
     - search.suggest
     - search.share
     - toc.integrate
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
 
 nav:
   - Home: index.md

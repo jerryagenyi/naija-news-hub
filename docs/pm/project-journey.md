@@ -1,12 +1,12 @@
 # The Naija News Hub Journey: From Concept to Structure
 
-**Last Updated:** April 11, 2023
+**Last Updated:** April 12, 2025
 
 > **Note:** This document is updated regularly as the project evolves. The date above indicates when this document was last updated. Always check this date to determine if you need to review recent commits for additional developments.
 
 ## Introduction
 
-In early 2024, I embarked on an ambitious project to solve a significant challenge in Nigerian news aggregation: the inconsistent and often inaccessible nature of news website structures. This blog post chronicles the journey of Naija News Hub from its initial concept to its current structured state.
+In early 2025, I embarked on an ambitious project to solve a significant challenge in Nigerian news aggregation: the inconsistent and often inaccessible nature of news website structures. This blog post chronicles the journey of Naija News Hub from its initial concept to its current structured state.
 
 ## The Genesis: Identifying the Problem
 
@@ -32,7 +32,7 @@ The solution emerged as Naija News Hub - a sophisticated web scraping and news a
 
 ## The Development Journey
 
-### Phase 1: Documentation and Planning (February 2024)
+### Phase 1: Documentation and Planning (February 2025)
 
 The project started with comprehensive documentation:
 
@@ -54,7 +54,7 @@ The project started with comprehensive documentation:
    - Performance benchmarks
    - Security considerations
 
-### Phase 2: Project Structure (March 2024)
+### Phase 2: Project Structure (March 2025)
 
 With the documentation in place, we established a robust project structure:
 
@@ -100,7 +100,7 @@ With the documentation in place, we established a robust project structure:
 
 ## Current Status and Next Steps
 
-As of March 2024, Naija News Hub has:
+As of April 2025, Naija News Hub has:
 
 1. **Completed**
    - Comprehensive project documentation
@@ -121,7 +121,7 @@ As of March 2024, Naija News Hub has:
 
 ## Development Timeline
 
-### April 11, 2023
+### April 11-12, 2025
 
 - Initial project setup with basic scraper functionality
 - Created comprehensive Product Requirements Document (PRD)

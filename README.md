@@ -1,20 +1,22 @@
 # Naija News Hub
 
-A flexible news scraper that automatically extracts articles from any news website when provided with a base URL.
+A robust, adaptable, and scalable system for aggregating news content from a diverse range of Nigerian online news sources, enabling data-driven research and analysis.
 
 ## Features
 
-- Automatically detects and extracts news articles from a website
+- Automatically discovers and extracts news articles from websites
 - Extracts article title, content, author, publication date, and categories
-- Simple command-line interface
-- Supports saving articles to various formats (JSON, CSV)
+- Provides a RESTful API for accessing the data
+- Supports advanced research capabilities through LLM integration
+- Includes comprehensive monitoring and error handling
+- Offers a user-friendly interface for managing the system
 
 ## Installation
 
 1. Clone this repository:
    ```
-   git clone https://github.com/jerryagenyi/scraper-2.git
-   cd scraper-2
+   git clone https://github.com/jerryagenyi/naija-news-hub.git
+   cd naija-news-hub
    ```
 
 2. Create a virtual environment and activate it:
@@ -28,16 +30,41 @@ A flexible news scraper that automatically extracts articles from any news websi
    pip install -r requirements.txt
    ```
 
+4. Set up environment variables:
+   ```
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
+
+5. Initialize the database:
+   ```
+   python main.py init
+   ```
+
 ## Usage
 
-Basic usage:
+### Running the API server
+
 ```
-python -m scraper.main --url https://example-news-site.com
+python main.py api --host 0.0.0.0 --port 8000
 ```
 
-For more options:
+### Running the scraper
+
+To scrape a specific website:
 ```
-python -m scraper.main --help
+python main.py scrape --website-id 1
+```
+
+To scrape all active websites:
+```
+python main.py scrape --all
+```
+
+### Command-line help
+
+```
+python main.py --help
 ```
 
 ## Development Guidelines

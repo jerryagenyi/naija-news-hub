@@ -6,59 +6,50 @@ This document provides a comprehensive overview of the database schema for the N
 
 ```
 +----------------+       +----------------+       +----------------+
-|    websites    |       |    sitemaps    |       |   categories   |
+|    websites    |       | scraping_jobs  |       |   categories   |
 +----------------+       +----------------+       +----------------+
 | id             |<----->| website_id     |       | id             |
-| website_name   |       | article_url    |       | website_id     |<----+
-| website_url    |       | last_mod       |       | category_name  |     |
-| sitemap_index  |       | created_at     |       | category_url   |     |
-| first_archive  |       | is_valid       |       | created_at     |     |
-| last_archive   |       | last_checked   |       | is_valid       |     |
-| created_at     |       | status_code    |       | last_checked   |     |
-| updated_at     |       | retry_count    |       +----------------+     |
-+----------------+       | last_error     |                              |
+| name           |       | status         |       | name           |
+| base_url       |       | start_time     |       | url            |
+| description    |       | end_time       |       | website_id     |<----+
+| logo_url       |       | articles_found |       | active         |     |
+| sitemap_url    |       | articles_scraped|      | created_at     |     |
+| active         |       | error_message  |       | updated_at     |     |
+| created_at     |       | config         |       +----------------+     |
+| updated_at     |       | created_at     |                              |
++----------------+       | updated_at     |                              |
         ^                +----------------+                              |
-        |                                                                |
+        |                        |                                       |
+        |                        v                                       |
         |                +----------------+                              |
-        |                | progress_track |                              |
-        +--------------->| website_id     |                              |
-        |                | cat_scrape_st  |                              |
-        |                | site_scrape_st |                              |
-        |                | art_scrape_st  |                              |
-        |                | current_step   |                              |
-        |                | last_checked   |                              |
-        |                | new_discovered |                              |
-        |                | new_added      |                              |
-        |                | last_added     |                              |
-        |                | check_status   |                              |
-        |                | checkpoint     |                              |
+        |                | scraping_errors|                              |
         |                +----------------+                              |
-        |                                                                |
-        |                +----------------+                              |
-        |                |  error_logs    |                              |
-        +--------------->| website_id     |                              |
-        |                | error_message  |                              |
+        |                | id             |                              |
+        |                | job_id         |                              |
+        |                | url            |                              |
         |                | error_type     |                              |
+        |                | error_message  |                              |
+        |                | stack_trace    |                              |
         |                | created_at     |                              |
-        |                | resolved_at    |                              |
-        |                | resolution     |                              |
-        |                | retry_count    |                              |
         |                +----------------+                              |
         |                                                                |
-        |                +----------------+                              |
-        |                | articles_data  |                              |
-        +--------------->| website_id     |                              |
-                         | article_id     |                              |
-                         | article_title  |                              |
-                         | article_cat    |<----------------------------+
+        |                                                                |
+        |                +----------------+       +----------------+      |
+        |                |    articles    |       |article_categories|    |
+        +--------------->| id             |<----->| article_id     |     |
+                         | title          |       | category_id    |-----+
+                         | url            |       +----------------+
+                         | content        |
+                         | content_markdown|
+                         | content_html   |
                          | author         |
-                         | article_url    |
-                         | pub_date       |
+                         | published_at   |
+                         | image_url      |
+                         | website_id     |
+                         | metadata       |
+                         | active         |
                          | created_at     |
-                         | article_content|
-                         | scraping_status|
-                         | retry_count    |
-                         | last_error     |
+                         | updated_at     |
                          +----------------+
 ```
 
@@ -71,30 +62,32 @@ Stores information about news websites being scraped.
 | Column Name       | Data Type      | Constraints       | Description                                |
 |-------------------|----------------|-------------------|--------------------------------------------|
 | id                | SERIAL         | PRIMARY KEY       | Unique identifier for the website          |
-| website_name      | VARCHAR(255)   | NOT NULL          | Name of the website                        |
-| website_url       | VARCHAR(255)   | NOT NULL, UNIQUE  | Base URL of the website                    |
-| sitemap_index_url | VARCHAR(255)   |                   | URL of the sitemap index                   |
-| first_archive_url | VARCHAR(255)   |                   | URL of the first archive page              |
-| last_archive_url  | VARCHAR(255)   |                   | URL of the last archive page               |
+| name              | VARCHAR(255)   | NOT NULL          | Name of the website                        |
+| base_url          | VARCHAR(255)   | NOT NULL, UNIQUE  | Base URL of the website                    |
+| description       | TEXT           |                   | Description of the website                 |
+| logo_url          | VARCHAR(255)   |                   | URL of the website logo                    |
+| sitemap_url       | VARCHAR(255)   |                   | URL of the sitemap                         |
+| active            | BOOLEAN        | DEFAULT TRUE      | Whether the website is active              |
 | created_at        | TIMESTAMP      | DEFAULT NOW()     | When the record was created                |
-| updated_at        | TIMESTAMP      |                   | When the record was last updated           |
+| updated_at        | TIMESTAMP      | DEFAULT NOW()     | When the record was last updated           |
 
-### 2. sitemaps
+### 2. scraping_jobs
 
-Stores article URLs extracted from website sitemaps.
+Stores information about scraping jobs.
 
 | Column Name    | Data Type      | Constraints                | Description                                |
 |----------------|----------------|----------------------------|--------------------------------------------|
-| id             | SERIAL         | PRIMARY KEY                | Unique identifier for the sitemap entry    |
+| id             | SERIAL         | PRIMARY KEY                | Unique identifier for the scraping job     |
 | website_id     | INTEGER        | FOREIGN KEY (websites.id)  | Reference to the website                   |
-| article_url    | VARCHAR(1024)  | NOT NULL, UNIQUE           | URL of the article                         |
-| last_mod       | TIMESTAMP      |                            | Last modification date from sitemap        |
+| status         | VARCHAR(50)    | NOT NULL, DEFAULT 'pending'| Status of the job (pending/running/completed/failed) |
+| start_time     | TIMESTAMP      |                            | When the job started                       |
+| end_time       | TIMESTAMP      |                            | When the job ended                         |
+| articles_found | INTEGER        | DEFAULT 0                  | Number of articles found                   |
+| articles_scraped| INTEGER       | DEFAULT 0                  | Number of articles scraped                 |
+| error_message  | TEXT           |                            | Error message if job failed                |
+| config         | JSON           |                            | Configuration for the job                  |
 | created_at     | TIMESTAMP      | DEFAULT NOW()              | When the record was created                |
-| is_valid       | BOOLEAN        |                            | Whether the URL is valid                   |
-| last_checked   | TIMESTAMP      |                            | When the URL was last checked              |
-| status_code    | INTEGER        |                            | HTTP status code of the URL                |
-| retry_count    | INTEGER        | DEFAULT 0                  | Number of retry attempts                   |
-| last_error     | TEXT           |                            | Last error message                         |
+| updated_at     | TIMESTAMP      | DEFAULT NOW()              | When the record was last updated           |
 
 ### 3. categories
 
@@ -103,66 +96,56 @@ Stores category information for news websites.
 | Column Name    | Data Type      | Constraints                | Description                                |
 |----------------|----------------|----------------------------|--------------------------------------------|
 | id             | SERIAL         | PRIMARY KEY                | Unique identifier for the category         |
+| name           | VARCHAR(255)   | NOT NULL                   | Name of the category                       |
+| url            | VARCHAR(255)   | NOT NULL                   | URL of the category page                   |
 | website_id     | INTEGER        | FOREIGN KEY (websites.id)  | Reference to the website                   |
-| category_name  | VARCHAR(255)   | NOT NULL                   | Name of the category                       |
-| category_url   | VARCHAR(1024)  | NOT NULL                   | URL of the category page                   |
+| active         | BOOLEAN        | DEFAULT TRUE               | Whether the category is active             |
 | created_at     | TIMESTAMP      | DEFAULT NOW()              | When the record was created                |
-| is_valid       | BOOLEAN        |                            | Whether the category URL is valid          |
-| last_checked   | TIMESTAMP      |                            | When the category was last checked         |
+| updated_at     | TIMESTAMP      | DEFAULT NOW()              | When the record was last updated           |
 
-### 4. articles_data
+### 4. articles
 
 Stores scraped article content and metadata.
 
 | Column Name      | Data Type      | Constraints                | Description                                |
 |------------------|----------------|----------------------------|--------------------------------------------|
-| id               | SERIAL         | PRIMARY KEY                | Unique identifier for the article data     |
+| id               | SERIAL         | PRIMARY KEY                | Unique identifier for the article          |
+| title            | VARCHAR(512)   | NOT NULL                   | Title of the article                       |
+| url              | VARCHAR(512)   | NOT NULL, UNIQUE           | URL of the article                         |
+| content          | TEXT           |                            | Content of the article                     |
+| content_markdown | TEXT           |                            | Markdown content of the article            |
+| content_html     | TEXT           |                            | HTML content of the article                |
+| author           | VARCHAR(255)   |                            | Author of the article                      |
+| published_at     | TIMESTAMP      |                            | Publication date of the article            |
+| image_url        | VARCHAR(512)   |                            | URL of the article image                   |
 | website_id       | INTEGER        | FOREIGN KEY (websites.id)  | Reference to the website                   |
-| article_id       | VARCHAR(255)   | NOT NULL, UNIQUE           | Unique identifier for the article          |
-| article_title    | TEXT           | NOT NULL                   | Title of the article                       |
-| article_category | INTEGER        | FOREIGN KEY (categories.id)| Reference to the category                  |
-| author           | TEXT           |                            | Author of the article                      |
-| article_url      | TEXT           | NOT NULL                   | URL of the article                         |
-| pub_date         | TIMESTAMP      |                            | Publication date of the article            |
+| metadata         | JSON           |                            | Metadata of the article                    |
+| active           | BOOLEAN        | DEFAULT TRUE               | Whether the article is active              |
 | created_at       | TIMESTAMP      | DEFAULT NOW()              | When the record was created                |
-| article_content  | TEXT           |                            | Content of the article                     |
-| scraping_status  | VARCHAR(50)    | DEFAULT 'pending'          | Status of scraping (pending/success/failed)|
-| retry_count      | INTEGER        | DEFAULT 0                  | Number of retry attempts                   |
-| last_error       | TEXT           |                            | Last error message                         |
+| updated_at       | TIMESTAMP      | DEFAULT NOW()              | When the record was last updated           |
 
-### 5. error_logs
+### 5. scraping_errors
 
 Stores error information for debugging and monitoring.
 
 | Column Name      | Data Type      | Constraints                | Description                                |
 |------------------|----------------|----------------------------|--------------------------------------------|
 | id               | SERIAL         | PRIMARY KEY                | Unique identifier for the error log        |
-| website_id       | INTEGER        | FOREIGN KEY (websites.id)  | Reference to the website                   |
+| job_id           | INTEGER        | FOREIGN KEY (scraping_jobs.id) | Reference to the scraping job           |
+| url              | VARCHAR(512)   |                            | URL that caused the error                  |
+| error_type       | VARCHAR(255)   | NOT NULL                   | Type of error                              |
 | error_message    | TEXT           | NOT NULL                   | Error message                              |
-| error_type       | VARCHAR(100)   | NOT NULL                   | Type of error                              |
+| stack_trace      | TEXT           |                            | Stack trace of the error                   |
 | created_at       | TIMESTAMP      | DEFAULT NOW()              | When the error occurred                    |
-| resolved_at      | TIMESTAMP      |                            | When the error was resolved                |
-| resolution_notes | TEXT           |                            | Notes on how the error was resolved        |
-| retry_count      | INTEGER        | DEFAULT 0                  | Number of retry attempts                   |
 
-### 6. progress_tracking
+### 6. article_categories
 
-Tracks the progress of scraping operations.
+Stores relationships between articles and categories.
 
-| Column Name                | Data Type      | Constraints                | Description                                |
-|----------------------------|----------------|----------------------------|--------------------------------------------|
-| id                         | SERIAL         | PRIMARY KEY                | Unique identifier for the progress record  |
-| website_id                 | INTEGER        | FOREIGN KEY (websites.id)  | Reference to the website                   |
-| category_scraping_status   | BOOLEAN        | DEFAULT FALSE              | Whether category scraping is complete      |
-| sitemap_scraping_status    | BOOLEAN        | DEFAULT FALSE              | Whether sitemap scraping is complete       |
-| articles_scraping_status   | BOOLEAN        | DEFAULT FALSE              | Whether article scraping is complete       |
-| current_step               | INTEGER        | DEFAULT 0                  | Current step in the scraping process       |
-| last_checked               | TIMESTAMP      |                            | When the progress was last checked         |
-| new_articles_discovered    | INTEGER        | DEFAULT 0                  | Number of new articles discovered          |
-| new_articles_added         | INTEGER        | DEFAULT 0                  | Number of new articles added               |
-| last_article_added         | TIMESTAMP      |                            | When the last article was added            |
-| last_check_status          | VARCHAR(100)   |                            | Status of the last check                   |
-| checkpoint_data            | JSONB          |                            | Checkpoint data for resuming operations    |
+| Column Name      | Data Type      | Constraints                | Description                                |
+|------------------|----------------|----------------------------|--------------------------------------------|
+| article_id      | INTEGER        | PRIMARY KEY, FOREIGN KEY (articles.id) | Reference to the article                   |
+| category_id     | INTEGER        | PRIMARY KEY, FOREIGN KEY (categories.id) | Reference to the category               |
 
 ## SQL Creation Scripts
 
@@ -170,94 +153,86 @@ Tracks the progress of scraping operations.
 -- Create websites table
 CREATE TABLE websites (
     id SERIAL PRIMARY KEY,
-    website_name VARCHAR(255) NOT NULL,
-    website_url VARCHAR(255) NOT NULL UNIQUE,
-    sitemap_index_url VARCHAR(255),
-    first_archive_url VARCHAR(255),
-    last_archive_url VARCHAR(255),
+    name VARCHAR(255) NOT NULL,
+    base_url VARCHAR(255) NOT NULL UNIQUE,
+    description TEXT,
+    logo_url VARCHAR(255),
+    sitemap_url VARCHAR(255),
+    active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP
-);
-
--- Create sitemaps table
-CREATE TABLE sitemaps (
-    id SERIAL PRIMARY KEY,
-    website_id INTEGER REFERENCES websites(id) ON DELETE CASCADE,
-    article_url VARCHAR(1024) NOT NULL UNIQUE,
-    last_mod TIMESTAMP,
-    created_at TIMESTAMP DEFAULT NOW(),
-    is_valid BOOLEAN,
-    last_checked TIMESTAMP,
-    status_code INTEGER,
-    retry_count INTEGER DEFAULT 0,
-    last_error TEXT
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
 -- Create categories table
 CREATE TABLE categories (
     id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    url VARCHAR(255) NOT NULL,
     website_id INTEGER REFERENCES websites(id) ON DELETE CASCADE,
-    category_name VARCHAR(255) NOT NULL,
-    category_url VARCHAR(1024) NOT NULL,
+    active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT NOW(),
-    is_valid BOOLEAN,
-    last_checked TIMESTAMP,
-    UNIQUE(website_id, category_name)
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- Create articles_data table
-CREATE TABLE articles_data (
+-- Create articles table
+CREATE TABLE articles (
     id SERIAL PRIMARY KEY,
+    title VARCHAR(512) NOT NULL,
+    url VARCHAR(512) NOT NULL UNIQUE,
+    content TEXT,
+    content_markdown TEXT,
+    content_html TEXT,
+    author VARCHAR(255),
+    published_at TIMESTAMP,
+    image_url VARCHAR(512),
     website_id INTEGER REFERENCES websites(id) ON DELETE CASCADE,
-    article_id VARCHAR(255) NOT NULL UNIQUE,
-    article_title TEXT NOT NULL,
-    article_category INTEGER REFERENCES categories(id) ON DELETE SET NULL,
-    author TEXT,
-    article_url TEXT NOT NULL,
-    pub_date TIMESTAMP,
+    metadata JSONB,
+    active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT NOW(),
-    article_content TEXT,
-    scraping_status VARCHAR(50) DEFAULT 'pending',
-    retry_count INTEGER DEFAULT 0,
-    last_error TEXT
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- Create error_logs table
-CREATE TABLE error_logs (
+-- Create article_categories table
+CREATE TABLE article_categories (
+    article_id INTEGER REFERENCES articles(id) ON DELETE CASCADE,
+    category_id INTEGER REFERENCES categories(id) ON DELETE CASCADE,
+    PRIMARY KEY (article_id, category_id)
+);
+
+-- Create scraping_jobs table
+CREATE TABLE scraping_jobs (
     id SERIAL PRIMARY KEY,
     website_id INTEGER REFERENCES websites(id) ON DELETE CASCADE,
+    status VARCHAR(50) NOT NULL DEFAULT 'pending',
+    start_time TIMESTAMP,
+    end_time TIMESTAMP,
+    articles_found INTEGER DEFAULT 0,
+    articles_scraped INTEGER DEFAULT 0,
+    error_message TEXT,
+    config JSONB,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Create scraping_errors table
+CREATE TABLE scraping_errors (
+    id SERIAL PRIMARY KEY,
+    job_id INTEGER REFERENCES scraping_jobs(id) ON DELETE CASCADE,
+    url VARCHAR(512),
+    error_type VARCHAR(255) NOT NULL,
     error_message TEXT NOT NULL,
-    error_type VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    resolved_at TIMESTAMP,
-    resolution_notes TEXT,
-    retry_count INTEGER DEFAULT 0
-);
-
--- Create progress_tracking table
-CREATE TABLE progress_tracking (
-    id SERIAL PRIMARY KEY,
-    website_id INTEGER REFERENCES websites(id) ON DELETE CASCADE UNIQUE,
-    category_scraping_status BOOLEAN DEFAULT FALSE,
-    sitemap_scraping_status BOOLEAN DEFAULT FALSE,
-    articles_scraping_status BOOLEAN DEFAULT FALSE,
-    current_step INTEGER DEFAULT 0,
-    last_checked TIMESTAMP,
-    new_articles_discovered INTEGER DEFAULT 0,
-    new_articles_added INTEGER DEFAULT 0,
-    last_article_added TIMESTAMP,
-    last_check_status VARCHAR(100),
-    checkpoint_data JSONB
+    stack_trace TEXT,
+    created_at TIMESTAMP DEFAULT NOW()
 );
 
 -- Create indexes for performance
-CREATE INDEX idx_sitemaps_website_id ON sitemaps(website_id);
 CREATE INDEX idx_categories_website_id ON categories(website_id);
-CREATE INDEX idx_articles_data_website_id ON articles_data(website_id);
-CREATE INDEX idx_articles_data_category ON articles_data(article_category);
-CREATE INDEX idx_error_logs_website_id ON error_logs(website_id);
-CREATE INDEX idx_error_logs_error_type ON error_logs(error_type);
-CREATE INDEX idx_articles_data_scraping_status ON articles_data(scraping_status);
+CREATE INDEX idx_articles_website_id ON articles(website_id);
+CREATE INDEX idx_articles_published_at ON articles(published_at);
+CREATE INDEX idx_scraping_jobs_website_id ON scraping_jobs(website_id);
+CREATE INDEX idx_scraping_jobs_status ON scraping_jobs(status);
+CREATE INDEX idx_scraping_errors_job_id ON scraping_errors(job_id);
+CREATE INDEX idx_scraping_errors_error_type ON scraping_errors(error_type);
 ```
 
 ## Database Migration Strategy
@@ -289,11 +264,21 @@ When updating the schema:
 ### Example Migration Script
 
 ```sql
--- Example migration to add a new column to articles_data
-ALTER TABLE articles_data ADD COLUMN content_hash VARCHAR(64);
+-- Example migration to add a new column to articles
+ALTER TABLE articles ADD COLUMN content_hash VARCHAR(64);
 
 -- Example migration to create a new index
-CREATE INDEX idx_articles_data_pub_date ON articles_data(pub_date);
+CREATE INDEX idx_articles_content_hash ON articles(content_hash);
+
+-- Example migration to add a new table
+CREATE TABLE article_views (
+    id SERIAL PRIMARY KEY,
+    article_id INTEGER REFERENCES articles(id) ON DELETE CASCADE,
+    view_count INTEGER DEFAULT 0,
+    last_viewed TIMESTAMP,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
 ```
 
 ## Data Backup and Recovery
@@ -384,7 +369,7 @@ Configure connection pooling to efficiently manage database connections:
 
 1. **Table Size**:
    ```sql
-   SELECT pg_size_pretty(pg_total_relation_size('articles_data')) AS articles_data_size;
+   SELECT pg_size_pretty(pg_total_relation_size('articles')) AS articles_size;
    ```
 
 2. **Index Usage**:

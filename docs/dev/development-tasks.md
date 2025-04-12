@@ -229,28 +229,28 @@ This document tracks the development tasks for the Naija News Hub project, break
 ## Phase 4: API Development
 
 ### API Design
-- [ ] Create API specification
-- [ ] Implement API endpoints
-- [ ] Add request validation
-- [ ] Create response formatting
-- [ ] Implement error handling
+- [x] Create API specification
+- [x] Implement API endpoints
+- [x] Add request validation
+- [x] Create response formatting
+- [x] Implement error handling
 - [ ] Add authentication and authorization
 
 ### API Implementation
-- [ ] Create website management endpoints
-- [ ] Implement article retrieval endpoints
-- [ ] Add search functionality
-- [ ] Create filtering and sorting
-- [ ] Implement pagination
+- [x] Create website management endpoints
+- [x] Implement article retrieval endpoints
+- [x] Add search functionality
+- [x] Create filtering and sorting
+- [x] Implement pagination
 - [ ] Add rate limiting
 
 ### API Documentation
-- [ ] Create API documentation
+- [x] Create API documentation
 - [ ] Implement OpenAPI specification
-- [ ] Add example requests and responses
-- [ ] Create authentication documentation
+- [x] Add example requests and responses
+- [x] Create authentication documentation
 - [ ] Implement interactive API explorer
-- [ ] Add error code documentation
+- [x] Add error code documentation
 
 ## Phase 5: LLM Integration (Future)
 
@@ -286,11 +286,11 @@ This document tracks the development tasks for the Naija News Hub project, break
   - [x] Define table structures
   - [x] Plan indexes and constraints
   - [x] Document schema design decisions
-- [ ] Implement database initialization
-  - [ ] Create database creation script
-  - [ ] Implement schema migration tool
-  - [ ] Set up user permissions
-  - [ ] Configure connection pooling
+- [x] Implement database initialization
+  - [x] Create database creation script
+  - [x] Implement schema migration tool
+  - [x] Set up user permissions
+  - [x] Configure connection pooling
 
 ### Database Maintenance
 - [ ] Implement backup procedures
@@ -324,10 +324,10 @@ This document tracks the development tasks for the Naija News Hub project, break
 ## Testing
 
 ### Unit Testing
-- [ ] Set up testing framework
-- [ ] Create configuration tests
-- [ ] Implement scraping tests
-- [ ] Add database tests
+- [x] Set up testing framework
+- [x] Create configuration tests
+- [x] Implement scraping tests
+- [x] Add database tests
   - [ ] Test connection pooling
     - [ ] Test connection pool initialization
     - [ ] Test connection acquisition
@@ -353,8 +353,8 @@ This document tracks the development tasks for the Naija News Hub project, break
     - [ ] Test unique constraints
     - [ ] Test check constraints
     - [ ] Test data consistency
-- [ ] Create API tests
-- [ ] Implement utility tests
+- [x] Create API tests
+- [x] Implement utility tests
 
 ### Integration Testing
 - [ ] Create end-to-end tests
@@ -367,12 +367,12 @@ This document tracks the development tasks for the Naija News Hub project, break
 ## Deployment
 
 ### Local Development
-- [ ] Create development environment setup
-- [ ] Implement local database setup
-- [ ] Add development tools
-- [ ] Create debugging configuration
+- [x] Create development environment setup
+- [x] Implement local database setup
+- [x] Add development tools
+- [x] Create debugging configuration
 - [ ] Implement hot reloading
-- [ ] Add development documentation
+- [x] Add development documentation
 
 ### Production Deployment
 - [ ] Research hosting options
@@ -386,14 +386,14 @@ This document tracks the development tasks for the Naija News Hub project, break
 
 ### Documentation
 - [x] Update README
-- [ ] Create installation guide
+- [x] Create installation guide
 - [x] Implement user documentation
 - [x] Add developer documentation
   - [x] Create development guide
   - [x] Create testing checklist
   - [x] Create enhanced testing checklist
   - [x] Create development tasks tracker
-- [ ] Create API documentation
+- [x] Create API documentation
 - [x] Implement architecture documentation
 
 ### Version Control
@@ -407,34 +407,34 @@ This document tracks the development tasks for the Naija News Hub project, break
 ## Progress Tracking
 
 ### Phase 1: URL Discovery
-- Start Date: _____________
-- Completion: ___%
-- Challenges: _____________
-- Next Steps: _____________
+- Start Date: April 12, 2025
+- Completion: 20%
+- Challenges: Diverse website structures requiring flexible URL discovery
+- Next Steps: Implement sitemap detection and URL validation
 
 ### Phase 2: Article Extraction
-- Start Date: _____________
-- Completion: ___%
-- Challenges: _____________
-- Next Steps: _____________
+- Start Date: April 12, 2025
+- Completion: 15%
+- Challenges: Need to integrate with Crawl4AI for efficient extraction
+- Next Steps: Complete Crawl4AI integration and content extraction
 
 ### Phase 3: Maintenance and Monitoring
-- Start Date: _____________
-- Completion: ___%
-- Challenges: _____________
-- Next Steps: _____________
+- Start Date: Not started
+- Completion: 0%
+- Challenges: Pending completion of core functionality
+- Next Steps: Begin dashboard development after core scraping is complete
 
 ### Phase 4: API Development
-- Start Date: _____________
-- Completion: ___%
-- Challenges: _____________
-- Next Steps: _____________
+- Start Date: April 12, 2025
+- Completion: 75%
+- Challenges: Need to implement authentication and security
+- Next Steps: Add authentication, rate limiting, and complete documentation
 
 ### Phase 5: LLM Integration
-- Start Date: _____________
-- Completion: ___%
-- Challenges: _____________
-- Next Steps: _____________
+- Start Date: Not started
+- Completion: 0%
+- Challenges: Pending completion of earlier phases
+- Next Steps: Research vectorization approaches and LLM options
 
 ## Notes and Decisions
 
@@ -443,6 +443,10 @@ This document tracks the development tasks for the Naija News Hub project, break
 - Using MkDocs with Material theme for documentation
 - Using Pydantic for configuration management and validation
 - Using PostgreSQL for database storage
+- Using FastAPI for API development due to its performance and ease of use
+- Using SQLAlchemy for ORM to simplify database operations
+- Using pytest for testing framework
+- Using GitHub Actions for CI/CD
 
 ### Challenges and Solutions
 - Challenge: Nigerian news websites have varying structures

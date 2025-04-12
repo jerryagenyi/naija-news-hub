@@ -1,182 +1,126 @@
-# Naija News Hub - Development Guide
+# Naija News Hub Documentation Guide
 
-## Code Organization
+This document provides an overview of the documentation structure for the Naija News Hub project.
 
-### Directory Structure
-```
-naija-news-hub/
-├── src/
-│   ├── api/           # API implementation
-│   ├── scraper/       # Web scraping components
-│   ├── database/      # Database operations
-│   ├── utils/         # Utility functions
-│   ├── config/        # Configuration management
-│   └── tests/         # Test suite
-├── docs/              # Documentation
-├── scripts/           # Development scripts
-└── config/            # Configuration files
-```
+## Documentation Structure
 
-## Coding Standards
+The project documentation is organized into three main directories:
 
-### Python Standards
-- Follow PEP 8 style guide
-- Use type hints for all function parameters and return values
-- Document all public functions and classes
-- Keep functions small and focused
-- Use meaningful variable names
+### 1. Application Documentation (docs/app/)
+The `docs/app/` directory contains documentation related to the built application and its usage:
 
-### JavaScript/TypeScript Standards
-- Follow ESLint configuration
-- Use TypeScript for type safety
-- Follow React best practices
-- Use functional components with hooks
-- Implement proper error boundaries
+- **User Guides**
+  - Installation Guide
+  - User Manual
+  - API Documentation
+  - Configuration Guide
+  - Troubleshooting Guide
 
-## Git Workflow
+- **API Documentation**
+  - Endpoint Specifications
+  - Authentication
+  - Rate Limiting
+  - Error Codes
+  - Example Requests
 
-### Branch Naming
-- `feature/`: New features
-- `bugfix/`: Bug fixes
-- `hotfix/`: Urgent fixes
-- `release/`: Release preparation
-- `docs/`: Documentation updates
+- **Deployment Documentation**
+  - Deployment Guide
+  - Environment Setup
+  - Scaling Guide
+  - Monitoring Setup
+  - Backup Procedures
 
-### Commit Messages
-- Use conventional commits format
-- Start with type: `feat:`, `fix:`, `docs:`, `style:`, `refactor:`, `test:`, `chore:`
-- Keep messages concise and descriptive
-- Reference issue numbers when applicable
+### 2. Development Documentation (docs/dev/)
+The `docs/dev/` directory contains documentation for developers:
 
-### Pull Requests
-- Create from feature branches
-- Include description of changes
-- Link related issues
-- Request reviews from team members
-- Ensure all tests pass
+- **Development Standards**
+  - Coding Standards
+  - Git Workflow
+  - Testing Standards
+  - Documentation Standards
+  - Review Process
 
-## Development Process
+- **Technical Documentation**
+  - Architecture Overview
+  - Component Design
+  - Database Schema
+  - API Design
+  - Security Implementation
 
-### 1. Setup
-```bash
-# Clone repository
-git clone https://github.com/jerryagenyi/naija-news-hub.git
+- **Development Guides**
+  - Setup Guide
+  - Contribution Guide
+  - Testing Guide
+  - Debugging Guide
+  - Performance Optimization
 
-# Install dependencies
-pip install -r requirements.txt
-npm install
+### 3. Project Management Documentation (docs/pm/)
+The `docs/pm/` directory contains project planning and management artifacts:
 
-# Set up environment
-cp .env.example .env
-# Edit .env with your configuration
-```
+- **Requirements**
+  - Product Requirements Document (PRD)
+  - Technical Design Document (TDD)
+  - User Stories
+  - Feature Specifications
+  - Future Roadmap
 
-### 2. Development
-- Create feature branch
-- Implement changes
-- Run tests
-- Update documentation
-- Create pull request
+- **Project Management**
+  - Project Structure
+  - Milestone Planning
+  - Progress Tracking
+  - Risk Management
+  - Resource Planning
 
-### 3. Testing
-- Write unit tests for new features
-- Run test suite before commits
-- Ensure test coverage
-- Document test cases
+- **Process Documentation**
+  - Development Process
+  - Release Process
+  - Review Process
+  - Quality Assurance
+  - Security Procedures
 
-### 4. Documentation
-- Update relevant documentation
-- Add code comments
-- Update API documentation
-- Document configuration changes
+## Contributing Guidelines
 
-## Environment Setup
+The `CONTRIBUTING.md` file at the root level provides instructions for:
+- Setting up the development environment
+- Contributing to the project
+- Documentation standards
+- Code review process
+- Release process
 
-### Python Environment
-```bash
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+## Document Versioning
 
-# Install dependencies
-pip install -r requirements.txt
-```
+All documentation follows semantic versioning (MAJOR.MINOR.PATCH):
 
-### Node.js Environment
-```bash
-# Install dependencies
-npm install
+- **MAJOR**: Significant changes that fundamentally alter the document's purpose or structure
+- **MINOR**: New sections or substantial updates to existing content
+- **PATCH**: Minor updates, corrections, or clarifications
 
-# Start development server
-npm run dev
-```
+Each document includes a version history section at the end to track changes.
 
-## Configuration
+## Quick Links
 
-### Environment Variables
-- Use `.env` file for local development
-- Document all environment variables
-- Never commit sensitive data
-- Use `.env.example` as template
+### Key Project Management Documents
+- [Product Requirements Document](docs/pm/prd.md)
+- [Technical Design Document](docs/pm/tdd.md)
+- [Project Structure](docs/pm/project-structure.md)
+- [Milestone Planning](docs/pm/milestones.md)
 
-### Database Setup
-- Use migrations for schema changes
-- Document schema updates
-- Maintain backup strategy
-- Test database operations
+### Key Application Documentation
+- [User Guide](docs/app/user-guide.md)
+- [API Documentation](docs/app/api-docs.md)
+- [Installation Guide](docs/app/installation.md)
+- [Configuration Guide](docs/app/configuration.md)
 
-## Testing
+### Key Development Documentation
+- [Development Guide](docs/dev/development-guide.md)
+- [Coding Standards](docs/dev/coding-standards.md)
+- [Testing Guide](docs/dev/testing-guide.md)
+- [Security Guide](docs/dev/security-guide.md)
 
-### Unit Tests
-- Write tests for all new features
-- Maintain test coverage
-- Use pytest for Python tests
-- Use Jest for frontend tests
+## Version History
 
-### Integration Tests
-- Test API endpoints
-- Test database operations
-- Test scraping functionality
-- Test error handling
-
-## Deployment
-
-### CI/CD Pipeline
-- Automated testing
-- Code quality checks
-- Security scanning
-- Automated deployment
-
-### Release Process
-- Version tagging
-- Changelog updates
-- Documentation updates
-- Deployment verification
-
-## Monitoring
-
-### Logging
-- Use structured logging
-- Include relevant context
-- Set appropriate log levels
-- Monitor error rates
-
-### Performance
-- Monitor response times
-- Track resource usage
-- Set up alerts
-- Regular performance reviews
-
-## Security
-
-### Best Practices
-- Regular dependency updates
-- Security scanning
-- Access control
-- Data encryption
-
-### Code Review
-- Security checklist
-- Vulnerability scanning
-- Access control review
-- Data handling review 
+### 1.0.0 - March 2024
+- Initial creation of the documentation guide
+- Establishment of documentation structure
+- Definition of versioning standards
+- Creation of quick links section 

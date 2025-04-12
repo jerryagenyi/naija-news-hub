@@ -35,16 +35,18 @@ theme:
 
 nav:
   - Home: index.md
-  - Project Overview:
-    - Overview: project-overview.md
-    - Original Concept: original-idea.md
-    - Product Requirements: prd.md
+  - Project Management:
+    - Project Overview: pm/project-overview.md
+    - Product Requirements: pm/prd.md
+    - Technical Design: pm/tdd.md
+    - Project Structure: pm/project-structure.md
   - Development:
-    - Documentation Guide: documentation-guide.md
-    - Project Management: pm/
-    - Development Guide: dev/
+    - Development Guide: dev/development-guide.md
+    - Testing Checklist: dev/testing-checklist.md
+  - Personal Notes:
+    - Original Concept: notes/original-idea.md
+    - Project Journey: notes/project-journey.md
   - App Documentation: app/
-  - User Guide: guide/
 
 markdown_extensions:
   - admonition

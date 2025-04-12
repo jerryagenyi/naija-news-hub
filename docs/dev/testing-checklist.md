@@ -11,12 +11,29 @@
 - [ ] Type validation
 
 ### Crawl4AI Integration Tests
-- [ ] Basic URL crawling
-- [ ] Rate limiting
+- [x] Basic URL crawling
+  - [x] AsyncWebCrawler initialization
+  - [x] URL discovery
+  - [x] HTML parsing
+  - [x] Link extraction
+- [x] Rate limiting
+  - [x] Requests per second configuration
+  - [x] Rate limit options
 - [ ] Proxy rotation
-- [ ] Error handling
-- [ ] Retry mechanisms
+  - [x] Proxy configuration
+  - [ ] Dynamic proxy switching
+- [x] Error handling
+  - [x] Connection errors
+  - [x] Timeout errors
+  - [x] Parsing errors
+  - [x] Fallback mechanisms
+- [x] Retry mechanisms
+  - [x] Exponential backoff
+  - [x] Maximum retry configuration
+  - [ ] Circuit breaker pattern
 - [ ] Memory management
+  - [x] Resource cleanup
+  - [ ] Memory usage monitoring
 
 ### Data Processing Tests
 - [ ] Date format parsing
@@ -55,11 +72,25 @@
 ## Integration Tests
 
 ### Website Scraping
-- [ ] Single website scraping
+- [x] Single website scraping
+  - [x] URL discovery
+  - [x] Content extraction
+  - [x] Error handling
 - [ ] Multiple website concurrent scraping
-- [ ] Sitemap parsing
-- [ ] Article extraction
-- [ ] Metadata extraction
+  - [ ] Parallel processing
+  - [ ] Resource management
+- [x] Sitemap parsing
+  - [x] Sitemap URL extraction
+  - [x] URL validation
+- [x] Article extraction
+  - [x] HTML content extraction
+  - [x] Content cleaning
+  - [x] Markdown conversion
+- [x] Metadata extraction
+  - [x] Title extraction
+  - [x] Author extraction
+  - [x] Date extraction
+  - [x] Image URL extraction
 
 ### API Tests
 - [ ] Endpoint availability
@@ -132,10 +163,19 @@
 - [ ] Encoding handling
 
 ### Site-Specific Tests
-- [ ] Site-specific selectors
-- [ ] Site-specific error handling
-- [ ] Site-specific rate limiting
-- [ ] Site-specific content validation
+- [x] Site-specific selectors
+  - [x] CSS selectors for article content
+  - [x] CSS selectors for metadata
+  - [x] URL patterns for article discovery
+- [x] Site-specific error handling
+  - [x] Handling site-specific errors
+  - [x] Fallback mechanisms
+- [x] Site-specific rate limiting
+  - [x] Configurable rate limits
+  - [x] Respecting robots.txt
+- [x] Site-specific content validation
+  - [x] Content structure validation
+  - [x] Metadata validation
 
 ## Documentation Tests
 

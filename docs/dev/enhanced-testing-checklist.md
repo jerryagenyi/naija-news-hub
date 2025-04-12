@@ -156,26 +156,55 @@ This comprehensive testing checklist covers all aspects of the Naija News Hub pr
 - [ ] Test configuration deserialization
 
 ### Crawl4AI Integration Tests
-- [ ] Test basic URL crawling
-- [ ] Test rate limiting
+- [x] Test basic URL crawling
+  - [x] Test AsyncWebCrawler initialization
+  - [x] Test URL discovery
+  - [x] Test HTML parsing
+  - [x] Test link extraction
+- [x] Test rate limiting
+  - [x] Test requests per second configuration
+  - [x] Test rate limit options
 - [ ] Test proxy rotation
-- [ ] Test error handling
-- [ ] Test retry mechanisms
+  - [x] Test proxy configuration
+  - [ ] Test dynamic proxy switching
+- [x] Test error handling
+  - [x] Test connection errors
+  - [x] Test timeout errors
+  - [x] Test parsing errors
+  - [x] Test fallback mechanisms
+- [x] Test retry mechanisms
+  - [x] Test exponential backoff
+  - [x] Test maximum retry configuration
+  - [ ] Test circuit breaker pattern
 - [ ] Test memory management
+  - [x] Test resource cleanup
+  - [ ] Test memory usage monitoring
 - [ ] Test concurrent crawling
-- [ ] Test depth-limited crawling
+  - [ ] Test parallel URL discovery
+  - [ ] Test parallel article extraction
+- [x] Test depth-limited crawling
+  - [x] Test max_depth configuration
+  - [x] Test URL filtering by depth
 - [ ] Test breadth-first crawling
 - [ ] Test depth-first crawling
 - [ ] Test custom crawling strategies
-- [ ] Test crawling with different user agents
+- [x] Test crawling with different user agents
+  - [x] Test user agent configuration
+  - [x] Test user agent rotation
 - [ ] Test crawling with cookies
 - [ ] Test crawling with headers
 - [ ] Test crawling with authentication
-- [ ] Test crawling with JavaScript rendering
-- [ ] Test crawling with timeouts
+- [x] Test crawling with JavaScript rendering
+  - [x] Test browser automation
+  - [x] Test dynamic content loading
+- [x] Test crawling with timeouts
+  - [x] Test request timeout configuration
+  - [x] Test page load timeout configuration
 - [ ] Test crawling with bandwidth limits
 - [ ] Test crawling with request limits
-- [ ] Test crawling with custom parsers
+- [x] Test crawling with custom parsers
+  - [x] Test CSS selector configuration
+  - [x] Test HTML cleaning
 
 ### Data Processing Tests
 - [ ] Test date format parsing
@@ -244,23 +273,75 @@ This comprehensive testing checklist covers all aspects of the Naija News Hub pr
 ## Integration Tests
 
 ### Website Scraping
-- [ ] Test single website scraping
+- [x] Test single website scraping
+  - [x] Test URL discovery
+  - [x] Test content extraction
+  - [x] Test error handling
 - [ ] Test multiple website concurrent scraping
-- [ ] Test sitemap parsing
-- [ ] Test article extraction
-- [ ] Test metadata extraction
+  - [ ] Test parallel processing
+  - [ ] Test resource management
+  - [ ] Test database concurrency
+- [x] Test sitemap parsing
+  - [x] Test sitemap URL extraction
+  - [x] Test URL validation
+  - [x] Test URL normalization
+- [x] Test article extraction
+  - [x] Test HTML content extraction
+  - [x] Test content cleaning
+  - [x] Test Markdown conversion
+  - [x] Test HTML structure parsing
+- [x] Test metadata extraction
+  - [x] Test title extraction
+  - [x] Test author extraction
+  - [x] Test date extraction
+  - [x] Test image URL extraction
+  - [x] Test category extraction
 - [ ] Test incremental scraping
+  - [ ] Test new article detection
+  - [ ] Test article update detection
 - [ ] Test full site scraping
-- [ ] Test scraping with different configurations
-- [ ] Test scraping with different strategies
-- [ ] Test scraping with different selectors
-- [ ] Test scraping with different parsers
-- [ ] Test scraping with different output formats
-- [ ] Test scraping with different error handling strategies
-- [ ] Test scraping with different retry strategies
-- [ ] Test scraping with different rate limiting strategies
+  - [x] Test category-based discovery
+  - [x] Test sitemap-based discovery
+  - [ ] Test archive page discovery
+- [x] Test scraping with different configurations
+  - [x] Test different user agents
+  - [x] Test different rate limits
+  - [x] Test different timeout settings
+- [x] Test scraping with different strategies
+  - [x] Test URL discovery strategies
+  - [x] Test content extraction strategies
+- [x] Test scraping with different selectors
+  - [x] Test CSS selectors
+  - [x] Test XPath selectors
+  - [x] Test regex patterns
+- [x] Test scraping with different parsers
+  - [x] Test HTML parsing
+  - [x] Test XML parsing
+  - [x] Test JSON parsing
+- [x] Test scraping with different output formats
+  - [x] Test Markdown output
+  - [x] Test HTML output
+  - [x] Test plain text output
+- [x] Test scraping with different error handling strategies
+  - [x] Test retry on error
+  - [x] Test fallback mechanisms
+  - [x] Test error logging
+- [x] Test scraping with different retry strategies
+  - [x] Test exponential backoff
+  - [x] Test maximum retry limits
+  - [ ] Test circuit breaker pattern
+- [x] Test scraping with different rate limiting strategies
+  - [x] Test requests per second
+  - [x] Test delay between requests
+  - [ ] Test adaptive rate limiting
 - [ ] Test scraping with different proxy strategies
-- [ ] Test scraping with different user agent strategies
+  - [x] Test single proxy configuration
+  - [ ] Test proxy rotation
+  - [ ] Test proxy failover
+- [x] Test scraping with different user agent strategies
+  - [x] Test fixed user agent
+  - [x] Test random user agent selection
+  - [ ] Test browser-specific user agents
 - [ ] Test scraping with different cookie strategies
 - [ ] Test scraping with different header strategies
 - [ ] Test scraping with different authentication strategies
@@ -582,26 +663,93 @@ This comprehensive testing checklist covers all aspects of the Naija News Hub pr
 - [ ] Test Nigerian legal references
 
 ### Site-Specific Tests
-- [ ] Test site-specific selectors
-- [ ] Test site-specific error handling
-- [ ] Test site-specific rate limiting
-- [ ] Test site-specific content validation
+- [x] Test site-specific selectors
+  - [x] Test CSS selectors for article content
+  - [x] Test CSS selectors for metadata
+  - [x] Test URL patterns for article discovery
+  - [x] Test selector fallback mechanisms
+- [x] Test site-specific error handling
+  - [x] Test handling site-specific errors
+  - [x] Test fallback mechanisms
+  - [x] Test error logging
+  - [x] Test error recovery
+- [x] Test site-specific rate limiting
+  - [x] Test configurable rate limits
+  - [x] Test respecting robots.txt
+  - [x] Test adaptive rate limiting
+  - [x] Test rate limit detection
+- [x] Test site-specific content validation
+  - [x] Test content structure validation
+  - [x] Test metadata validation
+  - [x] Test content completeness validation
+  - [x] Test content quality validation
 - [ ] Test site-specific authentication
-- [ ] Test site-specific navigation
-- [ ] Test site-specific pagination
+  - [ ] Test login mechanisms
+  - [ ] Test session management
+  - [ ] Test cookie handling
+- [x] Test site-specific navigation
+  - [x] Test menu navigation
+  - [x] Test breadcrumb navigation
+  - [x] Test internal link navigation
+  - [x] Test navigation error handling
+- [x] Test site-specific pagination
+  - [x] Test page number pagination
+  - [x] Test infinite scroll pagination
+  - [x] Test "load more" button pagination
+  - [x] Test AJAX pagination
 - [ ] Test site-specific search
+  - [ ] Test search functionality
+  - [ ] Test search result extraction
+  - [ ] Test search pagination
 - [ ] Test site-specific filtering
+  - [ ] Test filter functionality
+  - [ ] Test filter result extraction
+  - [ ] Test filter combination
 - [ ] Test site-specific sorting
-- [ ] Test site-specific categorization
+  - [ ] Test sort functionality
+  - [ ] Test sort result extraction
+  - [ ] Test sort direction
+- [x] Test site-specific categorization
+  - [x] Test category detection
+  - [x] Test category navigation
+  - [x] Test category URL patterns
+  - [x] Test subcategory handling
 - [ ] Test site-specific tagging
+  - [ ] Test tag detection
+  - [ ] Test tag navigation
+  - [ ] Test tag URL patterns
 - [ ] Test site-specific author pages
+  - [ ] Test author page detection
+  - [ ] Test author page navigation
+  - [ ] Test author page URL patterns
 - [ ] Test site-specific topic pages
+  - [ ] Test topic page detection
+  - [ ] Test topic page navigation
+  - [ ] Test topic page URL patterns
 - [ ] Test site-specific special sections
+  - [ ] Test special section detection
+  - [ ] Test special section navigation
+  - [ ] Test special section URL patterns
 - [ ] Test site-specific multimedia content
+  - [ ] Test image gallery extraction
+  - [ ] Test video content extraction
+  - [ ] Test audio content extraction
 - [ ] Test site-specific interactive content
+  - [ ] Test interactive element detection
+  - [ ] Test interactive content extraction
+  - [ ] Test interactive content interaction
 - [ ] Test site-specific paywalled content
+  - [ ] Test paywall detection
+  - [ ] Test paywall bypass strategies
+  - [ ] Test partial content extraction
 - [ ] Test site-specific subscription content
+  - [ ] Test subscription content detection
+  - [ ] Test subscription content access
+  - [ ] Test subscription content extraction
 - [ ] Test site-specific premium content
+  - [ ] Test premium content detection
+  - [ ] Test premium content access
+  - [ ] Test premium content extraction
 
 ### Multi-language Support
 - [ ] Test English content extraction

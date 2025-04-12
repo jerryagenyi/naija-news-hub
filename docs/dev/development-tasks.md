@@ -111,46 +111,46 @@ This document tracks the development tasks for the Naija News Hub project, break
   - [x] Implement retry limits and policies
 
 ### Content Extraction
-- [ ] Implement title extraction
-  - [ ] Extract from meta tags
-  - [ ] Extract from heading elements
+- [x] Implement title extraction
+  - [x] Extract from meta tags
+  - [x] Extract from heading elements
   - [ ] Extract from structured data
-  - [ ] Implement fallback strategies
-- [ ] Create author extraction
-  - [ ] Extract from byline elements
-  - [ ] Extract from meta tags
+  - [x] Implement fallback strategies
+- [x] Create author extraction
+  - [x] Extract from byline elements
+  - [x] Extract from meta tags
   - [ ] Extract from structured data
   - [ ] Handle multiple authors
-- [ ] Implement publication date extraction
-  - [ ] Extract from meta tags
-  - [ ] Extract from article elements
+- [x] Implement publication date extraction
+  - [x] Extract from meta tags
+  - [x] Extract from article elements
   - [ ] Extract from structured data
-  - [ ] Handle different date formats
-  - [ ] Normalize to standard format
-- [ ] Create category extraction
+  - [x] Handle different date formats
+  - [x] Normalize to standard format
+- [x] Create category extraction
   - [ ] Extract from breadcrumbs
-  - [ ] Extract from meta tags
-  - [ ] Extract from URL structure
+  - [x] Extract from meta tags
+  - [x] Extract from URL structure
   - [ ] Extract from article elements
   - [ ] Handle multiple categories
-- [ ] Implement content extraction
-  - [ ] Identify main content container
-  - [ ] Extract paragraphs and formatting
+- [x] Implement content extraction
+  - [x] Identify main content container
+  - [x] Extract paragraphs and formatting
   - [ ] Handle multi-page articles
-  - [ ] Remove ads and irrelevant content
-  - [ ] Preserve important formatting
-- [ ] Add support for images and media
-  - [ ] Extract featured images
-  - [ ] Extract inline images
+  - [x] Remove ads and irrelevant content
+  - [x] Preserve important formatting
+- [x] Add support for images and media
+  - [x] Extract featured images
+  - [x] Extract inline images
   - [ ] Extract image captions
   - [ ] Extract videos and embeds
   - [ ] Handle lazy-loaded media
-- [ ] Create content cleaning and normalization
-  - [ ] Remove HTML artifacts
-  - [ ] Normalize whitespace
-  - [ ] Fix character encoding issues
-  - [ ] Standardize formatting
-  - [ ] Handle special characters
+- [x] Create content cleaning and normalization
+  - [x] Remove HTML artifacts
+  - [x] Normalize whitespace
+  - [x] Fix character encoding issues
+  - [x] Standardize formatting
+  - [x] Handle special characters
 
 ### Data Storage
 - [x] Create article database schema

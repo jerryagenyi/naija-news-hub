@@ -5,21 +5,21 @@ This document tracks the development tasks for the Naija News Hub project, break
 ## Project Setup
 
 ### Environment Setup
-- [ ] Create virtual environment
-- [ ] Set up basic project structure
-- [ ] Initialize Git repository
-- [ ] Create .gitignore file
-- [ ] Set up documentation structure
-- [ ] Configure MkDocs
-- [ ] Set up GitHub Actions for documentation deployment
+- [x] Create virtual environment
+- [x] Set up basic project structure
+- [x] Initialize Git repository
+- [x] Create .gitignore file
+- [x] Set up documentation structure
+- [x] Configure MkDocs
+- [x] Set up GitHub Actions for documentation deployment
 
 ### Configuration
-- [ ] Create configuration template
-- [ ] Set up environment variable handling
-- [ ] Create example configuration file
+- [x] Create configuration template
+- [x] Set up environment variable handling
+- [x] Create example configuration file
 - [ ] Implement configuration validation
 - [ ] Set up logging configuration
-- [ ] Create database configuration
+- [x] Create database configuration
 
 ## Phase 1: URL Discovery and Sitemap Generation
 
@@ -31,11 +31,29 @@ This document tracks the development tasks for the Naija News Hub project, break
 
 ### Sitemap Detection
 - [ ] Implement sitemap.xml detection
+  - [ ] Detect robots.txt for sitemap references
+  - [ ] Check common sitemap paths
+  - [ ] Handle redirects and status codes
 - [ ] Create sitemap index parser
+  - [ ] Parse standard sitemap index format
+  - [ ] Handle nested sitemap indexes
+  - [ ] Support gzipped sitemaps
 - [ ] Implement sitemap URL extraction
+  - [ ] Extract URLs from standard sitemaps
+  - [ ] Extract URLs from news-specific sitemaps
+  - [ ] Extract URLs from image sitemaps when relevant
 - [ ] Add support for various sitemap formats
+  - [ ] Support RSS-based sitemaps
+  - [ ] Support custom XML formats
+  - [ ] Support HTML sitemaps
 - [ ] Implement sitemap URL validation
+  - [ ] Check URL status codes
+  - [ ] Verify URL format and structure
+  - [ ] Filter non-article URLs
 - [ ] Create storage for sitemap URLs
+  - [ ] Design database schema for URLs
+  - [ ] Implement batch storage operations
+  - [ ] Add metadata storage (last modified, priority, etc.)
 
 ### Category-based URL Discovery
 - [ ] Implement category page detection
@@ -57,20 +75,77 @@ This document tracks the development tasks for the Naija News Hub project, break
 
 ### Crawl4AI Integration
 - [ ] Set up Crawl4AI configuration
+  - [ ] Configure user agents and headers
+  - [ ] Set up rate limiting parameters
+  - [ ] Configure proxy settings
+  - [ ] Set up browser rendering options
 - [ ] Implement basic article scraping
+  - [ ] Create scraper class with Crawl4AI
+  - [ ] Implement URL fetching
+  - [ ] Set up HTML parsing
+  - [ ] Create basic content extraction
 - [ ] Create article extraction pipeline
+  - [ ] Design pipeline architecture
+  - [ ] Implement pipeline stages
+  - [ ] Create pipeline configuration
+  - [ ] Add pipeline monitoring
 - [ ] Add support for different article formats
+  - [ ] Support standard news articles
+  - [ ] Support gallery/slideshow articles
+  - [ ] Support video articles
+  - [ ] Support mixed-media articles
 - [ ] Implement error handling for scraping
+  - [ ] Create error classification system
+  - [ ] Implement error logging
+  - [ ] Add error recovery strategies
+  - [ ] Create error reporting
 - [ ] Create retry mechanism for failed scrapes
+  - [ ] Implement exponential backoff
+  - [ ] Add circuit breaker pattern
+  - [ ] Create retry queue
+  - [ ] Implement retry limits and policies
 
 ### Content Extraction
 - [ ] Implement title extraction
+  - [ ] Extract from meta tags
+  - [ ] Extract from heading elements
+  - [ ] Extract from structured data
+  - [ ] Implement fallback strategies
 - [ ] Create author extraction
+  - [ ] Extract from byline elements
+  - [ ] Extract from meta tags
+  - [ ] Extract from structured data
+  - [ ] Handle multiple authors
 - [ ] Implement publication date extraction
+  - [ ] Extract from meta tags
+  - [ ] Extract from article elements
+  - [ ] Extract from structured data
+  - [ ] Handle different date formats
+  - [ ] Normalize to standard format
 - [ ] Create category extraction
+  - [ ] Extract from breadcrumbs
+  - [ ] Extract from meta tags
+  - [ ] Extract from URL structure
+  - [ ] Extract from article elements
+  - [ ] Handle multiple categories
 - [ ] Implement content extraction
+  - [ ] Identify main content container
+  - [ ] Extract paragraphs and formatting
+  - [ ] Handle multi-page articles
+  - [ ] Remove ads and irrelevant content
+  - [ ] Preserve important formatting
 - [ ] Add support for images and media
+  - [ ] Extract featured images
+  - [ ] Extract inline images
+  - [ ] Extract image captions
+  - [ ] Extract videos and embeds
+  - [ ] Handle lazy-loaded media
 - [ ] Create content cleaning and normalization
+  - [ ] Remove HTML artifacts
+  - [ ] Normalize whitespace
+  - [ ] Fix character encoding issues
+  - [ ] Standardize formatting
+  - [ ] Handle special characters
 
 ### Data Storage
 - [ ] Create article database schema
@@ -213,15 +288,19 @@ This document tracks the development tasks for the Naija News Hub project, break
 ## Project Management
 
 ### Documentation
-- [ ] Update README
+- [x] Update README
 - [ ] Create installation guide
-- [ ] Implement user documentation
-- [ ] Add developer documentation
+- [x] Implement user documentation
+- [x] Add developer documentation
+  - [x] Create development guide
+  - [x] Create testing checklist
+  - [x] Create enhanced testing checklist
+  - [x] Create development tasks tracker
 - [ ] Create API documentation
-- [ ] Implement architecture documentation
+- [x] Implement architecture documentation
 
 ### Version Control
-- [ ] Create branching strategy
+- [x] Create branching strategy
 - [ ] Implement release process
 - [ ] Add version tagging
 - [ ] Create changelog
@@ -232,47 +311,53 @@ This document tracks the development tasks for the Naija News Hub project, break
 
 ### Phase 1: URL Discovery
 - Start Date: _____________
-- Completion: ___% 
+- Completion: ___%
 - Challenges: _____________
 - Next Steps: _____________
 
 ### Phase 2: Article Extraction
 - Start Date: _____________
-- Completion: ___% 
+- Completion: ___%
 - Challenges: _____________
 - Next Steps: _____________
 
 ### Phase 3: Maintenance and Monitoring
 - Start Date: _____________
-- Completion: ___% 
+- Completion: ___%
 - Challenges: _____________
 - Next Steps: _____________
 
 ### Phase 4: API Development
 - Start Date: _____________
-- Completion: ___% 
+- Completion: ___%
 - Challenges: _____________
 - Next Steps: _____________
 
 ### Phase 5: LLM Integration
 - Start Date: _____________
-- Completion: ___% 
+- Completion: ___%
 - Challenges: _____________
 - Next Steps: _____________
 
 ## Notes and Decisions
 
 ### Technical Decisions
-- _____________
-- _____________
-- _____________
+- Using Crawl4AI as the primary web scraping library for its advanced features
+- Using MkDocs with Material theme for documentation
+- Using Pydantic for configuration management and validation
+- Using PostgreSQL for database storage
 
 ### Challenges and Solutions
-- _____________
-- _____________
-- _____________
+- Challenge: Nigerian news websites have varying structures
+  - Solution: Implement flexible scraping strategies with Crawl4AI
+- Challenge: Some websites may block scraping attempts
+  - Solution: Implement proxy rotation and rate limiting
+- Challenge: Need to handle multiple languages
+  - Solution: Implement language detection and appropriate text processing
 
 ### Ideas for Future Development
-- _____________
-- _____________
-- _____________
+- Implement a browser extension for manual article selection
+- Create a mobile app for browsing scraped content
+- Integrate with social media platforms for sharing
+- Implement sentiment analysis on news content
+- Create topic modeling for automatic categorization

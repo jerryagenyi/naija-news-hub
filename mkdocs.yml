@@ -36,6 +36,7 @@ theme:
 nav:
   - Home: index.md
   - Project Overview:
+    - Overview: project-overview.md
     - Original Concept: original-idea.md
     - Product Requirements: prd.md
   - Development:

@@ -86,6 +86,34 @@ class ProxyConfig(BaseModel):
         description="Maximum failures before proxy is marked as bad"
     )
 
+class ScraperConfig(BaseModel):
+    """Scraper configuration settings"""
+    max_articles_per_run: int = Field(default=10, description="Maximum number of articles to scrape per run")
+    max_concurrent_requests: int = Field(default=5, description="Maximum number of concurrent requests")
+    default_timeout: int = Field(default=30, description="Default timeout for requests in seconds")
+    user_agent: str = Field(
+        default="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+        description="User agent string"
+    )
+    retry_count: int = Field(default=3, description="Number of retries for failed requests")
+    retry_delay: int = Field(default=2, description="Delay between retries in seconds")
+    extract_images: bool = Field(default=True, description="Extract images from articles")
+    extract_videos: bool = Field(default=True, description="Extract videos from articles")
+    extract_links: bool = Field(default=True, description="Extract links from articles")
+    extract_metadata: bool = Field(default=True, description="Extract metadata from articles")
+    extract_categories: bool = Field(default=True, description="Extract categories from articles")
+    extract_tags: bool = Field(default=True, description="Extract tags from articles")
+    extract_authors: bool = Field(default=True, description="Extract authors from articles")
+    extract_published_date: bool = Field(default=True, description="Extract published date from articles")
+    extract_modified_date: bool = Field(default=True, description="Extract modified date from articles")
+    extract_content: bool = Field(default=True, description="Extract content from articles")
+    extract_comments: bool = Field(default=False, description="Extract comments from articles")
+    extract_related: bool = Field(default=False, description="Extract related articles")
+    extract_social: bool = Field(default=False, description="Extract social media links")
+    extract_share_count: bool = Field(default=False, description="Extract share count")
+    extract_view_count: bool = Field(default=False, description="Extract view count")
+    extract_comment_count: bool = Field(default=False, description="Extract comment count")
+
 class Config(BaseModel):
     """Main configuration class"""
     crawl4ai: Crawl4AIConfig = Field(default_factory=Crawl4AIConfig)
@@ -93,6 +121,7 @@ class Config(BaseModel):
     api: APIConfig = Field(default_factory=APIConfig)
     nigerian_news: NigerianNewsConfig = Field(default_factory=NigerianNewsConfig)
     proxy: ProxyConfig = Field(default_factory=ProxyConfig)
+    scraper: ScraperConfig = Field(default_factory=ScraperConfig)
 
     class Config:
         env_prefix = "NAIJA_NEWS_"
@@ -109,4 +138,4 @@ config = Config(
         password="password"
     )
 )
-""" 
+"""

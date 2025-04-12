@@ -199,19 +199,17 @@ As of April 2025, Naija News Hub has:
 - Tested URL discovery and article extraction with real websites
 - Committed changes to the repository
 
-### April 14, 2025
+### April 14, 2025 (Afternoon)
 
-- Implemented database integration using repository pattern
-- Created repository classes for articles, websites, and scraping jobs
-- Implemented service layer for business logic
-- Added command-line interface for database operations
-- Created batch operations for efficient article storage
-- Implemented error handling and transaction management
-- Added article metadata storage and retrieval
-- Created comprehensive documentation for database integration
-- Tested database operations with real articles
-- Updated development tasks and project journey documentation
-- Committed changes to the repository
+- **Frontend Dependencies Optimization**
+  - Removed `@types/axios` package in favor of built-in TypeScript types from axios
+  - Improved type compatibility and reduced package dependencies
+  - Streamlined frontend development setup
+- **Documentation Updates**
+  - Updated file relationship rules to reflect current project structure
+  - Ensured consistency across all documentation files
+  - Updated development tasks to reflect completed work
+  - Maintained documentation integrity according to established rules
 
 ## Project Milestones
 
@@ -251,31 +249,44 @@ As of April 2025, Naija News Hub has:
 
 ### Documentation Best Practices
 
-1. **Descriptive Filenames**
-   - Using clear, descriptive filenames instead of abbreviations (e.g., `product-requirements-document.md` instead of `prd.md`)
-   - Following consistent naming conventions with hyphens for filenames
-   - Organizing documentation in logical directories (`docs/dev/`, `docs/pm/`, etc.)
+1. **Foundational Documentation Files**
+   - **Product Requirements Document (PRD)**: Comprehensive system requirements and feature specifications
+   - **Technical Design Document (TDD)**: System architecture and component design
+   - **File Relationship Rules**: Ensures documentation and code consistency
+   - **Development Standards**:
+     - `frontend_rules.mdc`: Frontend development standards and conventions
+     - `python_rules.mdc`: Python development standards and conventions
+   - **Integration Documentation**:
+     - `crawl4ai_integration.md`: Crawl4AI integration details and best practices
+     - `database_integration.md`: Database integration patterns and practices
+   - **Testing Documentation**:
+     - `testing_checklist.md`: Core testing requirements
+     - `enhanced_testing_checklist.md`: Advanced testing scenarios
+   - **Project Management**:
+     - `project_journey.md`: Project evolution and decisions
+     - `development_tasks.md`: Task tracking and progress
+   - **API Documentation**:
+     - `api_documentation.md`: API specifications and usage
+   - **User Documentation**:
+     - `user_guide.md`: End-user documentation
+     - `issue_tracking_guide.md`: Issue management process
 
-2. **Consistent Date and Time References**
+2. **Documentation Structure**
+   - Using MkDocs for documentation generation
+   - Organized documentation in logical directories:
+     - `docs/api/`: API documentation
+     - `docs/dev/`: Development standards and guides
+     - `docs/pm/`: Project management documentation
+     - `docs/guide/`: User guides and tutorials
+     - `docs/frontend/`: Frontend-specific documentation
+     - `docs/notes/`: Project notes and ideas
+
+3. **Documentation Standards**
+   - Using consistent Markdown formatting
+   - Including "Last Updated" timestamps
+   - Maintaining cross-references between documents
+   - Following the file relationship rules
    - Using MCP time handling for consistent date references
-   - Including "Last Updated" timestamps in documentation
-   - Following YYYY-MM-DD format for all dates
-   - Updating timestamps when making significant changes
-
-3. **Documentation Synchronization**
-   - Maintaining file relationship rules to ensure related files stay in sync
-   - Updating all related documentation when making changes
-   - Including cross-references between related documents
-
-3. **Comprehensive Testing Documentation**
-   - Creating both focused and enhanced testing checklists
-   - Breaking down tests into detailed subtasks
-   - Ensuring testing documentation aligns with development tasks
-
-4. **Tracking Project Evolution**
-   - Maintaining a dated project journey document
-   - Recording key decisions and their rationales
-   - Documenting best practices as they emerge
 
 ### Development Best Practices
 
@@ -329,3 +340,101 @@ The journey of Naija News Hub is just beginning. With a solid foundation in plac
 This project represents not just a technical solution, but a commitment to making Nigerian news more accessible and researchable. The structured approach we've taken ensures that Naija News Hub will be a robust, scalable, and maintainable system that can grow with the needs of its users.
 
 Stay tuned for more updates as we continue this exciting journey!
+
+## Foundational Documentation Files
+
+This project has established several key documentation files that serve as templates and best practices for future projects:
+
+### Core Documentation
+1. **Product Requirements Document (PRD)**
+   - Location: `docs/pm/prd.md`
+   - Purpose: Defines product vision, goals, and requirements
+   - Best Practice: Use as a template for future project requirements documentation
+
+2. **Technical Design Document (TDD)**
+   - Location: `docs/pm/tdd.md`
+   - Purpose: Outlines technical architecture, components, and implementation details
+   - Best Practice: Follow the established structure for technical documentation
+
+3. **File Relationship Rules**
+   - Location: `docs/dev/file-relationship-rules.md`
+   - Purpose: Defines relationships between files and ensures documentation integrity
+   - Best Practice: Implement similar rules for maintaining documentation consistency
+
+4. **MkDocs Documentation**
+   - Location: `docs/`
+   - Purpose: Comprehensive project documentation using MkDocs
+   - Best Practice: Use MkDocs for all future project documentation
+
+### Integration Documentation
+1. **Crawl4AI Integration**
+   - Location: `docs/dev/crawl4ai-integration.md`
+   - Purpose: Documents web scraping integration and best practices
+   - Best Practice: Use as a template for third-party service integrations
+
+2. **Database Integration**
+   - Location: `docs/dev/database-integration.md`
+   - Purpose: Documents database architecture and integration patterns
+   - Best Practice: Follow established database integration patterns
+
+### Testing Documentation
+1. **Testing Checklist**
+   - Location: `docs/dev/testing-checklist.md`
+   - Purpose: Standardizes testing procedures and coverage
+   - Best Practice: Use as a template for test planning
+
+2. **Enhanced Testing Checklist**
+   - Location: `docs/dev/enhanced-testing-checklist.md`
+   - Purpose: Advanced testing scenarios and edge cases
+   - Best Practice: Implement comprehensive testing strategies
+
+### Project Management
+1. **Development Tasks**
+   - Location: `docs/dev/development-tasks.md`
+   - Purpose: Tracks development progress and priorities
+   - Best Practice: Maintain clear task tracking and progress updates
+
+2. **Project Journey**
+   - Location: `docs/pm/project-journey.md`
+   - Purpose: Documents project evolution and key decisions
+   - Best Practice: Keep detailed project history and decision logs
+
+### API Documentation
+1. **API Documentation**
+   - Location: `docs/api/api-documentation.md`
+   - Purpose: Comprehensive API reference and usage guidelines
+   - Best Practice: Maintain up-to-date API documentation
+
+### User Documentation
+1. **User Guide**
+   - Location: `docs/app/user-guide.md`
+   - Purpose: End-user documentation and tutorials
+   - Best Practice: Create clear and comprehensive user guides
+
+### Frontend Documentation
+1. **Frontend Project Structure**
+   - Location: `docs/frontend/project-structure.md`
+   - Purpose: Documents frontend architecture and components
+   - Best Practice: Follow established frontend documentation patterns
+
+2. **Frontend Development Tasks**
+   - Location: `docs/frontend/development-tasks.md`
+   - Purpose: Tracks frontend development progress
+   - Best Practice: Maintain separate frontend task tracking
+
+### Documentation Standards
+1. **File Naming Convention**
+   - Use hyphens (-) for Markdown documentation files
+   - Use underscores (_) for Python files
+   - Follow consistent casing (lowercase for all files)
+
+2. **Directory Structure**
+   - Organize documentation in logical directories
+   - Maintain clear separation of concerns
+   - Follow established directory naming conventions
+
+3. **Documentation Format**
+   - Use consistent Markdown formatting
+   - Include "Last Updated" timestamps
+   - Maintain cross-references between documents
+   - Follow file relationship rules

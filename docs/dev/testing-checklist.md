@@ -43,21 +43,31 @@
 - [ ] Encoding handling
 
 ### Database Tests
-- [ ] Connection pooling
-  - [ ] Test connection pool initialization
-  - [ ] Test connection acquisition
-  - [ ] Test connection release
+- [x] Connection pooling
+  - [x] Test connection pool initialization
+  - [x] Test connection acquisition
+  - [x] Test connection release
   - [ ] Test pool size limits
-- [ ] Transaction handling
-  - [ ] Test transaction commit
-  - [ ] Test transaction rollback
+- [x] Transaction handling
+  - [x] Test transaction commit
+  - [x] Test transaction rollback
   - [ ] Test nested transactions
   - [ ] Test transaction isolation levels
-- [ ] Batch operations
-  - [ ] Test batch inserts
+- [x] Batch operations
+  - [x] Test batch inserts
   - [ ] Test batch updates
   - [ ] Test batch deletes
   - [ ] Test batch performance
+- [x] Repository pattern
+  - [x] Test article repository
+  - [x] Test website repository
+  - [x] Test scraping repository
+  - [x] Test repository error handling
+- [x] Service layer
+  - [x] Test article service
+  - [x] Test article extraction and storage
+  - [x] Test URL discovery and storage
+  - [x] Test service error handling
 - [ ] Error recovery
   - [ ] Test connection failures
   - [ ] Test query failures
@@ -117,11 +127,26 @@
 - [ ] Concurrent requests
 
 ### Database Performance
-- [ ] Query performance
-- [ ] Connection handling
-- [ ] Batch operations
+- [x] Query performance
+  - [x] Test basic CRUD operations
+  - [ ] Test complex queries
+  - [ ] Test query optimization
+- [x] Connection handling
+  - [x] Test connection pooling
+  - [ ] Test connection timeouts
+  - [ ] Test connection limits
+- [x] Batch operations
+  - [x] Test batch inserts
+  - [ ] Test batch updates
+  - [ ] Test batch deletes
 - [ ] Index usage
+  - [ ] Test index effectiveness
+  - [ ] Test index creation
+  - [ ] Test index maintenance
 - [ ] Cache effectiveness
+  - [ ] Test cache hit rate
+  - [ ] Test cache invalidation
+  - [ ] Test cache size limits
 
 ## Security Tests
 

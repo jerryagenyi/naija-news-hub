@@ -4,7 +4,7 @@ This document defines the relationships between project files and establishes ru
 
 ## Core Documentation Relationships
 
-### Database Schema Documentation
+### Database Documentation
 
 | Primary File | Related Files | Integrity Rule |
 |--------------|---------------|----------------|
@@ -13,6 +13,10 @@ This document defines the relationships between project files and establishes ru
 | `docs/dev/database-schema.md` | `docs/dev/development-tasks.md` | When database schema is updated, ensure database-related tasks are updated accordingly. |
 | `docs/dev/database-schema.md` | `docs/dev/testing-checklist.md` | When database schema is updated, ensure database testing sections are updated to cover new/changed features. |
 | `docs/dev/database-schema.md` | `docs/dev/enhanced-testing-checklist.md` | When database schema is updated, ensure enhanced database testing sections are updated to cover new/changed features. |
+| `docs/dev/database-integration.md` | `src/database/repositories/*.py` | When repository implementations are updated, ensure database integration documentation is updated to match. |
+| `docs/dev/database-integration.md` | `src/services/article_service.py` | When article service is updated, ensure database integration documentation is updated to match. |
+| `docs/dev/database-integration.md` | `docs/dev/development-tasks.md` | When database integration documentation is updated, ensure development tasks are updated accordingly. |
+| `docs/dev/database-integration.md` | `docs/pm/project-journey.md` | When database integration is updated, ensure project journey document reflects the changes. |
 
 ### Testing Documentation
 
@@ -112,9 +116,10 @@ This document defines the relationships between project files and establishes ru
    - Update `docs/dev/database-schema.md` first
    - Create database migration scripts
    - Update Pydantic models in `config/config_template.py`
-   - Update ORM models in `models/database.py`
-   - Update repository classes in `repositories/`
+   - Update ORM models in `src/database/models.py`
+   - Update repository classes in `src/database/repositories/`
    - Update tests to cover the changes
+   - Update `docs/dev/database-integration.md` to reflect the changes
 
 4. **Testing Documentation**: When updating testing documentation:
    - Ensure both `testing-checklist.md` and `enhanced-testing-checklist.md` remain in sync
@@ -128,7 +133,15 @@ This document defines the relationships between project files and establishes ru
    - Update tests to cover the changes
    - Update development tasks to reflect completed tasks
 
-6. **Time and Date References**: When adding time or date references:
+6. **Database Integration**: When updating database integration:
+   - Update `docs/dev/database-integration.md` to reflect implementation changes
+   - Update repository classes in `src/database/repositories/` to maintain consistency
+   - Update service classes in `src/services/` to reflect the changes
+   - Update CLI commands in `main.py` if needed
+   - Update tests to cover the changes
+   - Update development tasks to reflect completed tasks
+
+7. **Time and Date References**: When adding time or date references:
    - Use the MCP time module (`utils/mcp/time.py`) to get the current date/time
    - Follow the format YYYY-MM-DD for dates
    - Update the "Last Updated" timestamp in documentation files
@@ -139,12 +152,13 @@ This document defines the relationships between project files and establishes ru
 When modifying any file, ask yourself:
 
 1. Does this change affect the database schema?
-2. Does this change affect the API?
-3. Does this change affect the scraper functionality?
-4. Does this change affect Crawl4AI integration?
-5. Does this change affect configuration requirements?
-6. Does this change require updates to tests?
-7. Does this change require updates to documentation?
+2. Does this change affect the database integration?
+3. Does this change affect the API?
+4. Does this change affect the scraper functionality?
+5. Does this change affect Crawl4AI integration?
+6. Does this change affect configuration requirements?
+7. Does this change require updates to tests?
+8. Does this change require updates to documentation?
 
 For each "yes" answer, identify the related files using this document and update them accordingly.
 

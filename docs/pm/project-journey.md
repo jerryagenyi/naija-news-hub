@@ -1,6 +1,6 @@
 # The Naija News Hub Journey: From Concept to Structure
 
-**Last Updated:** April 13, 2025
+**Last Updated:** April 14, 2025
 
 > **Note:** This document is updated regularly as the project evolves. The date above indicates when this document was last updated. Always check this date to determine if you need to review recent commits for additional developments.
 
@@ -116,21 +116,28 @@ As of April 2025, Naija News Hub has:
    - Database models and connection
    - Core scraper components with Crawl4AI integration
    - URL discovery and article extraction
+   - Database integration with repository pattern
+   - Article storage and retrieval
+   - Command-line interface for database operations
    - API structure and routes
    - Unit tests for core components
+   - Error handling and recovery mechanisms
 
 2. **In Progress**
    - Content extraction refinement
-   - Database integration and testing
    - API refinement and security
-   - Error handling and recovery improvements
+   - Article update mechanism
+   - Content versioning implementation
+   - Article deduplication
 
 3. **Next Steps**
    - Frontend development
+   - Dashboard for monitoring
    - LLM integration
    - Vector database implementation
    - Advanced feature integration
    - Automated URL discovery and content updates
+   - Error notification system
 
 ## Development Timeline
 
@@ -190,6 +197,20 @@ As of April 2025, Naija News Hub has:
 - Created test command for scraper testing
 - Updated documentation to reflect Crawl4AI integration
 - Tested URL discovery and article extraction with real websites
+- Committed changes to the repository
+
+### April 14, 2025
+
+- Implemented database integration using repository pattern
+- Created repository classes for articles, websites, and scraping jobs
+- Implemented service layer for business logic
+- Added command-line interface for database operations
+- Created batch operations for efficient article storage
+- Implemented error handling and transaction management
+- Added article metadata storage and retrieval
+- Created comprehensive documentation for database integration
+- Tested database operations with real articles
+- Updated development tasks and project journey documentation
 - Committed changes to the repository
 
 ## Best Practices Adopted

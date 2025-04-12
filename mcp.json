@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "time": {
+      "command": "python",
+      "args": ["-m", "mcp_server_time"],
+      "env": {},
+      "cwd": "${workspaceFolder}",
+      "description": "MCP Time Server - Provides current time and date information"
+    }
+  }
+}

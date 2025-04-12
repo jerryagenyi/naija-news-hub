@@ -20,6 +20,10 @@ This document tracks the development tasks for the Naija News Hub project, break
 - [ ] Implement configuration validation
 - [ ] Set up logging configuration
 - [x] Create database configuration
+- [x] Implement MCP time handling
+  - [x] Create MCP time server implementation
+  - [x] Create MCP time module for consistent time references
+  - [x] Update documentation to use consistent date formats
 
 ## Phase 1: URL Discovery and Sitemap Generation
 

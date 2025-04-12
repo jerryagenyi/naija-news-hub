@@ -143,6 +143,8 @@ As of April 2025, Naija News Hub has:
 - Added comprehensive enhanced testing checklist with redundancy
 - Created comprehensive database schema documentation
 - Added file relationship rules document for maintaining project integrity
+- Implemented MCP time handling for consistent date references
+- Updated file relationship rules to include MCP time relationships
 
 ## Best Practices Adopted
 
@@ -153,7 +155,13 @@ As of April 2025, Naija News Hub has:
    - Following consistent naming conventions with hyphens for filenames
    - Organizing documentation in logical directories (`docs/dev/`, `docs/pm/`, etc.)
 
-2. **Documentation Synchronization**
+2. **Consistent Date and Time References**
+   - Using MCP time handling for consistent date references
+   - Including "Last Updated" timestamps in documentation
+   - Following YYYY-MM-DD format for all dates
+   - Updating timestamps when making significant changes
+
+3. **Documentation Synchronization**
    - Maintaining file relationship rules to ensure related files stay in sync
    - Updating all related documentation when making changes
    - Including cross-references between related documents

@@ -39,6 +39,14 @@ This document defines the relationships between project files and establishes ru
 | `config/config_template.py` | `.env` | When configuration template is updated, ensure your local .env file is updated with new variables (not committed to Git). |
 | `.env.example` | `docs/dev/database-schema.md` | When database-related environment variables are updated, ensure they align with the database schema documentation. |
 
+### MCP Configuration
+
+| Primary File | Related Files | Integrity Rule |
+|--------------|---------------|----------------|
+| `mcp.json` | `mcp_server_time.py` | When MCP time configuration is updated, ensure the time server implementation is compatible. |
+| `mcp_time.py` | `docs/pm/project-journey.md` | When MCP time module is updated, ensure project journey document uses the correct date format. |
+| `mcp_time.py` | Any documentation with timestamps | When MCP time module is updated, ensure all documentation with timestamps follows the same format. |
+
 ## Code Relationships
 
 ### Database Models
@@ -73,6 +81,14 @@ This document defines the relationships between project files and establishes ru
 | `docs/pm/project-journey.md` | `docs/pm/tdd.md` | When architectural decisions are documented in the project journey, ensure they are reflected in the TDD. |
 | `docs/pm/project-journey.md` | `README.md` | When major milestones are documented in the project journey, update the README to reflect current project status. |
 
+### Time Handling
+
+| Primary File | Related Files | Integrity Rule |
+|--------------|---------------|-----------------|
+| `mcp_time.py` | All documentation files | When updating documentation with dates or timestamps, use the MCP time module to ensure consistency. |
+| `mcp_time.py` | `docs/pm/project-journey.md` | When adding entries to the project journey, include the current date from the MCP time module. |
+| `mcp_time.py` | Database timestamp fields | When storing timestamps in the database, use consistent formats from the MCP time module. |
+
 ## Documentation Consistency Rules
 
 1. **Version Numbers**: When updating version numbers, ensure they are updated in:
@@ -99,6 +115,12 @@ This document defines the relationships between project files and establishes ru
    - Ensure both `testing-checklist.md` and `enhanced-testing-checklist.md` remain in sync
    - Update actual test files to implement the described tests
    - Update development tasks to reflect testing requirements
+
+5. **Time and Date References**: When adding time or date references:
+   - Use the MCP time module (`mcp_time.py`) to get the current date/time
+   - Follow the format YYYY-MM-DD for dates
+   - Update the "Last Updated" timestamp in documentation files
+   - Ensure all documentation uses consistent date formats
 
 ## File Modification Checklist
 

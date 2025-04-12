@@ -16,6 +16,7 @@ from src.database_management.repositories import ArticleRepository, WebsiteRepos
 from src.web_scraper.article_extractor import extract_article
 from src.web_scraper.url_discovery import discover_urls
 from src.utility_modules.content_validation import validate_article_content
+from src.utility_modules.article_comparison import should_update_article, merge_article_data, get_article_changes_summary
 from config.config import get_config
 
 # Configure logging
@@ -37,13 +38,15 @@ class ArticleService:
         self.scraping_repo = ScrapingRepository(db)
         self.config = get_config()
 
-    async def extract_and_store_article(self, url: str, website_id: int) -> Optional[Dict[str, Any]]:
+    async def extract_and_store_article(self, url: str, website_id: int, force_update: bool = False) -> Optional[Dict[str, Any]]:
         """
         Extract an article from a URL and store it in the database.
+        If the article already exists, check if it needs to be updated.
 
         Args:
             url (str): Article URL
             website_id (int): Website ID
+            force_update (bool, optional): Force update even if article exists. Defaults to False.
 
         Returns:
             Optional[Dict[str, Any]]: Extracted article data if successful, None otherwise
@@ -51,13 +54,19 @@ class ArticleService:
         try:
             # Check if article already exists
             existing_article = self.article_repo.get_article_by_url(url)
-            if existing_article:
+            if existing_article and not force_update:
+                # Update the last_checked_at timestamp
+                self.article_repo.update_article(existing_article.id, {
+                    "last_checked_at": datetime.utcnow()
+                })
+
                 logger.info(f"Article already exists: {url}")
                 return {
                     "id": existing_article.id,
                     "title": existing_article.title,
                     "url": existing_article.url,
-                    "status": "existing"
+                    "status": "existing",
+                    "last_checked_at": datetime.utcnow()
                 }
 
             # Extract article
@@ -77,7 +86,8 @@ class ArticleService:
                 "published_at": article_data.get("published_at", datetime.utcnow()),
                 "image_url": article_data.get("image_url", ""),
                 "website_id": website_id,
-                "article_metadata": article_data.get("metadata", {})
+                "article_metadata": article_data.get("article_metadata", {}),
+                "last_checked_at": datetime.utcnow()
             }
 
             # Check if article metadata contains validation results
@@ -86,6 +96,8 @@ class ArticleService:
             # If validation data is not present, validate the article
             if not validation_data:
                 validation_result = validate_article_content(db_article_data)
+                if not db_article_data["article_metadata"]:
+                    db_article_data["article_metadata"] = {}
                 db_article_data["article_metadata"]["validation"] = validation_result.to_dict()
 
                 # Log validation results
@@ -100,8 +112,48 @@ class ArticleService:
                         logger.error(f"Article content quality too low for {url}: score={validation_result.score}")
                         return None
 
-            # Store article in database
-            article = self.article_repo.create_article(db_article_data)
+            # If article exists, check if it needs to be updated
+            if existing_article and force_update:
+                # Force update the article
+                logger.info(f"Force updating article: {url}")
+
+                # Merge existing data with new data
+                merged_data = merge_article_data(existing_article, db_article_data)
+
+                # Update the article
+                article = self.article_repo.update_article(existing_article.id, merged_data)
+
+                # Get a summary of changes
+                changes_summary = get_article_changes_summary(existing_article, db_article_data)
+                logger.info(f"Article update summary for {url}:\n{changes_summary}")
+
+                status = "updated"
+            elif existing_article:
+                # Check if article needs to be updated
+                should_update, reasons = should_update_article(existing_article, db_article_data)
+
+                if should_update:
+                    logger.info(f"Updating article: {url}, reasons: {reasons}")
+
+                    # Merge existing data with new data
+                    merged_data = merge_article_data(existing_article, db_article_data)
+
+                    # Update the article
+                    article = self.article_repo.update_article(existing_article.id, merged_data)
+
+                    # Get a summary of changes
+                    changes_summary = get_article_changes_summary(existing_article, db_article_data)
+                    logger.info(f"Article update summary for {url}:\n{changes_summary}")
+
+                    status = "updated"
+                else:
+                    logger.info(f"No update needed for article: {url}, reasons: {reasons}")
+                    article = existing_article
+                    status = "unchanged"
+            else:
+                # Store new article in database
+                article = self.article_repo.create_article(db_article_data)
+                status = "new"
 
             # Add categories if available
             categories = article_data.get("categories", [])
@@ -145,12 +197,13 @@ class ArticleService:
                 # Add category to article
                 self.article_repo.add_article_category(article.id, category.id)
 
-            logger.info(f"Successfully extracted and stored article: {url}")
+            logger.info(f"Successfully processed article: {url} (status: {status})")
             return {
                 "id": article.id,
                 "title": article.title,
                 "url": article.url,
-                "status": "new"
+                "status": status,
+                "last_checked_at": article.last_checked_at
             }
         except Exception as e:
             logger.error(f"Error extracting and storing article {url}: {str(e)}")

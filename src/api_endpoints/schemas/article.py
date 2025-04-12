@@ -44,6 +44,20 @@ class ArticleResponse(ArticleBase):
     id: int = Field(..., description="ID of the article")
     created_at: datetime = Field(..., description="When the article was created")
     updated_at: datetime = Field(..., description="When the article was last updated")
+    last_checked_at: Optional[datetime] = Field(None, description="When the article was last checked for updates")
+    update_count: Optional[int] = Field(0, description="Number of times the article has been updated")
+
+    class Config:
+        orm_mode = True
+
+class ArticleUpdateResponse(BaseModel):
+    """Schema for article update response."""
+    id: int = Field(..., description="ID of the article")
+    title: str = Field(..., description="Title of the article")
+    url: HttpUrl = Field(..., description="URL of the article")
+    status: str = Field(..., description="Status of the update (new, updated, unchanged, existing)")
+    last_checked_at: datetime = Field(..., description="When the article was last checked for updates")
+    message: Optional[str] = Field(None, description="Additional message about the update")
 
     class Config:
         orm_mode = True

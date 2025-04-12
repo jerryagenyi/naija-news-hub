@@ -71,6 +71,8 @@ class Article(Base):
     active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    last_checked_at = Column(DateTime, default=datetime.utcnow)
+    update_count = Column(Integer, default=0)
 
     # Relationships
     website = relationship("Website", back_populates="articles")

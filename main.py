@@ -79,6 +79,11 @@ def parse_args():
     recent_articles_parser.add_argument("--website-id", type=int, help="Website ID")
     recent_articles_parser.add_argument("--limit", type=int, default=10, help="Maximum number of articles to return")
 
+    # Update article command
+    update_article_parser = db_subparsers.add_parser("update-article", help="Update an existing article")
+    update_article_parser.add_argument("--article-id", type=int, required=True, help="Article ID")
+    update_article_parser.add_argument("--force", action="store_true", help="Force update even if article was recently updated")
+
     # Test command
     test_parser = subparsers.add_parser("test", help="Test the scraper")
     test_parser.add_argument("--url", type=str, required=True, help="URL to test")
@@ -193,6 +198,30 @@ def handle_db_command(args):
                 logger.info(f"ID: {article['id']}, Title: {article['title']}, URL: {article['url']}")
                 logger.info(f"  Author: {article['author']}, Published: {article['published_at']}")
                 logger.info(f"  Website: {article['website_name']} (ID: {article['website_id']})")
+
+        elif args.db_command == "update-article":
+            # Update an existing article
+            article_repo = ArticleRepository(db)
+            article = article_repo.get_article_by_id(args.article_id)
+
+            if not article:
+                logger.error(f"Article not found with ID: {args.article_id}")
+                return
+
+            logger.info(f"Updating article: {article.title} (ID: {article.id})")
+            article_service = ArticleService(db)
+            result = asyncio.run(article_service.extract_and_store_article(article.url, article.website_id, args.force))
+
+            if result:
+                logger.info(f"Article update result: {result['status']}")
+                if result['status'] == 'updated':
+                    logger.info(f"Article successfully updated: {result['title']}")
+                elif result['status'] == 'unchanged':
+                    logger.info(f"Article unchanged: {result['title']}")
+                else:
+                    logger.info(f"Article status: {result['status']}")
+            else:
+                logger.error(f"Failed to update article: {article.url}")
                 logger.info(f"  Categories: {', '.join(article['categories'])}")
                 logger.info("---")
         else:

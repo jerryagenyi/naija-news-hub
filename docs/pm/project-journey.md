@@ -145,6 +145,9 @@ As of April 2025, Naija News Hub has:
 - Added file relationship rules document for maintaining project integrity
 - Implemented MCP time handling for consistent date references
 - Updated file relationship rules to include MCP time relationships
+- Reorganized MCP time implementation into utils/mcp directory
+- Created example script for demonstrating time utility usage
+- Configured MCP to use the official time server
 
 ## Best Practices Adopted
 

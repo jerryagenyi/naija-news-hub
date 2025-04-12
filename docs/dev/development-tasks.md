@@ -21,8 +21,9 @@ This document tracks the development tasks for the Naija News Hub project, break
 - [ ] Set up logging configuration
 - [x] Create database configuration
 - [x] Implement MCP time handling
-  - [x] Create MCP time server implementation
-  - [x] Create MCP time module for consistent time references
+  - [x] Configure MCP time server connection
+  - [x] Create MCP time utility module in utils/mcp/time.py
+  - [x] Create example script for demonstrating time utility usage
   - [x] Update documentation to use consistent date formats
 
 ## Phase 1: URL Discovery and Sitemap Generation

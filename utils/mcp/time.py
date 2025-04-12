@@ -6,23 +6,23 @@ which can be used throughout the project to ensure consistent time references.
 """
 
 import datetime
-import subprocess
-import json
-import os
-import sys
-from typing import Dict, Any, Optional, Union
+from typing import Dict, Any, Optional
 
-def get_current_time(timezone: Optional[str] = None) -> str:
+def get_current_time(format_str: Optional[str] = None) -> str:
     """
-    Get the current time in ISO format.
+    Get the current time in ISO format or specified format.
     
     Args:
-        timezone: Optional timezone name
+        format_str: Optional format string for datetime.strftime
+                   If None, returns ISO format
         
     Returns:
-        Current time in ISO format
+        Current time in the specified format
     """
-    return datetime.datetime.now().isoformat()
+    now = datetime.datetime.now()
+    if format_str:
+        return now.strftime(format_str)
+    return now.isoformat()
 
 def get_current_date(format_str: str = '%Y-%m-%d') -> str:
     """
@@ -63,18 +63,6 @@ def get_current_day() -> int:
     """
     return datetime.datetime.now().day
 
-def get_formatted_timestamp(format_str: str = '%Y-%m-%d %H:%M:%S') -> str:
-    """
-    Get a formatted timestamp.
-    
-    Args:
-        format_str: Format string for datetime.strftime
-        
-    Returns:
-        Formatted timestamp string
-    """
-    return datetime.datetime.now().strftime(format_str)
-
 def get_time_info() -> Dict[str, Any]:
     """
     Get comprehensive time information.
@@ -93,21 +81,18 @@ def get_time_info() -> Dict[str, Any]:
         'hour': now.hour,
         'minute': now.minute,
         'second': now.second,
-        'microsecond': now.microsecond,
         'timestamp': now.timestamp(),
         'formatted_date': now.strftime('%Y-%m-%d'),
         'formatted_time': now.strftime('%H:%M:%S'),
         'formatted_datetime': now.strftime('%Y-%m-%d %H:%M:%S'),
     }
 
-# For testing
 if __name__ == "__main__":
     print(f"Current Time: {get_current_time()}")
     print(f"Current Date: {get_current_date()}")
     print(f"Current Year: {get_current_year()}")
     print(f"Current Month: {get_current_month()}")
     print(f"Current Day: {get_current_day()}")
-    print(f"Formatted Timestamp: {get_formatted_timestamp()}")
     print("\nTime Info:")
     time_info = get_time_info()
     for key, value in time_info.items():

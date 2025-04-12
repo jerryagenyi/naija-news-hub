@@ -43,9 +43,9 @@ This document defines the relationships between project files and establishes ru
 
 | Primary File | Related Files | Integrity Rule |
 |--------------|---------------|----------------|
-| `mcp.json` | `mcp_server_time.py` | When MCP time configuration is updated, ensure the time server implementation is compatible. |
-| `mcp_time.py` | `docs/pm/project-journey.md` | When MCP time module is updated, ensure project journey document uses the correct date format. |
-| `mcp_time.py` | Any documentation with timestamps | When MCP time module is updated, ensure all documentation with timestamps follows the same format. |
+| `mcp.json` | `utils/mcp/time.py` | When MCP time configuration is updated, ensure the time utility implementation is compatible. |
+| `utils/mcp/time.py` | `docs/pm/project-journey.md` | When MCP time module is updated, ensure project journey document uses the correct date format. |
+| `utils/mcp/time.py` | Any documentation with timestamps | When MCP time module is updated, ensure all documentation with timestamps follows the same format. |
 
 ## Code Relationships
 
@@ -85,9 +85,9 @@ This document defines the relationships between project files and establishes ru
 
 | Primary File | Related Files | Integrity Rule |
 |--------------|---------------|-----------------|
-| `mcp_time.py` | All documentation files | When updating documentation with dates or timestamps, use the MCP time module to ensure consistency. |
-| `mcp_time.py` | `docs/pm/project-journey.md` | When adding entries to the project journey, include the current date from the MCP time module. |
-| `mcp_time.py` | Database timestamp fields | When storing timestamps in the database, use consistent formats from the MCP time module. |
+| `utils/mcp/time.py` | All documentation files | When updating documentation with dates or timestamps, use the MCP time module to ensure consistency. |
+| `utils/mcp/time.py` | `docs/pm/project-journey.md` | When adding entries to the project journey, include the current date from the MCP time module. |
+| `utils/mcp/time.py` | Database timestamp fields | When storing timestamps in the database, use consistent formats from the MCP time module. |
 
 ## Documentation Consistency Rules
 
@@ -117,7 +117,7 @@ This document defines the relationships between project files and establishes ru
    - Update development tasks to reflect testing requirements
 
 5. **Time and Date References**: When adding time or date references:
-   - Use the MCP time module (`mcp_time.py`) to get the current date/time
+   - Use the MCP time module (`utils/mcp/time.py`) to get the current date/time
    - Follow the format YYYY-MM-DD for dates
    - Update the "Last Updated" timestamp in documentation files
    - Ensure all documentation uses consistent date formats

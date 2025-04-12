@@ -1,0 +1,57 @@
+site_name: Naija News Hub Guide
+site_description: Personal learning and reference guide for the Naija News Hub project
+site_author: Jeremiah Agenyi
+site_url: https://jerryagenyi.github.io/naija-news-hub/
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.suggest
+    - search.share
+    - toc.integrate
+
+nav:
+  - Home: index.md
+  - Project Journey:
+    - Original Concept: guide/original-idea.md
+    - Issue Tracking: guide/issue-tracking-guide.md
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - footnotes
+  - meta
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+plugins:
+  - search
+  - git-revision-date-localized
+  - minify:
+      minify_html: true
+      minify_js: true
+      minify_css: true 

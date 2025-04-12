@@ -27,6 +27,8 @@ The database integration follows a repository pattern with a service layer:
 
 ## Repository Classes
 
+The repository classes are located in `src/database_management/repositories/`:
+
 ### ArticleRepository
 
 Handles operations related to articles:
@@ -88,6 +90,8 @@ def get_job_stats(self, website_id: Optional[int] = None) -> Dict[str, Any]
 ```
 
 ## Service Layer
+
+The service layer is located in `src/service_layer/`:
 
 ### ArticleService
 

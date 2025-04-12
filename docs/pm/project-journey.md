@@ -213,6 +213,24 @@ As of April 2025, Naija News Hub has:
 - Updated development tasks and project journey documentation
 - Committed changes to the repository
 
+## Project Milestones
+
+### April 2025
+
+#### April 13, 2025 - Major Project Restructuring and Crawl4AI Migration
+- Reorganized project directory structure to follow Python naming conventions (snake_case)
+- Updated all directory names for better consistency:
+  - `api-endpoints` → `api_endpoints`
+  - `database-management` → `database_management`
+  - `service-layer` → `service_layer`
+  - `test-suite` → `test_suite`
+  - `utility-modules` → `utility_modules`
+  - `web-scraper` → `web_scraper`
+- Updated import statements across the codebase
+- Enhanced error handling system with comprehensive test suite
+- Implemented Crawl4AI v0.5.0 migration changes
+- Updated documentation to reflect new directory structure
+
 ## Directory Structure Standardization (2024-04-12)
 - Standardized directory naming conventions:
   - Converted directory names to kebab-case for better readability

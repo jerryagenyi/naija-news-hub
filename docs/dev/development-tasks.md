@@ -26,6 +26,19 @@ This document tracks the development tasks for the Naija News Hub project, break
   - [x] Create example script for demonstrating time utility usage
   - [x] Update documentation to use consistent date formats
 
+## Project Structure
+
+### Core Components
+- `src/api_endpoints/`: API routes and schemas
+- `src/database_management/`: Database models and repositories
+- `src/service_layer/`: Business logic and service implementations
+- `src/web_scraper/`: Web scraping and article extraction
+- `src/utility_modules/`: Shared utilities and helper functions
+- `src/test_suite/`: Test files and test utilities
+
+### Configuration
+- `src/configuration/`: Configuration templates and implementations
+
 ## Phase 1: URL Discovery and Sitemap Generation
 
 ### Base URL Handling

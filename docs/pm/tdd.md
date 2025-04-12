@@ -1,4 +1,4 @@
- # Technical Design Document (TDD) - NaijaNewsHub (Crawl4AI)
+# Technical Design Document (TDD) - NaijaNewsHub (Crawl4AI)
 
 **1. Introduction**
 
@@ -7,8 +7,15 @@
 
 **2. System Architecture**
 
-* **Modular Design:** The system will be designed with a modular architecture to facilitate maintainability and scalability
+* **Modular Design:** The system is designed with a modular architecture to facilitate maintainability and scalability
 * **Components:**
+  * **API Endpoints (`src/api_endpoints/`):** Handles all HTTP endpoints and request/response handling
+  * **Database Management (`src/database_management/`):** Manages data persistence and database operations
+  * **Service Layer (`src/service_layer/`):** Implements business logic and coordinates between components
+  * **Web Scraper (`src/web_scraper/`):** Handles web scraping and content extraction
+  * **Utility Modules (`src/utility_modules/`):** Provides shared utilities and helper functions
+  * **Test Suite (`src/test_suite/`):** Contains all test files and testing utilities
+  * **Configuration (`src/configuration/`):** Manages application configuration
   * **Crawl4AI Module:** Handles all web scraping functionalities.
   * **Data Processing Module:** Handles data cleaning, normalization, and compression.
   * **Data Storage Module:** Manages data storage and retrieval.

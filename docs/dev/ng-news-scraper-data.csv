@@ -1,0 +1,49 @@
+"table_schema","table_name","column_name","data_type","character_maximum_length","is_nullable","column_default","constraint_type","referenced_table","referenced_column"
+"public","alembic_version","version_num","character varying",32,"NO",NULL,"PRIMARY KEY","alembic_version","version_num"
+"public","article_data","id","integer",NULL,"NO","nextval('article_data_id_seq'::regclass)","PRIMARY KEY","article_data","id"
+"public","article_data","website_id","integer",NULL,"YES",NULL,"FOREIGN KEY","websites","id"
+"public","article_data","article_id","integer",NULL,"NO",NULL,"FOREIGN KEY","articles","id"
+"public","article_data","article_id","integer",NULL,"NO",NULL,"UNIQUE","article_data","article_id"
+"public","article_data","article_id","integer",NULL,"NO",NULL,"FOREIGN KEY","articles","id"
+"public","article_data","article_title","text",NULL,"NO",NULL,NULL,NULL,NULL
+"public","article_data","author","text",NULL,"YES",NULL,NULL,NULL,NULL
+"public","article_data","article_url","text",NULL,"YES",NULL,NULL,NULL,NULL
+"public","article_data","pub_date","timestamp without time zone",NULL,"YES",NULL,NULL,NULL,NULL
+"public","article_data","created_at","timestamp without time zone",NULL,"YES","CURRENT_TIMESTAMP",NULL,NULL,NULL
+"public","article_data","article_content","text",NULL,"YES",NULL,NULL,NULL,NULL
+"public","article_data","article_category","integer",NULL,"YES",NULL,"FOREIGN KEY","categories","id"
+"public","articles","id","integer",NULL,"NO","nextval('articles_id_seq1'::regclass)","PRIMARY KEY","articles","id"
+"public","articles","website_id","integer",NULL,"NO",NULL,"UNIQUE","articles","website_id"
+"public","articles","website_id","integer",NULL,"NO",NULL,"UNIQUE","articles","article_url"
+"public","articles","website_id","integer",NULL,"NO",NULL,"FOREIGN KEY","websites","id"
+"public","articles","article_title","text",NULL,"NO",NULL,NULL,NULL,NULL
+"public","articles","category_id","integer",NULL,"NO",NULL,"FOREIGN KEY","categories","id"
+"public","articles","article_url","text",NULL,"NO",NULL,"UNIQUE","articles","website_id"
+"public","articles","article_url","text",NULL,"NO",NULL,"UNIQUE","articles","article_url"
+"public","articles","article_url","text",NULL,"NO",NULL,"UNIQUE","articles","article_url"
+"public","articles","author","text",NULL,"YES",NULL,NULL,NULL,NULL
+"public","articles","pub_date","timestamp without time zone",NULL,"YES",NULL,NULL,NULL,NULL
+"public","articles","created_at","timestamp without time zone",NULL,"YES","now()",NULL,NULL,NULL
+"public","articles","scraped","boolean",NULL,"YES","false",NULL,NULL,NULL
+"public","categories","id","integer",NULL,"NO","nextval('categories_id_seq'::regclass)","PRIMARY KEY","categories","id"
+"public","categories","website_id","integer",NULL,"NO",NULL,"FOREIGN KEY","websites","id"
+"public","categories","category_name","character varying",NULL,"NO",NULL,NULL,NULL,NULL
+"public","categories","category_url","character varying",NULL,"NO",NULL,"UNIQUE","categories","category_url"
+"public","categories","created_at","timestamp without time zone",NULL,"YES",NULL,NULL,NULL,NULL
+"public","sitemaps","id","integer",NULL,"NO",NULL,"PRIMARY KEY","sitemaps","id"
+"public","sitemaps","website_id","integer",NULL,"NO",NULL,"UNIQUE","sitemaps","website_id"
+"public","sitemaps","website_id","integer",NULL,"NO",NULL,"UNIQUE","sitemaps","article_url"
+"public","sitemaps","article_url","character varying",NULL,"NO",NULL,"UNIQUE","sitemaps","website_id"
+"public","sitemaps","article_url","character varying",NULL,"NO",NULL,"UNIQUE","sitemaps","article_url"
+"public","sitemaps","article_url","character varying",NULL,"NO",NULL,"UNIQUE","sitemaps","article_url"
+"public","sitemaps","last_mod","timestamp with time zone",NULL,"YES",NULL,NULL,NULL,NULL
+"public","sitemaps","created_at","timestamp with time zone",NULL,"YES","CURRENT_TIMESTAMP",NULL,NULL,NULL
+"public","sitemaps","is_valid","boolean",NULL,"YES",NULL,NULL,NULL,NULL
+"public","sitemaps","last_checked","timestamp with time zone",NULL,"YES",NULL,NULL,NULL,NULL
+"public","sitemaps","status_code","integer",NULL,"YES",NULL,NULL,NULL,NULL
+"public","website_category_info","website_id","integer",NULL,"NO",NULL,"PRIMARY KEY","website_category_info","website_id"
+"public","website_category_info","sitemap_url","text",NULL,"NO",NULL,NULL,NULL,NULL
+"public","website_category_info","structure","text",NULL,"NO",NULL,NULL,NULL,NULL
+"public","websites","id","integer",NULL,"NO",NULL,"PRIMARY KEY","websites","id"
+"public","websites","website_name","text",NULL,"YES",NULL,NULL,NULL,NULL
+"public","websites","website_url","text",NULL,"YES",NULL,"UNIQUE","websites","website_url"

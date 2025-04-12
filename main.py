@@ -11,13 +11,13 @@ import logging
 import uvicorn
 from typing import Optional, Dict, Any, List
 
-from src.api.main import app
-from src.scraper.main import scrape_website, scrape_all_websites
-from src.database.connection import init_db, get_db, SessionLocal
-from src.scraper.url_discovery import discover_urls
-from src.scraper.article_extractor import extract_article
-from src.services import ArticleService
-from src.database.repositories import WebsiteRepository, ArticleRepository, ScrapingRepository
+from src.api_endpoints.main import app
+from src.web_scraper.main import scrape_website, scrape_all_websites
+from src.database_management.connection import init_db, get_db, SessionLocal
+from src.web_scraper.url_discovery import discover_urls
+from src.web_scraper.article_extractor import extract_article
+from src.service_layer import ArticleService
+from src.database_management.repositories import WebsiteRepository, ArticleRepository, ScrapingRepository
 
 # Configure logging
 logging.basicConfig(
@@ -207,7 +207,7 @@ def main():
     if args.command == "api":
         logger.info(f"Starting API server on {args.host}:{args.port}")
         uvicorn.run(
-            "src.api.main:app",
+            "src.api-endpoints.main:app",
             host=args.host,
             port=args.port,
             reload=args.reload,

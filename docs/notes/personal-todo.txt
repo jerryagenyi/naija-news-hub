@@ -1,0 +1,3 @@
+1. get schema for old news scraper project an use to improve the new schema. DONE 
+2. Integrate NOTION for project documentation (journey) - https://developers.notion.com/docs/mcp 
+3. Add MCP for current date and time:  https://mcp.so/server/time/modelcontextprotocol

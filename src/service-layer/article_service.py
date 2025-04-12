@@ -10,7 +10,9 @@ from typing import List, Dict, Any, Optional, Tuple
 from datetime import datetime
 from sqlalchemy.orm import Session
 
-from src.database.repositories import ArticleRepository, WebsiteRepository, ScrapingRepository
+from src.database_management.models import Article
+from src.database_management.connection import get_db
+from src.repository.article_repository import ArticleRepository
 from src.scraper.article_extractor import extract_article
 from src.scraper.url_discovery import discover_urls
 from config.config import get_config

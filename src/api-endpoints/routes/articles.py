@@ -9,8 +9,9 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
-from src.database.connection import get_db
-from src.database.models import Article
+from src.database_management.models import Article
+from src.database_management.connection import get_db
+from src.service_layer.article_service import ArticleService
 from src.api.schemas.article import ArticleResponse
 
 # Configure logging

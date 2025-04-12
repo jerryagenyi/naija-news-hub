@@ -213,6 +213,22 @@ As of April 2025, Naija News Hub has:
 - Updated development tasks and project journey documentation
 - Committed changes to the repository
 
+## Directory Structure Standardization (2024-04-12)
+- Standardized directory naming conventions:
+  - Converted directory names to kebab-case for better readability
+  - Maintained Python files in snake_case for module compatibility
+  - Renamed key directories:
+    - `database` → `database-management`
+    - `services` → `service-layer`
+    - `utils` → `utility-modules`
+    - `api` → `api-endpoints`
+    - `scraper` → `web-scraper`
+    - `config` → `configuration`
+    - `tests` → `test-suite`
+- Updated import statements across the codebase to reflect new directory names
+- Ensured all Python files maintain snake_case naming for module compatibility
+- Documented naming conventions in project guidelines
+
 ## Best Practices Adopted
 
 ### Documentation Best Practices

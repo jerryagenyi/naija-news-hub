@@ -1,0 +1,37 @@
+# Naija News Hub Project Guidelines
+
+- Follow PEP 8 style guidelines for all Python code.
+- Use snake_case for Python function and variable names (e.g., process_article_content).
+- Use meaningful, descriptive names for functions and variables.
+- Use type hints in Python functions.
+- For web scraping, use Crawl4AI for dynamic content and JavaScript-heavy websites.
+- Use requests and BeautifulSoup for simple static websites.
+- Implement robust error handling for web scraping, including retries with exponential backoff.
+- Implement proper rate limiting and anti-ban measures when scraping.
+- Store scraped data in PostgreSQL with appropriate data compression.
+- Use JSON for structured data and CSV for tabular data.
+- Implement data validation and handle missing data appropriately.
+- Use FastAPI for API endpoints with Pydantic models for data validation.
+- Document API endpoints with OpenAPI.
+- Implement structured logging with appropriate log levels and context.
+- Write unit tests for critical functions and integration tests for workflows.
+- Use docstrings for functions and classes, including type hints and usage examples.
+- Use kebab-case for directory and file names in both Python and frontend code.
+- Use PascalCase for React component names (e.g., SiteStatusCard).
+- Use camelCase for variables and functions in React code.
+- Prefix React event handlers with 'handle' (e.g., handleStatusUpdate).
+- Use Tailwind CSS exclusively for styling in React components.
+- Keep React components focused and single-purpose.
+- Use TypeScript interfaces for React component props.
+- Implement real-time updates and meaningful progress indicators in the dashboard.
+- Ensure responsive design and accessibility in the dashboard.
+- Implement proper loading states and error handling in the frontend.
+- Document React component props and complex functions with JSDoc comments.
+- Prioritize performance and maintainability in both Python and frontend code.
+- Automate URL discovery and content updates using n8n.
+- Implement a scheduled task to check for new articles and update the database and dashboard accordingly.
+- Use Celery or asyncio for asynchronous tasks.
+- Use Redis for caching.
+- Deploy the application using Docker and Kubernetes on a cloud platform (AWS, Google Cloud, or Azure).
+- Implement secure API endpoints and data encryption.
+- Implement regular backups and disaster recovery.

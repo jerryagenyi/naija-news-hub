@@ -6,11 +6,12 @@ This module defines the SQLAlchemy ORM models for the database.
 
 from datetime import datetime
 from typing import List, Optional
-from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, ForeignKey, JSON
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, ForeignKey, JSON, Enum
+from sqlalchemy.orm import DeclarativeBase, relationship
+from src.utils.enums import ErrorType, ErrorSeverity
 
-Base = declarative_base()
+class Base(DeclarativeBase):
+    pass
 
 class Website(Base):
     """Model for news websites."""
@@ -93,35 +94,40 @@ class ArticleCategory(Base):
         return f"<ArticleCategory(article_id={self.article_id}, category_id={self.category_id})>"
 
 class ScrapingJob(Base):
-    """Model for scraping jobs."""
-    __tablename__ = "scraping_jobs"
+    """Model for tracking scraping jobs."""
+    __tablename__ = 'scraping_jobs'
 
     id = Column(Integer, primary_key=True)
-    website_id = Column(Integer, ForeignKey("websites.id"), nullable=False)
-    status = Column(String(50), nullable=False, default="pending")  # pending, running, completed, failed
-    start_time = Column(DateTime, nullable=True)
-    end_time = Column(DateTime, nullable=True)
-    articles_found = Column(Integer, default=0)
-    articles_scraped = Column(Integer, default=0)
-    error_message = Column(Text, nullable=True)
-    config = Column(JSON, nullable=True)
+    status = Column(String(50), nullable=False, default='pending')
+    start_time = Column(DateTime, default=datetime.utcnow)
+    end_time = Column(DateTime)
+    error_count = Column(Integer, default=0)
+    success_count = Column(Integer, default=0)
+    total_count = Column(Integer, default=0)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    def __repr__(self):
-        return f"<ScrapingJob(id={self.id}, website_id={self.website_id}, status='{self.status}')>"
+    # Relationships
+    errors = relationship("ErrorLog", back_populates="job", cascade="all, delete-orphan")
+    articles = relationship("Article", back_populates="job", cascade="all, delete-orphan")
 
-class ScrapingError(Base):
-    """Model for scraping errors."""
-    __tablename__ = "scraping_errors"
+class ErrorLog(Base):
+    """Model for tracking errors during scraping."""
+    __tablename__ = 'error_logs'
 
     id = Column(Integer, primary_key=True)
-    job_id = Column(Integer, ForeignKey("scraping_jobs.id"), nullable=False)
-    url = Column(String(512), nullable=True)
-    error_type = Column(String(255), nullable=False)
+    job_id = Column(Integer, ForeignKey('scraping_jobs.id', ondelete='CASCADE'), nullable=False)
+    error_type = Column(Enum(ErrorType), nullable=False)
+    severity = Column(Enum(ErrorSeverity), nullable=False)
     error_message = Column(Text, nullable=False)
-    stack_trace = Column(Text, nullable=True)
+    url = Column(String(500))
+    context = Column(Text)
+    stack_trace = Column(Text)
+    recovery_actions = Column(Text)
+    resolved_at = Column(DateTime)
+    resolution_notes = Column(Text)
     created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    def __repr__(self):
-        return f"<ScrapingError(id={self.id}, job_id={self.job_id}, error_type='{self.error_type}')>"
+    # Relationships
+    job = relationship("ScrapingJob", back_populates="errors")

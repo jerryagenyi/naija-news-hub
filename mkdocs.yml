@@ -36,14 +36,14 @@ theme:
 nav:
   - Home: index.md
   - Project Overview:
-    - Original Concept: docs/original-idea.md
-    - Product Requirements: docs/prd.md
+    - Original Concept: original-idea.md
+    - Product Requirements: prd.md
   - Development:
-    - Documentation Guide: docs/documentation-guide.md
-    - Project Management: docs/pm/
-    - Development Guide: docs/dev/
-  - App Documentation: docs/app/
-  - User Guide: docs/guide/
+    - Documentation Guide: documentation-guide.md
+    - Project Management: pm/
+    - Development Guide: dev/
+  - App Documentation: app/
+  - User Guide: guide/
 
 markdown_extensions:
   - admonition

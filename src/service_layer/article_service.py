@@ -105,16 +105,42 @@ class ArticleService:
 
             # Add categories if available
             categories = article_data.get("categories", [])
-            for category_name in categories:
-                # Try to find existing category
+            category_urls = article_data.get("category_urls", [])
+
+            # Ensure we have the same number of category URLs as categories
+            if len(category_urls) < len(categories):
+                # Get website base URL
+                website = self.website_repo.get_website_by_id(website_id)
+                base_url = website.base_url
+
+                # Generate missing category URLs
+                for i in range(len(category_urls), len(categories)):
+                    category_name = categories[i]
+                    category_urls.append(f"{base_url}/category/{category_name.lower().replace(' ', '-')}")
+
+            # Process each category
+            for i, category_name in enumerate(categories):
+                category_url = category_urls[i] if i < len(category_urls) else None
+
+                # Try to find existing category by name
                 category = self.website_repo.get_category_by_name(website_id, category_name)
+
+                if not category and category_url:
+                    # Try to find by URL
+                    category = self.website_repo.get_category_by_url(website_id, category_url)
+
                 if not category:
                     # Create new category
-                    category_url = f"{self.website_repo.get_website_by_id(website_id).base_url}/category/{category_name.lower().replace(' ', '-')}"
+                    if not category_url:
+                        # Generate URL if not provided
+                        website = self.website_repo.get_website_by_id(website_id)
+                        category_url = f"{website.base_url}/category/{category_name.lower().replace(' ', '-')}"
+
                     category = self.website_repo.create_category(website_id, {
                         "name": category_name,
                         "url": category_url
                     })
+                    logger.info(f"Created new category: {category_name} ({category_url})")
 
                 # Add category to article
                 self.article_repo.add_article_category(article.id, category.id)

@@ -6,6 +6,7 @@ This module provides functions to extract article content from news websites.
 
 import logging
 import re
+import json
 from typing import Dict, Any, Optional, List
 from datetime import datetime
 from urllib.parse import urlparse, urljoin
@@ -19,6 +20,7 @@ from config.config import get_config
 from playwright.sync_api import Page, TimeoutError as PlaywrightTimeoutError
 from src.utility_modules.error_handling import ScrapingErrorHandler, BrowserErrorHandler
 from src.utility_modules.content_validation import validate_article_content, ValidationResult
+from src.web_scraper.category_extractor import extract_categories_from_html, extract_tags_from_html, categorize_article
 from src.database_management.models import Article, ScrapingJob
 from src.database_management.connection import get_db
 
@@ -250,6 +252,15 @@ async def extract_article(url: str, website_id: int, config: Optional[Dict[str, 
                 "active": True,
             }
 
+            # Get website base URL for category URL generation
+            website_base_url = url
+            # Extract domain from URL
+            parsed_url = urlparse(url)
+            website_base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
+
+            # Categorize the article
+            article_data = categorize_article(article_data, website_base_url)
+
             # Validate article content
             validation_result = validate_article_content(article_data)
             logger.info(f"Content validation result for {url}: {validation_result}")
@@ -338,13 +349,9 @@ async def extract_article_metadata(url: str, config: Optional[Dict[str, Any]] = 
             date_match = re.search(r'<meta\s+property=["\']article:published_time["\']\s+content=["\']([^"\']*)["\']/>', result.html, re.IGNORECASE | re.DOTALL)
             published_at = date_match.group(1) if date_match else datetime.now().isoformat()
 
-            # Try to extract categories
-            categories_match = re.search(r'<meta\s+property=["\']article:section["\']\s+content=["\']([^"\']*)["\']/>', result.html, re.IGNORECASE | re.DOTALL)
-            categories = [categories_match.group(1)] if categories_match else ["News"]
-
-            # Try to extract tags
-            tags_match = re.search(r'<meta\s+property=["\']article:tag["\']\s+content=["\']([^"\']*)["\']/>', result.html, re.IGNORECASE | re.DOTALL)
-            tags = [tag.strip() for tag in tags_match.group(1).split(',')] if tags_match else []
+            # Extract categories and tags using the category extractor
+            categories = extract_categories_from_html(result.html)
+            tags = extract_tags_from_html(result.html)
 
             # Try to extract image URL
             image_match = re.search(r'<meta\s+property=["\']og:image["\']\s+content=["\']([^"\']*)["\']/>', result.html, re.IGNORECASE | re.DOTALL)

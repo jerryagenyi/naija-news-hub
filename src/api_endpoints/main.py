@@ -9,8 +9,8 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
 from config.config import get_config
-from src.database.connection import get_db, init_db
-from src.api.routes import websites, articles, scraping
+from src.database_management.connection import get_db, init_db
+from src.api_endpoints.routes import websites, articles, scraping, categories
 
 # Configure logging
 logging.basicConfig(
@@ -40,6 +40,7 @@ app.add_middleware(
 app.include_router(websites.router, prefix="/api/websites", tags=["websites"])
 app.include_router(articles.router, prefix="/api/articles", tags=["articles"])
 app.include_router(scraping.router, prefix="/api/scraping", tags=["scraping"])
+app.include_router(categories.router, prefix="/api/categories", tags=["categories"])
 
 @app.on_event("startup")
 async def startup_event():

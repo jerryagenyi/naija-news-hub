@@ -9,7 +9,7 @@ from typing import Optional
 from pathlib import Path
 from dotenv import load_dotenv
 
-from config.config_template import Config, DatabaseConfig, APIConfig, NigerianNewsConfig, ProxyConfig, Crawl4AIConfig, ScraperConfig
+from config.config_template import Config, DatabaseConfig, APIConfig, NigerianNewsConfig, ProxyConfig, Crawl4AIConfig, ScraperConfig, ContentValidationConfig
 
 # Load environment variables from .env file
 load_dotenv()
@@ -78,6 +78,26 @@ def load_config() -> Config:
         retry_delay=int(os.getenv("NAIJA_NEWS_SCRAPER_RETRY_DELAY", "2")),
     )
 
+    # Create content validation configuration
+    content_validation_config = ContentValidationConfig(
+        enabled=os.getenv("NAIJA_NEWS_CONTENT_VALIDATION_ENABLED", "True").lower() == "true",
+        min_quality_score=int(os.getenv("NAIJA_NEWS_CONTENT_VALIDATION_MIN_QUALITY_SCORE", "50")),
+        reject_low_quality=os.getenv("NAIJA_NEWS_CONTENT_VALIDATION_REJECT_LOW_QUALITY", "True").lower() == "true",
+        min_title_length=int(os.getenv("NAIJA_NEWS_CONTENT_VALIDATION_MIN_TITLE_LENGTH", "10")),
+        max_title_length=int(os.getenv("NAIJA_NEWS_CONTENT_VALIDATION_MAX_TITLE_LENGTH", "200")),
+        min_content_length=int(os.getenv("NAIJA_NEWS_CONTENT_VALIDATION_MIN_CONTENT_LENGTH", "100")),
+        max_content_length=int(os.getenv("NAIJA_NEWS_CONTENT_VALIDATION_MAX_CONTENT_LENGTH", "100000")),
+        min_word_count=int(os.getenv("NAIJA_NEWS_CONTENT_VALIDATION_MIN_WORD_COUNT", "50")),
+        min_paragraph_count=int(os.getenv("NAIJA_NEWS_CONTENT_VALIDATION_MIN_PARAGRAPH_COUNT", "2")),
+        max_duplicate_paragraph_ratio=float(os.getenv("NAIJA_NEWS_CONTENT_VALIDATION_MAX_DUPLICATE_PARAGRAPH_RATIO", "0.3")),
+        max_ad_content_ratio=float(os.getenv("NAIJA_NEWS_CONTENT_VALIDATION_MAX_AD_CONTENT_RATIO", "0.2")),
+        min_image_count=int(os.getenv("NAIJA_NEWS_CONTENT_VALIDATION_MIN_IMAGE_COUNT", "0")),
+        max_recent_date_days=int(os.getenv("NAIJA_NEWS_CONTENT_VALIDATION_MAX_RECENT_DATE_DAYS", "1825")),
+        detect_clickbait=os.getenv("NAIJA_NEWS_CONTENT_VALIDATION_DETECT_CLICKBAIT", "True").lower() == "true",
+        detect_spam=os.getenv("NAIJA_NEWS_CONTENT_VALIDATION_DETECT_SPAM", "True").lower() == "true",
+        detect_placeholder=os.getenv("NAIJA_NEWS_CONTENT_VALIDATION_DETECT_PLACEHOLDER", "True").lower() == "true"
+    )
+
     # Create and return the config object
     return Config(
         database=database_config,
@@ -85,7 +105,8 @@ def load_config() -> Config:
         crawl4ai=crawl4ai_config,
         nigerian_news=nigerian_news_config,
         proxy=proxy_config,
-        scraper=scraper_config
+        scraper=scraper_config,
+        content_validation=content_validation_config
     )
 
 # Global configuration instance

@@ -15,6 +15,7 @@ from src.database_management.connection import get_db
 from src.database_management.repositories import ArticleRepository, WebsiteRepository, ScrapingRepository
 from src.web_scraper.article_extractor import extract_article
 from src.web_scraper.url_discovery import discover_urls
+from src.utility_modules.content_validation import validate_article_content
 from config.config import get_config
 
 # Configure logging
@@ -78,6 +79,26 @@ class ArticleService:
                 "website_id": website_id,
                 "article_metadata": article_data.get("metadata", {})
             }
+
+            # Check if article metadata contains validation results
+            validation_data = article_data.get("article_metadata", {}).get("validation", {})
+
+            # If validation data is not present, validate the article
+            if not validation_data:
+                validation_result = validate_article_content(db_article_data)
+                db_article_data["article_metadata"]["validation"] = validation_result.to_dict()
+
+                # Log validation results
+                logger.info(f"Content validation result for {url}: {validation_result}")
+
+                # If content is not valid, log warning
+                if not validation_result.is_valid:
+                    logger.warning(f"Article content validation failed for {url}: {validation_result.issues}")
+
+                    # If validation score is too low, return None
+                    if validation_result.score < 30:  # Very low quality content
+                        logger.error(f"Article content quality too low for {url}: score={validation_result.score}")
+                        return None
 
             # Store article in database
             article = self.article_repo.create_article(db_article_data)

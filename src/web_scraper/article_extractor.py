@@ -18,6 +18,7 @@ from crawl4ai import (
 from config.config import get_config
 from playwright.sync_api import Page, TimeoutError as PlaywrightTimeoutError
 from src.utility_modules.error_handling import ScrapingErrorHandler, BrowserErrorHandler
+from src.utility_modules.content_validation import validate_article_content, ValidationResult
 from src.database_management.models import Article, ScrapingJob
 from src.database_management.connection import get_db
 
@@ -248,6 +249,22 @@ async def extract_article(url: str, website_id: int, config: Optional[Dict[str, 
                 },
                 "active": True,
             }
+
+            # Validate article content
+            validation_result = validate_article_content(article_data)
+            logger.info(f"Content validation result for {url}: {validation_result}")
+
+            # Add validation results to metadata
+            article_data["article_metadata"]["validation"] = validation_result.to_dict()
+
+            # If content is not valid, log warning
+            if not validation_result.is_valid:
+                logger.warning(f"Article content validation failed for {url}: {validation_result.issues}")
+
+                # If validation score is too low, return None
+                if validation_result.score < 30:  # Very low quality content
+                    logger.error(f"Article content quality too low for {url}: score={validation_result.score}")
+                    return None
 
             logger.info(f"Successfully extracted article from {url}: {article_data['title']}")
             return article_data

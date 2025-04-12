@@ -86,6 +86,25 @@ class ProxyConfig(BaseModel):
         description="Maximum failures before proxy is marked as bad"
     )
 
+class ContentValidationConfig(BaseModel):
+    """Content validation configuration settings"""
+    enabled: bool = Field(default=True, description="Enable content validation")
+    min_quality_score: int = Field(default=50, description="Minimum quality score for valid content (0-100)")
+    reject_low_quality: bool = Field(default=True, description="Reject articles with quality score below threshold")
+    min_title_length: int = Field(default=10, description="Minimum title length in characters")
+    max_title_length: int = Field(default=200, description="Maximum title length in characters")
+    min_content_length: int = Field(default=100, description="Minimum content length in characters")
+    max_content_length: int = Field(default=100000, description="Maximum content length in characters")
+    min_word_count: int = Field(default=50, description="Minimum word count")
+    min_paragraph_count: int = Field(default=2, description="Minimum paragraph count")
+    max_duplicate_paragraph_ratio: float = Field(default=0.3, description="Maximum duplicate paragraph ratio")
+    max_ad_content_ratio: float = Field(default=0.2, description="Maximum ad content ratio")
+    min_image_count: int = Field(default=0, description="Minimum image count")
+    max_recent_date_days: int = Field(default=1825, description="Maximum age of article in days (5 years)")
+    detect_clickbait: bool = Field(default=True, description="Detect clickbait titles")
+    detect_spam: bool = Field(default=True, description="Detect spam content")
+    detect_placeholder: bool = Field(default=True, description="Detect placeholder content")
+
 class ScraperConfig(BaseModel):
     """Scraper configuration settings"""
     max_articles_per_run: int = Field(default=10, description="Maximum number of articles to scrape per run")
@@ -113,6 +132,7 @@ class ScraperConfig(BaseModel):
     extract_share_count: bool = Field(default=False, description="Extract share count")
     extract_view_count: bool = Field(default=False, description="Extract view count")
     extract_comment_count: bool = Field(default=False, description="Extract comment count")
+    content_validation: ContentValidationConfig = Field(default_factory=ContentValidationConfig, description="Content validation settings")
 
 class Config(BaseModel):
     """Main configuration class"""
@@ -122,6 +142,7 @@ class Config(BaseModel):
     nigerian_news: NigerianNewsConfig = Field(default_factory=NigerianNewsConfig)
     proxy: ProxyConfig = Field(default_factory=ProxyConfig)
     scraper: ScraperConfig = Field(default_factory=ScraperConfig)
+    content_validation: ContentValidationConfig = Field(default_factory=ContentValidationConfig)
 
     class Config:
         env_prefix = "NAIJA_NEWS_"

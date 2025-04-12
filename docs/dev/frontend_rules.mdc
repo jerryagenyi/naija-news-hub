@@ -1,0 +1,96 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+  # Frontend Development Rules - Naija News Hub
+
+## Development Philosophy
+- Write clean, maintainable code
+- Focus on dashboard functionality and user experience
+- Keep components simple and reusable
+- Prioritize performance and accessibility
+
+## Code Style and Structure
+
+### File and Directory Naming
+- Use kebab-case for directories and files
+  - ✅ `components/site-status`
+  - ✅ `components/progress-bar`
+  - ❌ `components/siteStatus`
+
+### Component Naming
+- Use PascalCase for component names
+  - ✅ `SiteStatusCard`
+  - ✅ `ProgressIndicator`
+  - ❌ `siteStatusCard`
+
+### Variable and Function Naming
+- Use camelCase for variables and functions
+- Prefix event handlers with 'handle'
+- Prefix boolean variables with verbs
+```typescript
+// Examples
+const isLoading = true;
+const hasError = false;
+const handleStatusUpdate = () => {};
+```
+
+## TailwindCSS Guidelines
+- Use Tailwind classes exclusively for styling
+- Avoid custom CSS unless absolutely necessary
+- Use consistent spacing and color values
+- Follow mobile-first responsive design
+```jsx
+// Example
+<div className="p-4 md:p-6 lg:p-8 bg-white rounded-lg shadow-sm">
+  <h2 className="text-lg md:text-xl font-semibold text-gray-900">
+    Site Status
+  </h2>
+</div>
+```
+
+## Component Structure
+- Keep components focused and single-purpose
+- Extract reusable logic into custom hooks
+- Use TypeScript interfaces for props
+```typescript
+interface StatusCardProps {
+  websiteName: string;
+  articlesScraped: number;
+  isActive: boolean;
+  lastUpdated: Date;
+}
+```
+
+## Dashboard-Specific Guidelines
+- Implement real-time updates efficiently
+- Use proper loading states
+- Handle errors gracefully
+- Show meaningful progress indicators
+- Ensure responsive design for all screen sizes
+
+## Accessibility
+- Use semantic HTML elements
+- Include proper ARIA labels
+- Ensure keyboard navigation
+- Maintain sufficient color contrast
+- Provide loading state indicators
+
+## Performance
+- Implement proper loading states
+- Use dynamic imports for large components
+- Optimize images and assets
+- Minimize unnecessary re-renders
+
+## Error Handling
+- Display user-friendly error messages
+- Implement proper error boundaries
+- Provide clear feedback for user actions
+- Handle loading and empty states appropriately
+
+## Documentation
+- Document component props using TypeScript
+- Add JSDoc comments for complex functions
+- Include usage examples for reusable components
+- Document any non-obvious implementation details

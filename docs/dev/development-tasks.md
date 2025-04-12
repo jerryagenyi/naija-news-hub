@@ -148,12 +148,36 @@ This document tracks the development tasks for the Naija News Hub project, break
   - [ ] Handle special characters
 
 ### Data Storage
-- [ ] Create article database schema
+- [x] Create article database schema
+  - [x] Design tables and relationships
+  - [x] Define column types and constraints
+  - [x] Document schema with ERD
+  - [x] Create SQL creation scripts
 - [ ] Implement article storage
+  - [ ] Create database connection pool
+  - [ ] Implement batch insert operations
+  - [ ] Add transaction support
+  - [ ] Implement error handling
 - [ ] Create article metadata storage
+  - [ ] Design metadata extraction
+  - [ ] Implement metadata validation
+  - [ ] Create storage procedures
+  - [ ] Add indexing for efficient retrieval
 - [ ] Implement article update mechanism
+  - [ ] Design change detection algorithm
+  - [ ] Implement partial updates
+  - [ ] Add conflict resolution
+  - [ ] Create update triggers
 - [ ] Add support for content versioning
+  - [ ] Design versioning strategy
+  - [ ] Implement version tracking
+  - [ ] Create version comparison tools
+  - [ ] Add rollback capabilities
 - [ ] Create article deduplication
+  - [ ] Implement content hashing
+  - [ ] Design similarity detection
+  - [ ] Create merge procedures
+  - [ ] Add duplicate reporting
 
 ### Error Handling
 - [ ] Implement error logging
@@ -249,6 +273,49 @@ This document tracks the development tasks for the Naija News Hub project, break
 - [ ] Implement conversation history
 - [ ] Create feedback mechanism
 
+## Database Management
+
+### Database Setup
+- [x] Design database schema
+  - [x] Create entity-relationship diagram
+  - [x] Define table structures
+  - [x] Plan indexes and constraints
+  - [x] Document schema design decisions
+- [ ] Implement database initialization
+  - [ ] Create database creation script
+  - [ ] Implement schema migration tool
+  - [ ] Set up user permissions
+  - [ ] Configure connection pooling
+
+### Database Maintenance
+- [ ] Implement backup procedures
+  - [ ] Create automated backup script
+  - [ ] Set up backup rotation
+  - [ ] Test restore procedures
+  - [ ] Document disaster recovery
+- [ ] Create database monitoring
+  - [ ] Set up size monitoring
+  - [ ] Implement performance tracking
+  - [ ] Create alert system for issues
+  - [ ] Add query optimization tools
+- [ ] Implement database scaling
+  - [ ] Design partitioning strategy
+  - [ ] Plan for read replicas
+  - [ ] Create connection distribution
+  - [ ] Document scaling procedures
+
+### Data Management
+- [ ] Create data validation procedures
+  - [ ] Implement constraint checking
+  - [ ] Create data quality reports
+  - [ ] Design data cleaning processes
+  - [ ] Add anomaly detection
+- [ ] Implement data archiving
+  - [ ] Design archiving criteria
+  - [ ] Create archiving procedures
+  - [ ] Implement archive retrieval
+  - [ ] Set up archive storage
+
 ## Testing
 
 ### Unit Testing
@@ -256,6 +323,10 @@ This document tracks the development tasks for the Naija News Hub project, break
 - [ ] Create configuration tests
 - [ ] Implement scraping tests
 - [ ] Add database tests
+  - [ ] Test connection handling
+  - [ ] Test transaction management
+  - [ ] Test query performance
+  - [ ] Test error recovery
 - [ ] Create API tests
 - [ ] Implement utility tests
 

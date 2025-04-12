@@ -323,10 +323,31 @@ This document tracks the development tasks for the Naija News Hub project, break
 - [ ] Create configuration tests
 - [ ] Implement scraping tests
 - [ ] Add database tests
-  - [ ] Test connection handling
-  - [ ] Test transaction management
-  - [ ] Test query performance
+  - [ ] Test connection pooling
+    - [ ] Test connection pool initialization
+    - [ ] Test connection acquisition
+    - [ ] Test connection release
+    - [ ] Test pool size limits
+  - [ ] Test transaction handling
+    - [ ] Test transaction commit
+    - [ ] Test transaction rollback
+    - [ ] Test nested transactions
+    - [ ] Test transaction isolation levels
+  - [ ] Test batch operations
+    - [ ] Test batch inserts
+    - [ ] Test batch updates
+    - [ ] Test batch deletes
+    - [ ] Test batch performance
   - [ ] Test error recovery
+    - [ ] Test connection failures
+    - [ ] Test query failures
+    - [ ] Test constraint violations
+    - [ ] Test deadlock recovery
+  - [ ] Test data integrity
+    - [ ] Test foreign key constraints
+    - [ ] Test unique constraints
+    - [ ] Test check constraints
+    - [ ] Test data consistency
 - [ ] Create API tests
 - [ ] Implement utility tests
 

@@ -1,5 +1,7 @@
 # Naija News Hub - Testing Checklist
 
+**Note**: This is a focused testing checklist. For a more comprehensive version with additional test cases, see [Enhanced Testing Checklist](enhanced-testing-checklist.md).
+
 ## Unit Tests
 
 ### Configuration Tests
@@ -25,10 +27,30 @@
 
 ### Database Tests
 - [ ] Connection pooling
+  - [ ] Test connection pool initialization
+  - [ ] Test connection acquisition
+  - [ ] Test connection release
+  - [ ] Test pool size limits
 - [ ] Transaction handling
+  - [ ] Test transaction commit
+  - [ ] Test transaction rollback
+  - [ ] Test nested transactions
+  - [ ] Test transaction isolation levels
 - [ ] Batch operations
+  - [ ] Test batch inserts
+  - [ ] Test batch updates
+  - [ ] Test batch deletes
+  - [ ] Test batch performance
 - [ ] Error recovery
+  - [ ] Test connection failures
+  - [ ] Test query failures
+  - [ ] Test constraint violations
+  - [ ] Test deadlock recovery
 - [ ] Data integrity
+  - [ ] Test foreign key constraints
+  - [ ] Test unique constraints
+  - [ ] Test check constraints
+  - [ ] Test data consistency
 
 ## Integration Tests
 
@@ -145,4 +167,4 @@
 - [ ] Docker compose
 - [ ] Volume mounting
 - [ ] Network configuration
-- [ ] Resource limits 
+- [ ] Resource limits

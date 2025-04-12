@@ -1,5 +1,7 @@
 # Naija News Hub - Enhanced Testing Checklist
 
+**Note**: This is a comprehensive testing checklist with redundancy built in for thorough coverage. For a more focused version, see the [Testing Checklist](testing-checklist.md). Both checklists are kept in sync to ensure consistency.
+
 This comprehensive testing checklist covers all aspects of the Naija News Hub project, with redundancy built in to ensure thorough testing coverage.
 
 ## Core Functionality Tests

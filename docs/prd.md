@@ -238,4 +238,4 @@ To create a reliable, scalable, and efficient platform for collecting, processin
 * Enhanced LLM query capabilities
 * Advanced data analysis tools
 * Custom research report generation
-* Trend analysis and visualization 
+* Trend analysis and visualization

@@ -1,4 +1,4 @@
-# News Scraper
+# Naija News Hub
 
 A flexible news scraper that automatically extracts articles from any news website when provided with a base URL.
 
@@ -39,6 +39,16 @@ For more options:
 ```
 python -m scraper.main --help
 ```
+
+## Development Guidelines
+
+### File Relationship Rules
+
+This project follows strict file relationship rules to maintain integrity across documentation and code. Before making changes to any file, please review the [File Relationship Rules](docs/dev/file-relationship-rules.md) document to understand which related files might need updates.
+
+### Project Journey
+
+To understand the evolution of this project and the decisions made along the way, check out our [Project Journey](docs/pm/project-journey.md) document.
 
 ## License
 

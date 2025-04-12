@@ -29,6 +29,7 @@ This document defines the relationships between project files and establishes ru
 | `docs/dev/development-tasks.md` | `docs/pm/tdd.md` | When development tasks are updated, ensure TDD reflects any architectural or design changes. |
 | `docs/dev/development-tasks.md` | `docs/dev/testing-checklist.md` | When development tasks are updated, ensure testing checklist covers the new/changed features. |
 | `docs/dev/development-tasks.md` | `README.md` | When major development tasks are completed, ensure README is updated to reflect current project status. |
+| `docs/dev/development-tasks.md` | `docs/pm/project-journey.md` | When significant development tasks are completed, add an entry to the project journey document with the date. |
 
 ### Configuration Files
 
@@ -63,6 +64,14 @@ This document defines the relationships between project files and establishes ru
 | `api/routes/` | `docs/api/api-documentation.md` | When API routes are updated, ensure API documentation is updated to match. |
 | `api/routes/` | `tests/test_api.py` | When API routes are updated, ensure API tests are updated to cover the changes. |
 | `api/schemas/` | `models/database.py` | When API schemas are updated, ensure they remain compatible with database models. |
+
+### Project Journey
+
+| Primary File | Related Files | Integrity Rule |
+|--------------|---------------|-----------------|
+| `docs/pm/project-journey.md` | `docs/dev/development-tasks.md` | When the project journey is updated, ensure it reflects completed development tasks. |
+| `docs/pm/project-journey.md` | `docs/pm/tdd.md` | When architectural decisions are documented in the project journey, ensure they are reflected in the TDD. |
+| `docs/pm/project-journey.md` | `README.md` | When major milestones are documented in the project journey, update the README to reflect current project status. |
 
 ## Documentation Consistency Rules
 

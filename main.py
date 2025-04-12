@@ -221,7 +221,7 @@ def main():
             logger.error("Either --website-id or --all must be specified")
     elif args.command == "init":
         logger.info("Initializing database")
-        init_db()
+        init_db(drop_all=True)
         logger.info("Database initialized")
     elif args.command == "db":
         handle_db_command(args)

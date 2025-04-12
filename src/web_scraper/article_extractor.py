@@ -13,16 +13,13 @@ from crawl4ai import (
     AsyncWebCrawler,
     BrowserConfig,
     CrawlerRunConfig,
-    CacheMode,
-    PruningContentFilter,
-    MarkdownGenerationStrategy,
-    DefaultMarkdownGenerator
+    CacheMode
 )
 from config.config import get_config
 from playwright.sync_api import Page, TimeoutError as PlaywrightTimeoutError
-from src.utils.error-handling import ScrapingErrorHandler, BrowserErrorHandler
-from src.database.models import Article, ScrapingJob
-from src.database.connection import get_db
+from src.utility_modules.error_handling import ScrapingErrorHandler, BrowserErrorHandler
+from src.database_management.models import Article, ScrapingJob
+from src.database_management.connection import get_db
 
 # Configure logging
 logging.basicConfig(
@@ -49,27 +46,6 @@ class ArticleExtractor:
                 timeout=30000
             )
 
-            # Configure content filtering
-            content_filter = PruningContentFilter(
-                min_length=100,  # Minimum content length
-                max_length=10000,  # Maximum content length
-                remove_ads=True,
-                remove_navigation=True,
-                remove_comments=True
-            )
-
-            # Configure markdown generation
-            markdown_strategy = MarkdownGenerationStrategy(
-                generator=DefaultMarkdownGenerator(
-                    options={
-                        "citations": True,  # Include link citations
-                        "clean_whitespace": True,
-                        "preserve_images": True
-                    }
-                ),
-                content_filter=content_filter
-            )
-
             # Configure crawler run settings
             crawler_config = CrawlerRunConfig(
                 cache_mode=CacheMode.BYPASS,
@@ -78,7 +54,15 @@ class ArticleExtractor:
                 excluded_tags=["script", "style", "noscript", "iframe"],
                 scan_full_page=True,
                 wait_for_images=True,  # Wait for lazy-loaded images
-                markdown_strategy=markdown_strategy
+                markdown=True,
+                min_content_length=100,  # Minimum content length
+                max_content_length=10000,  # Maximum content length
+                remove_ads=True,
+                remove_navigation=True,
+                remove_comments=True,
+                preserve_images=True,
+                clean_whitespace=True,
+                citations=True  # Include link citations
             )
 
             # Create and run crawler

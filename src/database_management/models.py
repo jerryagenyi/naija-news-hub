@@ -8,7 +8,7 @@ from datetime import datetime
 from typing import List, Optional
 from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, ForeignKey, JSON, Enum
 from sqlalchemy.orm import DeclarativeBase, relationship
-from src.utils.enums import ErrorType, ErrorSeverity
+from src.utility_modules.enums import ErrorType, ErrorSeverity
 
 class Base(DeclarativeBase):
     pass
@@ -98,18 +98,20 @@ class ScrapingJob(Base):
     __tablename__ = 'scraping_jobs'
 
     id = Column(Integer, primary_key=True)
+    website_id = Column(Integer, ForeignKey("websites.id"), nullable=False)
     status = Column(String(50), nullable=False, default='pending')
     start_time = Column(DateTime, default=datetime.utcnow)
     end_time = Column(DateTime)
-    error_count = Column(Integer, default=0)
-    success_count = Column(Integer, default=0)
-    total_count = Column(Integer, default=0)
+    config = Column(JSON, nullable=True)
+    error_message = Column(Text, nullable=True)
+    articles_found = Column(Integer, default=0)
+    articles_scraped = Column(Integer, default=0)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationships
+    website = relationship("Website")
     errors = relationship("ErrorLog", back_populates="job", cascade="all, delete-orphan")
-    articles = relationship("Article", back_populates="job", cascade="all, delete-orphan")
 
 class ErrorLog(Base):
     """Model for tracking errors during scraping."""

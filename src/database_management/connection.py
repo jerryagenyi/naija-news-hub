@@ -4,39 +4,39 @@ Database connection module for Naija News Hub.
 This module provides functions to connect to the database and create sessions.
 """
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.pool import QueuePool
 from typing import Generator
 
 from config.config import get_config
-from src.database.models import Base
+from src.database_management.models import Base
 
 def get_connection_string() -> str:
     """
     Get the database connection string from the configuration.
-    
+
     Returns:
         str: Database connection string
     """
     config = get_config()
     db_config = config.database
-    
+
     return f"postgresql://{db_config.user}:{db_config.password}@{db_config.host}:{db_config.port}/{db_config.database}"
 
 def create_database_engine():
     """
     Create a SQLAlchemy engine for the database.
-    
+
     Returns:
         Engine: SQLAlchemy engine
     """
     config = get_config()
     db_config = config.database
-    
+
     connection_string = get_connection_string()
-    
+
     return create_engine(
         connection_string,
         poolclass=QueuePool,
@@ -54,7 +54,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 def get_db() -> Generator[Session, None, None]:
     """
     Get a database session.
-    
+
     Yields:
         Session: Database session
     """
@@ -64,8 +64,17 @@ def get_db() -> Generator[Session, None, None]:
     finally:
         db.close()
 
-def init_db():
+def init_db(drop_all=False):
     """
     Initialize the database by creating all tables.
+
+    Args:
+        drop_all: If True, drop all tables before creating them
     """
+    if drop_all:
+        # Drop all tables with CASCADE
+        conn = engine.connect()
+        conn.execute(text("DROP SCHEMA public CASCADE"))
+        conn.execute(text("CREATE SCHEMA public"))
+        conn.close()
     Base.metadata.create_all(bind=engine)

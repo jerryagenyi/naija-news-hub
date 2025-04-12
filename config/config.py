@@ -23,7 +23,7 @@ def load_config() -> Config:
     """
     # Ensure database configuration is provided
     # Get database name and replace hyphens with underscores for PostgreSQL compatibility
-    db_name = os.getenv("NAIJA_NEWS_DB_NAME", "naija_news")
+    db_name = os.getenv("NAIJA_NEWS_DB_NAME", "naija_news_hub")
     db_name = db_name.replace("-", "_")
 
     database_config = DatabaseConfig(

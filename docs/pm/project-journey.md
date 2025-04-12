@@ -1,6 +1,6 @@
 # The Naija News Hub Journey: From Concept to Structure
 
-**Last Updated:** April 12, 2025
+**Last Updated:** April 13, 2025
 
 > **Note:** This document is updated regularly as the project evolves. The date above indicates when this document was last updated. Always check this date to determine if you need to review recent commits for additional developments.
 
@@ -79,9 +79,12 @@ With the documentation in place, we established a robust project structure:
 ## Key Decisions and Innovations
 
 1. **Crawl4AI Integration**
-   - Leveraging advanced web crawling capabilities
-   - Implementing intelligent URL discovery
-   - Handling dynamic content
+   - Leveraging AsyncWebCrawler for efficient web scraping
+   - Implementing intelligent URL discovery with pattern matching
+   - Handling dynamic content and JavaScript-rendered pages
+   - Extracting article content with HTML cleaning and markdown conversion
+   - Implementing error handling and fallback mechanisms
+   - Using rate limiting and proxy rotation to avoid blocking
 
 2. **Modular Architecture**
    - Separating concerns into distinct components
@@ -111,20 +114,23 @@ As of April 2025, Naija News Hub has:
    - Development environment configuration
    - Basic infrastructure setup
    - Database models and connection
-   - Basic scraper components
+   - Core scraper components with Crawl4AI integration
+   - URL discovery and article extraction
    - API structure and routes
    - Unit tests for core components
 
 2. **In Progress**
-   - Core scraping implementation with Crawl4AI
+   - Content extraction refinement
    - Database integration and testing
    - API refinement and security
+   - Error handling and recovery improvements
 
 3. **Next Steps**
    - Frontend development
    - LLM integration
    - Vector database implementation
    - Advanced feature integration
+   - Automated URL discovery and content updates
 
 ## Development Timeline
 
@@ -172,6 +178,19 @@ As of April 2025, Naija News Hub has:
 - Created comprehensive API documentation
 - Updated README.md with installation and usage instructions
 - Ensured documentation consistency according to file relationship rules
+
+### April 13, 2025
+
+- Implemented Crawl4AI integration for web scraping
+- Set up PostgreSQL database and configured the connection
+- Fixed database connection issues and metadata attribute conflicts
+- Implemented URL discovery using Crawl4AI's AsyncWebCrawler
+- Implemented article extraction with content cleaning and markdown conversion
+- Added error handling and fallback mechanisms for scraping
+- Created test command for scraper testing
+- Updated documentation to reflect Crawl4AI integration
+- Tested URL discovery and article extraction with real websites
+- Committed changes to the repository
 
 ## Best Practices Adopted
 

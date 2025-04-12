@@ -38,6 +38,8 @@ This document defines the relationships between project files and establishes ru
 | `config/config_template.py` | `.env.example` | When configuration template is updated, ensure .env.example includes all required environment variables. |
 | `config/config_template.py` | `.env` | When configuration template is updated, ensure your local .env file is updated with new variables (not committed to Git). |
 | `.env.example` | `docs/dev/database-schema.md` | When database-related environment variables are updated, ensure they align with the database schema documentation. |
+| `config/config_template.py` | `docs/dev/crawl4ai-integration.md` | When Crawl4AI configuration is updated, ensure the integration documentation is updated to match. |
+| `config/config.py` | `docs/dev/crawl4ai-integration.md` | When Crawl4AI configuration implementation is updated, ensure the integration documentation is updated to match. |
 
 ### MCP Configuration
 
@@ -61,9 +63,12 @@ This document defines the relationships between project files and establishes ru
 
 | Primary File | Related Files | Integrity Rule |
 |--------------|---------------|----------------|
-| `scraper/article_scraper.py` | `tests/test_scraper.py` | When scraper code is updated, ensure tests are updated to cover the changes. |
-| `scraper/article_scraper.py` | `docs/dev/testing-checklist.md` | When scraper features are added/changed, ensure testing checklist is updated. |
-| `scraper/utils/exporters.py` | `tests/test_exporters.py` | When exporter code is updated, ensure tests are updated to cover the changes. |
+| `src/scraper/url_discovery.py` | `docs/dev/crawl4ai-integration.md` | When URL discovery code is updated, ensure Crawl4AI integration documentation is updated. |
+| `src/scraper/article_extractor.py` | `docs/dev/crawl4ai-integration.md` | When article extraction code is updated, ensure Crawl4AI integration documentation is updated. |
+| `src/scraper/url_discovery.py` | `tests/test_scraper.py` | When URL discovery code is updated, ensure tests are updated to cover the changes. |
+| `src/scraper/article_extractor.py` | `tests/test_scraper.py` | When article extraction code is updated, ensure tests are updated to cover the changes. |
+| `src/scraper/url_discovery.py` | `docs/dev/testing-checklist.md` | When URL discovery features are added/changed, ensure testing checklist is updated. |
+| `src/scraper/article_extractor.py` | `docs/dev/testing-checklist.md` | When article extraction features are added/changed, ensure testing checklist is updated. |
 
 ### API Components
 
@@ -116,7 +121,14 @@ This document defines the relationships between project files and establishes ru
    - Update actual test files to implement the described tests
    - Update development tasks to reflect testing requirements
 
-5. **Time and Date References**: When adding time or date references:
+5. **Crawl4AI Integration**: When updating Crawl4AI integration:
+   - Update `docs/dev/crawl4ai-integration.md` to reflect implementation changes
+   - Update `src/scraper/url_discovery.py` and `src/scraper/article_extractor.py` to maintain consistency
+   - Update configuration in `config/config_template.py` if needed
+   - Update tests to cover the changes
+   - Update development tasks to reflect completed tasks
+
+6. **Time and Date References**: When adding time or date references:
    - Use the MCP time module (`utils/mcp/time.py`) to get the current date/time
    - Follow the format YYYY-MM-DD for dates
    - Update the "Last Updated" timestamp in documentation files
@@ -129,9 +141,10 @@ When modifying any file, ask yourself:
 1. Does this change affect the database schema?
 2. Does this change affect the API?
 3. Does this change affect the scraper functionality?
-4. Does this change affect configuration requirements?
-5. Does this change require updates to tests?
-6. Does this change require updates to documentation?
+4. Does this change affect Crawl4AI integration?
+5. Does this change affect configuration requirements?
+6. Does this change require updates to tests?
+7. Does this change require updates to documentation?
 
 For each "yes" answer, identify the related files using this document and update them accordingly.
 

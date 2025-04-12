@@ -79,36 +79,36 @@ This document tracks the development tasks for the Naija News Hub project, break
 ## Phase 2: Article Extraction
 
 ### Crawl4AI Integration
-- [ ] Set up Crawl4AI configuration
-  - [ ] Configure user agents and headers
-  - [ ] Set up rate limiting parameters
-  - [ ] Configure proxy settings
-  - [ ] Set up browser rendering options
-- [ ] Implement basic article scraping
-  - [ ] Create scraper class with Crawl4AI
-  - [ ] Implement URL fetching
-  - [ ] Set up HTML parsing
-  - [ ] Create basic content extraction
-- [ ] Create article extraction pipeline
-  - [ ] Design pipeline architecture
-  - [ ] Implement pipeline stages
-  - [ ] Create pipeline configuration
+- [x] Set up Crawl4AI configuration
+  - [x] Configure user agents and headers
+  - [x] Set up rate limiting parameters
+  - [x] Configure proxy settings
+  - [x] Set up browser rendering options
+- [x] Implement basic article scraping
+  - [x] Create scraper class with Crawl4AI
+  - [x] Implement URL fetching
+  - [x] Set up HTML parsing
+  - [x] Create basic content extraction
+- [x] Create article extraction pipeline
+  - [x] Design pipeline architecture
+  - [x] Implement pipeline stages
+  - [x] Create pipeline configuration
   - [ ] Add pipeline monitoring
-- [ ] Add support for different article formats
-  - [ ] Support standard news articles
+- [x] Add support for different article formats
+  - [x] Support standard news articles
   - [ ] Support gallery/slideshow articles
   - [ ] Support video articles
   - [ ] Support mixed-media articles
-- [ ] Implement error handling for scraping
-  - [ ] Create error classification system
-  - [ ] Implement error logging
-  - [ ] Add error recovery strategies
-  - [ ] Create error reporting
-- [ ] Create retry mechanism for failed scrapes
-  - [ ] Implement exponential backoff
+- [x] Implement error handling for scraping
+  - [x] Create error classification system
+  - [x] Implement error logging
+  - [x] Add error recovery strategies
+  - [x] Create error reporting
+- [x] Create retry mechanism for failed scrapes
+  - [x] Implement exponential backoff
   - [ ] Add circuit breaker pattern
   - [ ] Create retry queue
-  - [ ] Implement retry limits and policies
+  - [x] Implement retry limits and policies
 
 ### Content Extraction
 - [ ] Implement title extraction
@@ -414,9 +414,9 @@ This document tracks the development tasks for the Naija News Hub project, break
 
 ### Phase 2: Article Extraction
 - Start Date: April 12, 2025
-- Completion: 15%
-- Challenges: Need to integrate with Crawl4AI for efficient extraction
-- Next Steps: Complete Crawl4AI integration and content extraction
+- Completion: 40%
+- Challenges: Handling different article formats and structures
+- Next Steps: Complete content extraction and implement article metadata extraction
 
 ### Phase 3: Maintenance and Monitoring
 - Start Date: Not started

@@ -19,7 +19,7 @@ class ArticleBase(BaseModel):
     published_at: Optional[datetime] = Field(None, description="When the article was published")
     image_url: Optional[HttpUrl] = Field(None, description="URL of the article image")
     website_id: int = Field(..., description="ID of the website")
-    metadata: Optional[Dict[str, Any]] = Field(None, description="Metadata of the article")
+    article_metadata: Optional[Dict[str, Any]] = Field(None, description="Metadata of the article")
     active: bool = Field(True, description="Whether the article is active")
 
 class ArticleCreate(ArticleBase):
@@ -36,7 +36,7 @@ class ArticleUpdate(BaseModel):
     author: Optional[str] = Field(None, description="Author of the article")
     published_at: Optional[datetime] = Field(None, description="When the article was published")
     image_url: Optional[HttpUrl] = Field(None, description="URL of the article image")
-    metadata: Optional[Dict[str, Any]] = Field(None, description="Metadata of the article")
+    article_metadata: Optional[Dict[str, Any]] = Field(None, description="Metadata of the article")
     active: Optional[bool] = Field(None, description="Whether the article is active")
 
 class ArticleResponse(ArticleBase):
@@ -44,6 +44,6 @@ class ArticleResponse(ArticleBase):
     id: int = Field(..., description="ID of the article")
     created_at: datetime = Field(..., description="When the article was created")
     updated_at: datetime = Field(..., description="When the article was last updated")
-    
+
     class Config:
         orm_mode = True

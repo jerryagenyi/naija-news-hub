@@ -1,0 +1,66 @@
+# Frontend Development Rules - Naija News Hub
+
+## Development Philosophy
+- Create a responsive, user-friendly interface
+- Follow modern web development best practices
+- Ensure accessibility and performance
+- Maintain consistent styling and branding
+- Implement proper error handling and loading states
+
+## Code Style and Structure
+
+### File and Directory Naming
+- Use kebab-case for frontend files and directories
+  - ✅ `src/components/news-card`
+  - ✅ `src/pages/article-detail`
+  - ✅ `src/styles/theme-variables`
+  - ❌ `src/components/newsCard`
+  - ❌ `src/pages/article_detail`
+- Use snake_case for documentation files
+  - ✅ `docs/dev/frontend_architecture.md`
+  - ✅ `docs/api/endpoints.md`
+  - ❌ `docs/dev/frontend-architecture.md`
+
+### Component Naming
+- Use PascalCase for React components
+  - ✅ `NewsCard`
+  - ✅ `ArticleDetail`
+  - ❌ `news-card`
+- Use camelCase for component files
+  - ✅ `newsCard.tsx`
+  - ✅ `articleDetail.tsx`
+  - ❌ `news-card.tsx`
+
+## Implementation Details
+
+### Responsive Design
+- Ensure that the interface is responsive across different devices and screen sizes
+- Use media queries to adjust layout and content based on screen width
+
+### Accessibility
+- Implement proper ARIA attributes and semantic HTML
+- Ensure keyboard accessibility and screen reader support
+
+### Performance
+- Optimize image sizes and use lazy loading for images
+- Minimize network requests and use caching strategies
+
+### Error Handling and Loading States
+- Implement proper error handling and loading states for user feedback
+- Use asynchronous programming to handle network requests and data loading
+
+### Styling and Branding
+- Maintain consistent styling and branding across the interface
+- Use CSS variables and custom properties for reusable styles
+
+### Component Reusability
+- Design components with reusability in mind
+- Use props and context to pass data and functionality between components
+
+### Documentation
+- Write clear and concise documentation for each component and file
+- Use comments and code blocks to explain complex logic and functionality
+
+## Conclusion
+
+By following these rules and guidelines, you can create a high-quality, user-friendly, and maintainable frontend interface for the Naija News Hub. 

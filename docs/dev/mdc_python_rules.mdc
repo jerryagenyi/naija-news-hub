@@ -1,0 +1,35 @@
+# Python Development Rules - Naija News Hub
+
+## Development Philosophy
+- Write efficient, maintainable scraping code
+- Focus on reliability and error handling
+- Implement proper rate limiting and anti-ban measures
+- Follow PEP 8 style guidelines
+- Respect website terms of service and robots.txt
+- Use appropriate tools for different scraping scenarios
+
+## Code Style and Structure
+
+### File and Directory Naming
+- Use snake_case for directories and documentation files
+  - ✅ `src/scrapers/site_handlers`
+  - ✅ `src/utils/data_processors`
+  - ✅ `docs/dev/database_schema.md`
+  - ✅ `docs/pm/technical_design.md`
+  - ❌ `src/scrapers/siteHandlers`
+  - ❌ `docs/dev/database-schema.md`
+
+### Function and Variable Naming
+- Use snake_case for functions and variables
+  - ✅ `process_article_content`
+  - ✅ `site_config`
+  - ❌ `processArticleContent`
+- Use meaningful, descriptive names
+```python
+# Examples
+def extract_article_content(url: str) -> dict:
+    pass
+
+article_count = 0
+is_processing = True
+```

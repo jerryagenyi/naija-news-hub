@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import {
   FiUsers,
-  FiNewspaper,
+  FiFileText,
   FiGlobe,
   FiClock,
 } from 'react-icons/fi';
@@ -54,7 +54,7 @@ export default function DashboardPage() {
         <StatsCard
           title="Total Articles"
           value={stats.totalArticles.toLocaleString()}
-          icon={FiNewspaper}
+          icon={FiFileText}
           trend={+12.5}
         />
         <StatsCard
@@ -134,4 +134,4 @@ export default function DashboardPage() {
       </div>
     </div>
   );
-} 
+}

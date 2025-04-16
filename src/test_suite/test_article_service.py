@@ -7,7 +7,7 @@ This module provides tests for the ArticleService class.
 import pytest
 import asyncio
 from unittest.mock import patch, MagicMock, AsyncMock
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from src.service_layer.article_service import ArticleService
 from src.utility_modules.content_validation import ValidationResult
@@ -27,7 +27,7 @@ class TestArticleService:
                 "content_markdown": "# Test Article\n\nThis is a test article content.",
                 "content_html": "<h1>Test Article</h1><p>This is a test article content.</p>",
                 "author": "Test Author",
-                "published_at": datetime.utcnow(),
+                "published_at": datetime.now(timezone.utc),
                 "image_url": "https://example.com/image.jpg",
                 "categories": ["News", "Technology"],
                 "category_urls": ["https://example.com/news", "https://example.com/technology"],
@@ -74,7 +74,7 @@ class TestArticleService:
             "content_markdown": "# New Test Article\n\nTest content",
             "content_html": "<h1>New Test Article</h1><p>Test content</p>",
             "author": "Test Author",
-            "published_at": datetime.utcnow(),
+            "published_at": datetime.now(timezone.utc),
             "image_url": "https://example.com/image.jpg",
             "categories": ["News", "Technology"],
             "category_urls": ["https://example.com/news", "https://example.com/technology"],
@@ -120,7 +120,7 @@ class TestArticleService:
             "content_markdown": "# Updated Test Article\n\nUpdated test content",
             "content_html": "<h1>Updated Test Article</h1><p>Updated test content</p>",
             "author": "Updated Author",
-            "published_at": datetime.utcnow(),
+            "published_at": datetime.now(timezone.utc),
             "image_url": "https://example.com/updated-image.jpg",
             "categories": ["News", "Technology"],
             "category_urls": ["https://example.com/news", "https://example.com/technology"],
@@ -189,8 +189,19 @@ class TestArticleService:
             article = article_service.article_repo.get_article_by_url(url)
             assert article is None
 
-    def test_discover_and_store_articles(self, article_service, mock_discover_urls, sample_website):
+    @pytest.mark.asyncio
+    async def test_discover_and_store_articles(self, article_service, mock_discover_urls, sample_website):
         """Test discovering and storing articles."""
+        # Mock discover_urls to return a list of URLs
+        urls = [
+            "https://example.com/article1",
+            "https://example.com/article2",
+            "https://example.com/article3"
+        ]
+        future = asyncio.Future()
+        future.set_result(urls)
+        mock_discover_urls.return_value = future
+
         # Mock extract_and_store_article to return success for each URL
         with patch.object(article_service, 'extract_and_store_article') as mock:
             # Create a mock that returns a dictionary for each call
@@ -201,22 +212,16 @@ class TestArticleService:
                 "status": "new"
             }
 
-            # Mock the discover_and_store_articles method to avoid asyncio issues
-            with patch.object(article_service, 'discover_and_store_articles', return_value={
-                "status": "success",
-                "articles_found": 3,
-                "articles_stored": 3,
-                "job_id": 1
-            }):
-                # Call the method directly (not async in test)
-                result = article_service.discover_and_store_articles(sample_website.id)
+            # Call the method
+            result = await article_service.discover_and_store_articles(sample_website.id)
 
-                # Verify result
-                assert result["status"] == "success"
-                assert result["articles_found"] == 3
-                assert result["articles_stored"] == 3
+            # Verify result
+            assert result["status"] == "success"
+            assert result["articles_found"] == 3
+            assert mock.call_count == 3
 
-    def test_discover_and_store_articles_no_urls(self, article_service, sample_website):
+    @pytest.mark.asyncio
+    async def test_discover_and_store_articles_no_urls(self, article_service, sample_website):
         """Test discovering and storing articles when no URLs are found."""
         # Mock discover_urls to return an empty list
         with patch('src.service_layer.article_service.discover_urls') as mock:
@@ -224,23 +229,14 @@ class TestArticleService:
             future.set_result([])
             mock.return_value = future
 
-            # Mock the discover_and_store_articles method to avoid asyncio issues
-            error_message = f"No URLs discovered from {sample_website.base_url}"
-            with patch.object(article_service, 'discover_and_store_articles', return_value={
-                "status": "error",
-                "message": error_message,
-                "articles_found": 0,
-                "articles_stored": 0,
-                "job_id": 1
-            }):
-                # Call the method directly (not async in test)
-                result = article_service.discover_and_store_articles(sample_website.id)
+            # Call the method
+            result = await article_service.discover_and_store_articles(sample_website.id)
 
-                # Verify result
-                assert result["status"] == "error"
-                assert result["message"] == error_message
-                assert result["articles_found"] == 0
-                assert result["articles_stored"] == 0
+            # Verify result
+            assert result["status"] == "error"
+            assert "No URLs discovered from" in result["message"]
+            assert result["articles_found"] == 0
+            assert result["articles_stored"] == 0
 
     @pytest.mark.asyncio
     async def test_discover_and_store_articles_website_not_found(self, article_service):
@@ -254,7 +250,8 @@ class TestArticleService:
         assert result["articles_found"] == 0
         assert result["articles_stored"] == 0
 
-    def test_extract_and_store_article_batch(self, article_service, sample_website):
+    @pytest.mark.asyncio
+    async def test_extract_and_store_article_batch(self, article_service, sample_website):
         """Test extracting and storing multiple articles in a batch."""
         # Mock extract_and_store_article to return success for each URL
         with patch.object(article_service, 'extract_and_store_article') as mock:
@@ -273,20 +270,14 @@ class TestArticleService:
                 "https://example.com/article3"
             ]
 
-            # Mock the extract_and_store_article_batch method to avoid asyncio issues
-            with patch.object(article_service, 'extract_and_store_article_batch', return_value={
-                "status": "success",
-                "articles_found": 3,
-                "articles_stored": 3,
-                "job_id": 1
-            }):
-                # Call the method directly (not async in test)
-                result = article_service.extract_and_store_article_batch(urls, sample_website.id)
+            # Call the method
+            result = await article_service.extract_and_store_article_batch(urls, sample_website.id)
 
-                # Verify result
-                assert result["status"] == "success"
-                assert result["articles_found"] == 3
-                assert result["articles_stored"] == 3
+            # Verify result
+            assert result["status"] == "success"
+            assert result["articles_found"] == 3
+            assert result["articles_stored"] == 3
+            assert mock.call_count == 3
 
     def test_get_article_stats(self, article_service, sample_website, sample_articles, sample_scraping_job):
         """Test getting article statistics."""

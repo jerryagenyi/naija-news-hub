@@ -81,6 +81,11 @@ This document defines the relationships between project files and establishes ru
 | `api/routes/` | `docs/api/api-documentation.md` | When API routes are updated, ensure API documentation is updated to match. |
 | `api/routes/` | `tests/test_api.py` | When API routes are updated, ensure API tests are updated to cover the changes. |
 | `api/schemas/` | `models/database.py` | When API schemas are updated, ensure they remain compatible with database models. |
+| `frontend/src/app/dashboard/websites/page.tsx` | `docs/app/user-guide.md` | When websites management page is updated, ensure user guide is updated to match. |
+| `frontend/src/app/dashboard/jobs/page.tsx` | `docs/app/user-guide.md` | When jobs management page is updated, ensure user guide is updated to match. |
+| `frontend/src/components/layout/Header.tsx` | `docs/frontend/project-structure.md` | When header component is updated, ensure frontend project structure documentation is updated if needed. |
+| `frontend/src/components/layout/Footer.tsx` | `docs/frontend/project-structure.md` | When footer component is updated, ensure frontend project structure documentation is updated if needed. |
+| `frontend/src/components/layout/Sidebar.tsx` | `docs/frontend/project-structure.md` | When sidebar component is updated, ensure frontend project structure documentation is updated if needed. |
 
 ### Project Journey
 

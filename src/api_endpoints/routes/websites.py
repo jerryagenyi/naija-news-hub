@@ -32,21 +32,21 @@ async def get_websites(
 ):
     """
     Get all websites.
-    
+
     Args:
         skip: Number of websites to skip
         limit: Maximum number of websites to return
         active_only: If True, only return active websites
         db: Database session
-        
+
     Returns:
         List of websites
     """
     query = db.query(Website)
-    
+
     if active_only:
         query = query.filter(Website.active == True)
-    
+
     websites = query.offset(skip).limit(limit).all()
     return websites
 
@@ -54,11 +54,11 @@ async def get_websites(
 async def get_website(website_id: int, db: Session = Depends(get_db)):
     """
     Get a website by ID.
-    
+
     Args:
         website_id: ID of the website
         db: Database session
-        
+
     Returns:
         Website
     """
@@ -71,11 +71,11 @@ async def get_website(website_id: int, db: Session = Depends(get_db)):
 async def create_website(website: WebsiteCreate, db: Session = Depends(get_db)):
     """
     Create a new website.
-    
+
     Args:
         website: Website data
         db: Database session
-        
+
     Returns:
         Created website
     """
@@ -83,65 +83,65 @@ async def create_website(website: WebsiteCreate, db: Session = Depends(get_db)):
     existing_website = db.query(Website).filter(Website.base_url == website.base_url).first()
     if existing_website:
         raise HTTPException(status_code=400, detail="Website with this base URL already exists")
-    
+
     # Create new website
-    db_website = Website(**website.dict())
+    db_website = Website(**website.model_dump())
     db.add(db_website)
     db.commit()
     db.refresh(db_website)
-    
+
     logger.info(f"Created website {db_website.name} ({db_website.base_url})")
-    
+
     return db_website
 
 @router.put("/{website_id}", response_model=WebsiteResponse)
 async def update_website(website_id: int, website: WebsiteUpdate, db: Session = Depends(get_db)):
     """
     Update a website.
-    
+
     Args:
         website_id: ID of the website to update
         website: Website data
         db: Database session
-        
+
     Returns:
         Updated website
     """
     db_website = db.query(Website).filter(Website.id == website_id).first()
     if not db_website:
         raise HTTPException(status_code=404, detail="Website not found")
-    
+
     # Update website
-    for key, value in website.dict(exclude_unset=True).items():
+    for key, value in website.model_dump(exclude_unset=True).items():
         setattr(db_website, key, value)
-    
+
     db.commit()
     db.refresh(db_website)
-    
+
     logger.info(f"Updated website {db_website.name} ({db_website.base_url})")
-    
+
     return db_website
 
 @router.delete("/{website_id}")
 async def delete_website(website_id: int, db: Session = Depends(get_db)):
     """
     Delete a website.
-    
+
     Args:
         website_id: ID of the website to delete
         db: Database session
-        
+
     Returns:
         Success message
     """
     db_website = db.query(Website).filter(Website.id == website_id).first()
     if not db_website:
         raise HTTPException(status_code=404, detail="Website not found")
-    
+
     # Delete website
     db.delete(db_website)
     db.commit()
-    
+
     logger.info(f"Deleted website {db_website.name} ({db_website.base_url})")
-    
+
     return {"message": "Website deleted successfully"}

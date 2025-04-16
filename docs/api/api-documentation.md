@@ -1,6 +1,6 @@
 # Naija News Hub - API Documentation
 
-**Last Updated:** 2025-04-12
+**Last Updated:** 2024-04-16
 
 This document provides comprehensive documentation for the Naija News Hub API, including endpoints, request/response formats, authentication, and usage examples.
 
@@ -408,6 +408,78 @@ Response:
   {
     "id": 1,
     "website_id": 1,
+    "website_name": "Punch Nigeria",
+    "status": "running",
+    "progress": 75,
+    "articles_found": 120,
+    "articles_processed": 90,
+    "errors": 0,
+    "start_time": "2024-04-16T06:45:02Z",
+    "end_time": null,
+    "config": {
+      "max_depth": 3,
+      "rate_limit": 2,
+      "proxy_rotation": true
+    }
+  },
+  {
+    "id": 2,
+    "website_id": 2,
+    "website_name": "Vanguard Nigeria",
+    "status": "running",
+    "progress": 45,
+    "articles_found": 85,
+    "articles_processed": 38,
+    "errors": 2,
+    "start_time": "2024-04-16T07:00:02Z",
+    "end_time": null,
+    "config": {
+      "max_depth": 3,
+      "rate_limit": 2,
+      "proxy_rotation": true
+    }
+  }
+]
+```
+
+#### Control Scraping Job
+
+```http
+POST /scraping/jobs/{job_id}/control
+Content-Type: application/json
+
+{
+  "action": "pause|resume|stop|restart"
+}
+```
+
+Response:
+
+```json
+{
+  "id": 1,
+  "website_id": 1,
+  "website_name": "Punch Nigeria",
+  "status": "paused",
+  "progress": 75,
+  "articles_found": 120,
+  "articles_processed": 90,
+  "errors": 0,
+  "start_time": "2024-04-16T06:45:02Z",
+  "end_time": "2024-04-16T07:15:02Z",
+  "config": {
+    "max_depth": 3,
+    "rate_limit": 2,
+    "proxy_rotation": true
+  }
+}
+```
+
+```json
+[
+  {
+    "id": 1,
+    "website_id": 1,
     "status": "completed",
     "start_time": "2025-04-12T10:00:00Z",
     "end_time": "2025-04-12T10:15:00Z",
@@ -487,6 +559,83 @@ Error responses include a JSON object with an error message:
 {
   "detail": "Error message describing what went wrong"
 }
+```
+
+### Dashboard API
+
+#### Get Dashboard Stats
+
+```http
+GET /dashboard/stats
+```
+
+Response:
+
+```json
+{
+  "total_articles": 1234,
+  "total_websites": 15,
+  "active_jobs": 3,
+  "error_count": 2,
+  "trends": {
+    "articles": {
+      "value": 1234,
+      "change": 12.5,
+      "period": "24h"
+    },
+    "websites": {
+      "value": 15,
+      "change": 0,
+      "period": "24h"
+    },
+    "jobs": {
+      "value": 3,
+      "change": -2,
+      "period": "24h"
+    },
+    "errors": {
+      "value": 2,
+      "change": 50,
+      "period": "24h"
+    }
+  }
+}
+```
+
+#### Get Recent Errors
+
+```http
+GET /dashboard/errors
+```
+
+Query Parameters:
+- `limit` (integer, optional): Maximum number of records to return (default: 10)
+
+Response:
+
+```json
+[
+  {
+    "id": 1,
+    "website_id": 1,
+    "website_name": "Punch Nigeria",
+    "type": "network",
+    "message": "Connection timeout",
+    "timestamp": "2024-04-16T07:05:02Z",
+    "url": "https://punchng.com/some-article",
+    "resolved": false
+  },
+  {
+    "id": 2,
+    "website_id": 2,
+    "website_name": "Vanguard Nigeria",
+    "type": "parsing",
+    "message": "Failed to extract article content",
+    "timestamp": "2024-04-16T06:50:02Z",
+    "url": "https://vanguardngr.com/some-article",
+    "resolved": false
+  }
+]
 ```
 
 ## Rate Limiting

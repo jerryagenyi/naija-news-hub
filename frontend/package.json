@@ -9,26 +9,28 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@tailwindcss/forms": "^0.5.10",
-    "@tailwindcss/postcss": "^4.1.4",
-    "@tailwindcss/typography": "^0.5.16",
+    "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/typography": "^0.5.10",
     "axios": "^1.8.4",
-    "next": "15.3.0",
+    "critters": "^0.0.23",
+    "next": "^15.3.0",
     "next-themes": "^0.4.6",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-icons": "^5.5.0"
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-error-boundary": "^5.0.0",
+    "react-hook-form": "^7.55.0",
+    "react-icons": "^5.5.0",
+    "tailwindcss": "^3.4.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/node": "^20.11.19",
+    "@types/react": "^18.2.57",
+    "@types/react-dom": "^18.2.19",
     "autoprefixer": "^10.4.21",
-    "eslint": "^9",
-    "eslint-config-next": "15.3.0",
+    "eslint": "^8.56.0",
+    "eslint-config-next": "14.1.0",
     "postcss": "^8.5.3",
-    "tailwindcss": "^4.1.4",
-    "typescript": "^5"
+    "typescript": "^5.3.3"
   }
 }

@@ -1,0 +1,9 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# Your rule content
+
+- Before responding to any question that relies on documentation for its answer, always use context7 to check the latest documentation relevant to the question before you answer the question - Very important!

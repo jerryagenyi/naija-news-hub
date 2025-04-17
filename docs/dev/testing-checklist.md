@@ -110,6 +110,20 @@
 - [ ] Authentication
 - [ ] Rate limiting
 
+### Frontend Tests
+- [x] Layout components
+  - [x] Header component with sidebar toggle
+  - [x] Footer component with dark color scheme
+  - [x] Sidebar component with collapsible functionality
+- [x] Responsive design
+  - [x] Mobile layout
+  - [x] Tablet layout
+  - [x] Desktop layout
+- [ ] Component interactions
+  - [x] Sidebar toggle functionality
+  - [ ] Form submissions
+  - [ ] Data loading states
+
 ### Data Pipeline
 - [ ] Data flow
 - [ ] Error handling

@@ -2,6 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  images: {
+    domains: ['api.dicebear.com'],
+  },
 };
 
 module.exports = nextConfig;

@@ -55,5 +55,16 @@ export const mockApi = {
       article.content.toLowerCase().includes(query.toLowerCase())
     );
     return { data: results };
+  },
+  getDashboardStats: async () => {
+    await delay(400);
+    return {
+      data: {
+        totalArticles: 1234,
+        totalWebsites: 15,
+        activeJobs: 3,
+        errorCount: 2,
+      }
+    };
   }
 };

@@ -37,7 +37,7 @@ export interface ApiResponse<T> {
 
 // Define the API interface
 export interface Api {
-  getArticles: (params?: { category?: string; limit?: number }) => Promise<ApiResponse<Article[]>>;
+  getArticles: (params?: { category?: string; limit?: number; offset?: number }) => Promise<ApiResponse<Article[]>>;
   getArticle: (id: number) => Promise<ApiResponse<Article>>;
   getCategories: () => Promise<ApiResponse<Category[]>>;
   getSources: () => Promise<ApiResponse<Source[]>>;
@@ -62,9 +62,9 @@ export const ApiProvider = ({ children, isMock = true }: ApiProviderProps) => {
   const api = isMock ? mockApi : realApi;
 
   return (
-    <ApiContext.Provider 
-      value={{ 
-        isMock, 
+    <ApiContext.Provider
+      value={{
+        isMock,
         api,
         isLoading: false,
         error: null
@@ -84,7 +84,7 @@ export const useApi = () => {
 };
 
 // Custom hooks for specific API operations
-export const useArticles = (params?: { category?: string; limit?: number }) => {
+export const useArticles = (params?: { category?: string; limit?: number; offset?: number }) => {
   const { api } = useApi();
   const fetchArticles = useCallback(async () => {
     try {
@@ -110,4 +110,4 @@ export const useArticle = (id: number) => {
   }, [api, id]);
 
   return fetchArticle;
-}; 
+};

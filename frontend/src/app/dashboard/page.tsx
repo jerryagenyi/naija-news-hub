@@ -10,6 +10,7 @@ import {
 import StatsCard from '@/components/dashboard/StatsCard';
 import JobStatus from '@/components/dashboard/JobStatus';
 import ErrorSummary from '@/components/dashboard/ErrorSummary';
+import LatestArticles from '@/components/dashboard/LatestArticles';
 
 interface DashboardStats {
   totalArticles: number;
@@ -132,6 +133,9 @@ export default function DashboardPage() {
           />
         </div>
       </div>
+
+      {/* Latest Articles */}
+      <LatestArticles />
     </div>
   );
 }

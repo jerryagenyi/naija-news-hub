@@ -5,7 +5,7 @@ const api = axios.create({
 });
 
 export const realApi = {
-  getArticles: async (params?: { category?: string; limit?: number }) => {
+  getArticles: async (params?: { category?: string; limit?: number; offset?: number }) => {
     const response = await api.get('/articles', { params });
     return response.data;
   },
@@ -29,4 +29,4 @@ export const realApi = {
     const response = await api.get('/articles/search', { params: { q: query } });
     return response.data;
   }
-}; 
+};

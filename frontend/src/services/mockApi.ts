@@ -4,21 +4,28 @@ import { mockArticles, mockCategories, mockSources } from '../data/mockData';
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const mockApi = {
-  getArticles: async (params?: { category?: string; limit?: number }) => {
+  getArticles: async (params?: { category?: string; limit?: number; offset?: number }) => {
     await delay(500); // Simulate network delay
     let articles = [...mockArticles];
-    
+    let totalCount = articles.length;
+
     if (params?.category) {
       articles = articles.filter(article => article.category === params.category);
+      totalCount = articles.length;
     }
-    
-    if (params?.limit) {
+
+    // Apply offset first, then limit
+    if (params?.offset !== undefined) {
+      articles = articles.slice(params.offset);
+    }
+
+    if (params?.limit !== undefined) {
       articles = articles.slice(0, params.limit);
     }
-    
+
     return {
       data: articles,
-      total: articles.length
+      total: totalCount
     };
   },
 
@@ -43,10 +50,10 @@ export const mockApi = {
 
   searchArticles: async (query: string) => {
     await delay(600);
-    const results = mockArticles.filter(article => 
+    const results = mockArticles.filter(article =>
       article.title.toLowerCase().includes(query.toLowerCase()) ||
       article.content.toLowerCase().includes(query.toLowerCase())
     );
     return { data: results };
   }
-}; 
+};

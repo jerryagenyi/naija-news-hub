@@ -12,6 +12,7 @@ import JobStatus from '@/components/dashboard/JobStatus';
 import ErrorSummary from '@/components/dashboard/ErrorSummary';
 import LatestArticles from '@/components/dashboard/LatestArticles';
 import {useApi} from "@/contexts/ApiContext";
+import {mockArticles} from "@/data/mockData";
 
 interface DashboardStats {
   totalArticles: number;
@@ -27,19 +28,16 @@ export default function DashboardPage() {
     activeJobs: 0,
     errorCount: 0,
   });
-  const {api} = useApi();
 
   useEffect(() => {
-    const loadStats = async () => {
-      try {
-        const response = await api.getDashboardStats();
-        setStats(response.data);
-      } catch (e) {
-        console.error('dashboard stats fetch failed', e);
-      }
-    };
-    loadStats();
-  }, [api]);
+    // Simulated data for now
+    setStats({
+      totalArticles: mockArticles.length,
+      totalWebsites: 15,
+      activeJobs: 3,
+      errorCount: 2,
+    });
+  }, []);
 
   return (
     <div className="space-y-6">

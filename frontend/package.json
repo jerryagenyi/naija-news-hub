@@ -8,9 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
-    "test:watch": "jest --watch",
-    "export": "next export",
-    "deploy": "npm run build && npm run export && firebase deploy"
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@tailwindcss/forms": "^0.5.7",

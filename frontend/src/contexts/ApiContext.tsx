@@ -111,3 +111,31 @@ export const useArticle = (id: number) => {
 
   return fetchArticle;
 };
+
+export const useCategories = () => {
+  const { api } = useApi();
+  const fetchCategories = useCallback(async () => {
+    try {
+      return await api.getCategories();
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      throw error;
+    }
+  }, [api]);
+
+  return fetchCategories;
+};
+
+export const useSources = () => {
+  const { api } = useApi();
+  const fetchSources = useCallback(async () => {
+    try {
+      return await api.getSources();
+    } catch (error) {
+      console.error('Error fetching sources:', error);
+      throw error;
+    }
+  }, [api]);
+
+  return fetchSources;
+};

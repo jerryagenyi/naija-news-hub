@@ -15,6 +15,7 @@ import {
   FiSettings,
   FiHelpCircle
 } from 'react-icons/fi';
+import Image from 'next/image';
 
 interface HeaderProps {
   onToggleSidebar: () => void;
@@ -153,7 +154,13 @@ const Header = memo(({ onToggleSidebar }: HeaderProps) => {
             </button>
             <Link href="/" className="flex items-center space-x-2">
               <span className="sr-only">Naija News Hub</span>
-              <FiGlobe className="h-8 w-8 text-blue-600" />
+              <Image
+                src="https://api.dicebear.com/7.x/initials/svg?seed=NNH"
+                alt="Naija News Hub Logo"
+                width={40}
+                height={40}
+                className="rounded-full"
+              />
               <span className="hidden sm:block font-bold text-xl text-gray-900 dark:text-white">
                 Naija News Hub
               </span>

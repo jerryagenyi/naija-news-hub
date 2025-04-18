@@ -69,7 +69,13 @@ const navigation: NavItem[] = [
 
 export default function Sidebar({ isOpen }: SidebarProps) {
   const pathname = usePathname();
-  const [expandedItems, setExpandedItems] = useState<string[]>([]);
+
+  // Initialize expandedItems based on the current path
+  const initialExpandedItems = navigation
+    .filter(item => item.items && item.items.some(subItem => pathname?.startsWith(subItem.href)))
+    .map(item => item.name);
+
+  const [expandedItems, setExpandedItems] = useState<string[]>(initialExpandedItems);
 
   const toggleExpand = (name: string) => {
     setExpandedItems((prev) =>

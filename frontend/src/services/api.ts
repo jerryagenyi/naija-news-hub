@@ -28,9 +28,5 @@ export const realApi = {
   searchArticles: async (query: string) => {
     const response = await api.get('/articles/search', { params: { q: query } });
     return response.data;
-  },
-  getDashboardStats: async () => {
-    const response = await api.get('/dashboard/stats');
-    return response.data;
   }
 };

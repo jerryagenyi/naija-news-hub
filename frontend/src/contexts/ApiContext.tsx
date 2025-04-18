@@ -35,13 +35,6 @@ export interface ApiResponse<T> {
   total?: number;
 }
 
-export interface DashboardStats {
-  totalArticles: number;
-  totalWebsites: number;
-  activeJobs: number;
-  errorCount: number;
-}
-
 // Define the API interface
 export interface Api {
   getArticles: (params?: { category?: string; limit?: number; offset?: number }) => Promise<ApiResponse<Article[]>>;
@@ -49,7 +42,6 @@ export interface Api {
   getCategories: () => Promise<ApiResponse<Category[]>>;
   getSources: () => Promise<ApiResponse<Source[]>>;
   searchArticles: (query: string) => Promise<ApiResponse<Article[]>>;
-  getDashboardStats: () => Promise<ApiResponse<DashboardStats>>;
 }
 
 interface ApiContextType {

@@ -29,10 +29,11 @@ export default function DashboardPage() {
     errorCount: 0,
   });
 
+  // TODO: Fetch real data from API
   useEffect(() => {
     // Simulated data for now
     setStats({
-      totalArticles: mockArticles.length,
+      totalArticles: 1234,
       totalWebsites: 15,
       activeJobs: 3,
       errorCount: 2,

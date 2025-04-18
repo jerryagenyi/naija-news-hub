@@ -180,11 +180,11 @@ const Footer = memo(() => {
   };
 
   return (
-    <footer className="relative footer-gradient border-t border-gray-700 mt-auto">
+    <footer className="relative footer-gradient border-t border-gray-700 mt-auto z-50">
       {/* Back to top button */}
       <button
         onClick={scrollToTop}
-        className="fixed bottom-4 right-4 p-3 header-gradient text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+        className="fixed bottom-4 right-4 p-3 header-gradient text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 z-50"
         aria-label="Back to top"
       >
         <FiArrowUp className="w-5 h-5" />

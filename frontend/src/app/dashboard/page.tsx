@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import {
   FiUsers,
   FiFileText,
@@ -11,34 +10,59 @@ import StatsCard from '@/components/dashboard/StatsCard';
 import JobStatus from '@/components/dashboard/JobStatus';
 import ErrorSummary from '@/components/dashboard/ErrorSummary';
 import LatestArticles from '@/components/dashboard/LatestArticles';
-import {useApi} from "@/contexts/ApiContext";
-import {mockArticles} from "@/data/mockData";
 
-interface DashboardStats {
-  totalArticles: number;
-  totalWebsites: number;
-  activeJobs: number;
-  errorCount: number;
-}
+// Hardcoded dashboard stats
+const dashboardStats = {
+  totalArticles: 1234,
+  totalWebsites: 15,
+  activeJobs: 3,
+  errorCount: 2,
+};
+
+// Hardcoded active jobs
+const activeJobs = [
+  {
+    id: 1,
+    website: "Punch News",
+    progress: 75,
+    status: "running" as const,
+    startTime: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
+  },
+  {
+    id: 2,
+    website: "Vanguard News",
+    progress: 45,
+    status: "paused" as const,
+    startTime: new Date(Date.now() - 1000 * 60 * 15), // 15 minutes ago
+  },
+  {
+    id: 3,
+    website: "ThisDay",
+    progress: 90,
+    status: "failed" as const,
+    startTime: new Date(Date.now() - 1000 * 60 * 45), // 45 minutes ago
+  },
+];
+
+// Hardcoded errors
+const recentErrors = [
+  {
+    id: 1,
+    website: 'Punch News',
+    type: 'network',
+    message: 'Connection timeout',
+    timestamp: new Date(Date.now() - 1000 * 60 * 10), // 10 minutes ago
+  },
+  {
+    id: 2,
+    website: 'Vanguard News',
+    type: 'parsing',
+    message: 'Failed to extract article content',
+    timestamp: new Date(Date.now() - 1000 * 60 * 25), // 25 minutes ago
+  },
+];
 
 export default function DashboardPage() {
-  const [stats, setStats] = useState<DashboardStats>({
-    totalArticles: 0,
-    totalWebsites: 0,
-    activeJobs: 0,
-    errorCount: 0,
-  });
-
-  // TODO: Fetch real data from API
-  useEffect(() => {
-    // Simulated data for now
-    setStats({
-      totalArticles: 1234,
-      totalWebsites: 15,
-      activeJobs: 3,
-      errorCount: 2,
-    });
-  }, []);
 
   return (
     <div className="space-y-6">
@@ -56,25 +80,25 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard
           title="Total Articles"
-          value={stats.totalArticles.toLocaleString()}
+          value={dashboardStats.totalArticles.toLocaleString()}
           icon={FiFileText}
           trend={+12.5}
         />
         <StatsCard
           title="Active Websites"
-          value={stats.totalWebsites.toString()}
+          value={dashboardStats.totalWebsites.toString()}
           icon={FiGlobe}
           trend={0}
         />
         <StatsCard
           title="Active Jobs"
-          value={stats.activeJobs.toString()}
+          value={dashboardStats.activeJobs.toString()}
           icon={FiClock}
           trend={-2}
         />
         <StatsCard
           title="Recent Errors"
-          value={stats.errorCount.toString()}
+          value={dashboardStats.errorCount.toString()}
           icon={FiUsers}
           trend={+50}
           trendColor="red"
@@ -89,24 +113,15 @@ export default function DashboardPage() {
             Active Jobs
           </h2>
           <div className="space-y-4">
-            <JobStatus
-              website="Punch News"
-              progress={75}
-              status="running"
-              startTime={new Date(Date.now() - 1000 * 60 * 30)} // 30 minutes ago
-            />
-            <JobStatus
-              website="Vanguard News"
-              progress={45}
-              status="running"
-              startTime={new Date(Date.now() - 1000 * 60 * 15)} // 15 minutes ago
-            />
-            <JobStatus
-              website="ThisDay"
-              progress={90}
-              status="running"
-              startTime={new Date(Date.now() - 1000 * 60 * 45)} // 45 minutes ago
-            />
+            {activeJobs.map(job => (
+              <JobStatus
+                key={job.id}
+                website={job.website}
+                progress={job.progress}
+                status={job.status}
+                startTime={job.startTime}
+              />
+            ))}
           </div>
         </div>
 
@@ -115,24 +130,7 @@ export default function DashboardPage() {
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Recent Errors
           </h2>
-          <ErrorSummary
-            errors={[
-              {
-                id: 1,
-                website: 'Punch News',
-                type: 'network',
-                message: 'Connection timeout',
-                timestamp: new Date(Date.now() - 1000 * 60 * 10), // 10 minutes ago
-              },
-              {
-                id: 2,
-                website: 'Vanguard News',
-                type: 'parsing',
-                message: 'Failed to extract article content',
-                timestamp: new Date(Date.now() - 1000 * 60 * 25), // 25 minutes ago
-              },
-            ]}
-          />
+          <ErrorSummary errors={recentErrors} />
         </div>
       </div>
 

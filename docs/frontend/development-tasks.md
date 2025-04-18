@@ -7,6 +7,7 @@
 - [x] Configure ESLint and Prettier
 - [x] Set up project structure according to documentation
 - [x] Configure environment variables
+- [x] Set up mock API for development
 - [ ] Set up API client with Axios
 - [ ] Configure authentication middleware
 - [ ] Set up WebSocket client for real-time updates

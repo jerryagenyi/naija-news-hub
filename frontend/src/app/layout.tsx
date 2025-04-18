@@ -6,6 +6,7 @@ import Header from '@/components/layout/Header';
 import Sidebar from '@/components/layout/Sidebar';
 import Footer from '@/components/layout/Footer';
 import '@/styles/globals.css';
+import { ApiProvider } from '../contexts/ApiContext';
 
 export default function RootLayout({
   children,
@@ -17,25 +18,27 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-            <Header onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-            <Sidebar isOpen={isSidebarOpen} />
-            <main
-              className={`pt-16 transition-all duration-300 ${
-                isSidebarOpen ? 'md:pl-64' : ''
-              }`}
-            >
-              <div className="container mx-auto px-4 py-8">{children}</div>
-            </main>
-            <Footer />
-          </div>
-        </ThemeProvider>
+        <ApiProvider isMock={process.env.NEXT_PUBLIC_USE_MOCK_API === 'true'}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+              <Header onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+              <Sidebar isOpen={isSidebarOpen} />
+              <main
+                className={`pt-16 transition-all duration-300 ${
+                  isSidebarOpen ? 'md:pl-64' : ''
+                }`}
+              >
+                <div className="container mx-auto px-4 py-8">{children}</div>
+              </main>
+              <Footer />
+            </div>
+          </ThemeProvider>
+        </ApiProvider>
       </body>
     </html>
   );

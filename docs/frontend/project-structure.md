@@ -234,4 +234,21 @@ frontend/
    - Component documentation
    - API documentation
    - Usage examples
-   - Development guides 
+   - Development guides
+
+## Services Directory
+The `services` directory contains API-related services and utilities:
+
+- `api.ts`: Main API client implementation
+- `mockApi.ts`: Mock API service for development and testing
+  - Simulates API endpoints with realistic delays
+  - Provides mock data for articles, categories, and sources
+  - Supports filtering, pagination, and search
+
+## Data Directory
+The `data` directory contains mock data and type definitions:
+
+- `mockData.ts`: Mock data for development
+  - Articles with metadata
+  - Categories and sources
+  - Consistent data structure for testing 

@@ -65,6 +65,9 @@
 8. [ ] Create monitoring dashboard for scraping jobs
 9. [ ] Implement database compression for article content
 10. [ ] Set up scheduled tasks for automatic updates
+11. [ ] Implement vectorization of article content for LLM training
+12. [ ] Create API endpoints for LLM integration
+13. [ ] Develop data pipeline for LLM training
 
 ### Frontend Development
 1. [x] Complete Next.js project setup
@@ -97,6 +100,7 @@
 - [x] Implemented enhanced article extractor with better content extraction
 - [x] Added support for RSS feed discovery
 - [x] Improved sitemap parsing for better URL discovery
+- [x] Fixed category handling to ensure website-specific categories
 
 ### Frontend Development
 - [x] Initialized Next.js project with TypeScript and Tailwind CSS
@@ -142,4 +146,4 @@
 - Include "Last Updated" timestamps
 - Follow file relationship rules
 
-Last Updated: May 15, 2024
+Last Updated: May 16, 2024

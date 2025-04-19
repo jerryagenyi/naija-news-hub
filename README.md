@@ -1,6 +1,8 @@
 # Naija News Hub
 
-A robust, adaptable, and scalable system for aggregating news content from a diverse range of Nigerian online news sources, enabling data-driven research and analysis.
+A robust, adaptable, and scalable system for aggregating news content from a diverse range of Nigerian online news sources, enabling data-driven research and analysis through advanced web scraping and LLM integration.
+
+Naija News Hub is a news aggregation platform that collects Nigerian news articles for research and analysis. The scraped articles will be vectorized and used to train an LLM for a chat interface. This is not a public-facing news browsing platform, but rather a data collection and analysis tool for research purposes.
 
 ## Features
 

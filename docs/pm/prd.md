@@ -5,8 +5,8 @@
 ### 1.1 Project Overview
 * Project Name: NaijaNewsHub (Crawl4AI)
 * Simple Descriptor: Nigerian News Aggregation & Analysis Platform (Crawl4AI Integration)
-* Purpose: To build a robust, adaptable, and scalable system for aggregating news content from a diverse range of Nigerian online news sources, leveraging Crawl4AI for efficient web scraping, enabling data-driven research and analysis.
-* Target Audience: Researchers, analysts, journalists, and users seeking access to a consolidated source of Nigerian news.
+* Purpose: To build a robust, adaptable, and scalable system for aggregating news content from a diverse range of Nigerian online news sources, leveraging Crawl4AI for efficient web scraping, enabling data-driven research and analysis. The primary purpose of this platform is to collect news articles that will be vectorized and used to train an LLM for a chat interface, not for direct browsing by end users.
+* Target Audience: Researchers, analysts, journalists, and users seeking access to a consolidated source of Nigerian news for research and analysis purposes.
 
 ### 1.2 Scope
 The project will create a system capable of:
@@ -154,4 +154,4 @@ A separate technical design document will be created to detail the following:
 - Testing strategy and test cases
 - Deployment and infrastructure considerations
 - Detailed information about rate limiting, and anti scraping avoidance
-- Detailed information about data compression 
+- Detailed information about data compression

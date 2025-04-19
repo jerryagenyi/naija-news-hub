@@ -30,6 +30,8 @@ The solution emerged as Naija News Hub - a sophisticated web scraping and news a
 4. Provide a robust API for data access
 5. Offer advanced features like LLM integration for research
 
+It's important to note that Naija News Hub is not a public-facing news browsing platform. Rather, it's a data collection and analysis tool designed to aggregate news content that will be vectorized and used to train an LLM for a chat interface. The dashboard is for managing scraping, logging, and errors - not for browsing articles.
+
 ## The Development Journey
 
 ### Phase 1: Documentation and Planning (February 2025)

@@ -4,6 +4,7 @@
 
 * Document Purpose: To outline the technical architecture, design decisions, and implementation details for the NaijaNewsHub project.
 * Audience: Developers, system administrators, and technical stakeholders.
+* Project Purpose: The system is designed to aggregate news content for LLM training and research purposes, not as a public-facing news browsing platform. The scraped articles will be vectorized and used to train an LLM for a chat interface.
 
 **2. System Architecture**
 

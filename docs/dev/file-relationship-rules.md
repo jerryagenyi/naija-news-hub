@@ -67,16 +67,21 @@ This document defines the relationships between project files and establishes ru
 
 | Primary File | Related Files | Integrity Rule |
 |--------------|---------------|----------------|
-| `src/scraper/url_discovery.py` | `docs/dev/crawl4ai-integration.md` | When URL discovery code is updated, ensure Crawl4AI integration documentation is updated. |
-| `src/scraper/article_extractor.py` | `docs/dev/crawl4ai-integration.md` | When article extraction code is updated, ensure Crawl4AI integration documentation is updated. |
-| `src/scraper/url_discovery.py` | `docs/dev/scraping-workflow-architecture.mdc` | When URL discovery code is updated, ensure scraping workflow architecture documentation is updated. |
-| `src/scraper/article_extractor.py` | `docs/dev/scraping-workflow-architecture.mdc` | When article extraction code is updated, ensure scraping workflow architecture documentation is updated. |
-| `src/scraper/url_discovery.py` | `tests/test_scraper.py` | When URL discovery code is updated, ensure tests are updated to cover the changes. |
-| `src/scraper/article_extractor.py` | `tests/test_scraper.py` | When article extraction code is updated, ensure tests are updated to cover the changes. |
-| `src/scraper/url_discovery.py` | `docs/dev/testing-checklist.md` | When URL discovery features are added/changed, ensure testing checklist is updated. |
-| `src/scraper/article_extractor.py` | `docs/dev/testing-checklist.md` | When article extraction features are added/changed, ensure testing checklist is updated. |
-| `src/scraper/url_discovery.py` | `docs/dev/efficient-scraping-architecture.md` | When URL discovery code is updated, ensure it follows the efficient scraping principles. |
-| `src/scraper/article_extractor.py` | `docs/dev/efficient-scraping-architecture.md` | When article extraction code is updated, ensure it follows the efficient scraping principles. |
+| `src/web_scraper/url_discovery_agent.py` | `docs/dev/crawl4ai-integration.md` | When URL Discovery Agent code is updated, ensure Crawl4AI integration documentation is updated. |
+| `src/web_scraper/content_extraction_agent.py` | `docs/dev/crawl4ai-integration.md` | When Content Extraction Agent code is updated, ensure Crawl4AI integration documentation is updated. |
+| `src/web_scraper/metadata_enhancement_agent.py` | `docs/dev/crawl4ai-integration.md` | When Metadata Enhancement Agent code is updated, ensure Crawl4AI integration documentation is updated. |
+| `src/web_scraper/url_discovery_agent.py` | `docs/dev/scraping-workflow-architecture.mdc` | When URL Discovery Agent code is updated, ensure scraping workflow architecture documentation is updated. |
+| `src/web_scraper/content_extraction_agent.py` | `docs/dev/scraping-workflow-architecture.mdc` | When Content Extraction Agent code is updated, ensure scraping workflow architecture documentation is updated. |
+| `src/web_scraper/metadata_enhancement_agent.py` | `docs/dev/scraping-workflow-architecture.mdc` | When Metadata Enhancement Agent code is updated, ensure scraping workflow architecture documentation is updated. |
+| `src/web_scraper/url_discovery_agent.py` | `tests/test_scraper.py` | When URL Discovery Agent code is updated, ensure tests are updated to cover the changes. |
+| `src/web_scraper/content_extraction_agent.py` | `tests/test_scraper.py` | When Content Extraction Agent code is updated, ensure tests are updated to cover the changes. |
+| `src/web_scraper/metadata_enhancement_agent.py` | `tests/test_scraper.py` | When Metadata Enhancement Agent code is updated, ensure tests are updated to cover the changes. |
+| `src/web_scraper/url_discovery_agent.py` | `docs/dev/testing-checklist.md` | When URL Discovery Agent features are added/changed, ensure testing checklist is updated. |
+| `src/web_scraper/content_extraction_agent.py` | `docs/dev/testing-checklist.md` | When Content Extraction Agent features are added/changed, ensure testing checklist is updated. |
+| `src/web_scraper/metadata_enhancement_agent.py` | `docs/dev/testing-checklist.md` | When Metadata Enhancement Agent features are added/changed, ensure testing checklist is updated. |
+| `src/web_scraper/url_discovery_agent.py` | `docs/dev/efficient-scraping-architecture.md` | When URL Discovery Agent code is updated, ensure it follows the efficient scraping principles. |
+| `src/web_scraper/content_extraction_agent.py` | `docs/dev/efficient-scraping-architecture.md` | When Content Extraction Agent code is updated, ensure it follows the efficient scraping principles. |
+| `src/web_scraper/metadata_enhancement_agent.py` | `docs/dev/efficient-scraping-architecture.md` | When Metadata Enhancement Agent code is updated, ensure it follows the efficient scraping principles. |
 | `src/scheduler/job_scheduler.py` | `docs/dev/efficient-scraping-architecture.md` | When job scheduler is updated, ensure it follows the batch processing principles. |
 | `src/utils/compression.py` | `docs/dev/efficient-scraping-architecture.md` | When compression utilities are updated, ensure they align with the content compression strategy. |
 | `src/services/archive_service.py` | `docs/dev/efficient-scraping-architecture.md` | When archive service is updated, ensure it follows the data retention policies. |
@@ -141,12 +146,20 @@ This document defines the relationships between project files and establishes ru
 5. **Crawl4AI Integration**: When updating Crawl4AI integration:
    - Update `docs/dev/crawl4ai-integration.md` to reflect implementation changes
    - Update `docs/dev/scraping-workflow-architecture.mdc` to reflect workflow changes
-   - Update `src/scraper/url_discovery.py` and `src/scraper/article_extractor.py` to maintain consistency
+   - Update agent implementation files to maintain consistency
    - Update configuration in `config/config_template.py` if needed
    - Update tests to cover the changes
    - Update development tasks to reflect completed tasks
 
-6. **Database Integration**: When updating database integration:
+6. **AI Agent Integration**: When updating AI agent integration:
+   - Update `docs/dev/scraping-workflow-architecture.mdc` to reflect agent workflow changes
+   - Update `docs/dev/crawl4ai-with-agent-transcript.md` to reflect agent implementation details
+   - Update agent implementation files in `src/web_scraper/` to maintain consistency
+   - Update configuration in `config/config_template.py` to include agent settings
+   - Update tests to cover agent functionality
+   - Update development tasks to reflect completed tasks
+
+7. **Database Integration**: When updating database integration:
    - Update `docs/dev/database-integration.md` to reflect implementation changes
    - Update repository classes in `src/database/repositories/` to maintain consistency
    - Update service classes in `src/services/` to reflect the changes
@@ -169,9 +182,10 @@ When modifying any file, ask yourself:
 3. Does this change affect the API?
 4. Does this change affect the scraper functionality?
 5. Does this change affect Crawl4AI integration?
-6. Does this change affect configuration requirements?
-7. Does this change require updates to tests?
-8. Does this change require updates to documentation?
+6. Does this change affect AI agent integration?
+7. Does this change affect configuration requirements?
+8. Does this change require updates to tests?
+9. Does this change require updates to documentation?
 
 For each "yes" answer, identify the related files using this document and update them accordingly.
 

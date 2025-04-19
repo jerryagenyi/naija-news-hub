@@ -36,28 +36,60 @@
   * **Asynchronous tasks:** Celery, or asyncio.
   * **Caching:** Redis.
 
-**3. Crawl4AI Integration Module**
+**3. AI Agent Integration Module**
+
+* **Agent Architecture:**
+  * Implement a multi-agent system with specialized roles:
+    * URL Discovery Agent (GPT-4o-mini)
+    * Content Extraction Agent (GPT-4o)
+    * Metadata Enhancement Agent (GPT-4o-mini)
+  * Configure agent instructions and tools using OpenAI Agents SDK
+  * Implement agent communication and workflow orchestration
+  * Integrate with Crawl4AI for web scraping capabilities
+
+* **URL Discovery Agent:**
+  * Analyze website structure to identify navigation patterns
+  * Discover category URLs from base website URL
+  * Discover article URLs from category pages
+  * Store discovered URLs in the database
+  * Track progress for resumability
+
+* **Content Extraction Agent:**
+  * Extract structured content from article URLs
+  * Clean content by removing ads, navigation, and social media elements
+  * Extract metadata (title, author, date, categories, tags)
+  * Format content according to JSON schema
+  * Store extracted content in the database
+
+* **Metadata Enhancement Agent:**
+  * Analyze extracted content for additional metadata
+  * Enhance categorization and tagging
+  * Generate summaries and keywords
+  * Prepare content for vectorization
+  * Update article metadata in the database
+
+**4. Crawl4AI Integration Module**
 
 * **URL Discovery:**
-  * Utilize Crawl4AI's asynchronous capabilities for efficient URL discovery.
-  * Configure Crawl4AI for sitemap parsing and dynamic URL generation.
-  * Utilize Crawl4Ai's ability to handle javascript rendered pages.
-  * Implement intelligent retry mechanisms with exponential backoff.
-  * Configure proxy rotation and rate limiting.
+  * Utilize Crawl4AI's asynchronous capabilities for efficient URL discovery
+  * Configure Crawl4AI for sitemap parsing and dynamic URL generation
+  * Utilize Crawl4AI's ability to handle JavaScript rendered pages
+  * Implement intelligent retry mechanisms with exponential backoff
+  * Configure proxy rotation and rate limiting
 * **Article Extraction:**
-  * Implement Crawl4AI's CSS and LLM-based extraction strategies.
-  * Configure Crawl4AI for optimal data extraction and normalization.
-  * Utilize Crawl4AI's schema generation.
-  * Configure Crawl4AI's proxy and anti scraping avoidance features.
-  * Implement checkpointing for long-running extraction tasks.
+  * Implement Crawl4AI's LLM-based extraction strategies
+  * Configure Crawl4AI for optimal data extraction and normalization
+  * Utilize Crawl4AI's schema generation
+  * Configure Crawl4AI's proxy and anti-scraping avoidance features
+  * Implement checkpointing for long-running extraction tasks
 * **Data Processing:**
-  * Utilize Crawl4AI's markdown generation.
-  * Data cleaning and normalization using regular expressions and string manipulation.
-  * Data compression using gzip.
-  * Implement a process that checks the last published date of the most recent article, and compares that to the current date, to discover new articles.
-  * Implement data validation and sanitization.
+  * Utilize Crawl4AI's markdown generation
+  * Data cleaning and normalization using LLM capabilities
+  * Data compression using gzip
+  * Implement a process that checks the last published date of the most recent article
+  * Implement data validation and sanitization
 
-**4. Data Storage Module**
+**5. Data Storage Module**
 
 * **Database Schema (PostgreSQL):**
   * **websites table**: id (SERIAL PRIMARY KEY), website_name (VARCHAR NOT NULL), website_url (VARCHAR NOT NULL UNIQUE), sitemap_index_url (VARCHAR), first_archive_url (VARCHAR), last_archive_url (VARCHAR), created_at (TIMESTAMP DEFAULT NOW()), updated_at (TIMESTAMP)
@@ -72,7 +104,7 @@
   * Indexing strategy for efficient research queries.
   * Metadata storage for enhanced search capabilities.
 
-**5. LLM Integration Module**
+**6. LLM Integration Module**
 
 * **LLM API Interaction:**
   * Communication with the LLM API for natural language queries.
@@ -84,7 +116,7 @@
   * Metadata embedding for enhanced search.
   * Batch processing for efficiency.
 
-**6. API Module**
+**7. API Module**
 
 * **API Endpoints:**
   * Endpoints for accessing scraped articles.
@@ -95,7 +127,7 @@
   * API key-based authentication.
   * Role-based access control.
 
-**7. Frontend Module**
+**8. Frontend Module**
 
 * **UI Components:**
   * Multi-step form for URL input and configuration.
@@ -110,7 +142,7 @@
   * Next.js for server-side rendering and performance.
   * Real-time updates using WebSocket.
 
-**8. Automation Module**
+**9. Automation Module**
 
 * **n8n Workflows:**
   * Automated URL discovery and content updates.
@@ -124,26 +156,35 @@
   * Comprehensive error logging and reporting.
   * Performance metrics collection.
 
-**9. Data Flow**
+**10. Data Flow**
 
-* User input via the frontend triggers URL discovery and scraping using Crawl4AI.
-* Scraped data is processed and stored in the database and vector database.
-* User queries via the frontend are sent to the LLM API.
-* LLM responses are displayed in the frontend.
-* Research queries are processed through the vector database.
-* Automated workflows maintain data freshness and resolve errors.
+* User input via the frontend triggers the AI agent workflow:
+  * URL Discovery Agent analyzes the website and discovers category URLs
+  * URL Discovery Agent processes each category to discover article URLs
+  * Content Extraction Agent processes each article URL to extract content
+  * Metadata Enhancement Agent enriches the extracted content
+* Scraped and enhanced data is stored in the database and vector database
+* User queries via the frontend are sent to the LLM API
+* LLM responses are displayed in the frontend
+* Research queries are processed through the vector database
+* Automated workflows maintain data freshness and resolve errors
 
-**10. Testing**
+**11. Testing**
 
-* Unit tests for individual modules.
-* Integration tests for system components.
-* End-to-end tests for user workflows.
-* Performance testing to ensure scalability.
-* Testing for anti scraping avoidance.
-* Error handling and recovery testing.
-* Checkpoint and resume testing.
+* Unit tests for individual modules
+* Integration tests for system components
+* End-to-end tests for user workflows
+* AI agent testing:
+  * Mock testing of agent tools and functions
+  * Integration testing of agent workflows
+  * Testing agent resilience and error handling
+  * Testing agent output validation
+* Performance testing to ensure scalability
+* Testing for anti-scraping avoidance
+* Error handling and recovery testing
+* Checkpoint and resume testing
 
-**11. Deployment**
+**12. Deployment**
 
 * Cloud-based deployment (AWS, Google Cloud, or Azure).
 * Containerization using Docker.
@@ -151,7 +192,7 @@
 * Automated deployment pipelines.
 * Monitoring and alerting setup.
 
-**12. Security**
+**13. Security**
 
 * Secure API endpoints.
 * Data encryption at rest and in transit.
@@ -159,7 +200,7 @@
 * Rate limiting and DDoS protection.
 * Secure storage of API keys and credentials.
 
-**13. Maintenance**
+**14. Maintenance**
 
 * Automated monitoring and alerting.
 * Regular backups and disaster recovery.

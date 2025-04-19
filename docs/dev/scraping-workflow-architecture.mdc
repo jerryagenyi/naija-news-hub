@@ -6,7 +6,7 @@ alwaysApply: true
 
 # Naija News Hub - Scraping Workflow Architecture
 
-**Last Updated:** May 16, 2024
+**Last Updated:** April 19, 2025
 
 ## Overview
 
@@ -14,12 +14,14 @@ This document provides a comprehensive overview of the scraping workflow archite
 
 Naija News Hub is a news aggregation platform that collects Nigerian news articles for research and analysis. The scraped articles will be vectorized and used to train an LLM for a chat interface. This document focuses on the technical implementation of the scraping pipeline.
 
-## Workflow Diagram
+## Workflow Diagrams
+
+### Basic Scraping Workflow
 
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
 │                 │     │                 │     │                 │     │                 │
-│  URL Discovery  │────▶│ Article Scraping│────▶│  Data Processing│────▶│  Data Storage   │
+│  URL Discovery  │────▶│ Article Scraping│────▶│ Data Processing │────▶│  Data Storage   │
 │                 │     │                 │     │                 │     │                 │
 └─────────────────┘     └─────────────────┘     └─────────────────┘     └─────────────────┘
         │                       │                       │                       │
@@ -32,53 +34,267 @@ Naija News Hub is a news aggregation platform that collects Nigerian news articl
 └─────────────────┘     └─────────────────┘     └─────────────────┘     └─────────────────┘
 ```
 
+### Agent-Enhanced Workflow
+
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│                 │     │                 │     │                 │     │                 │     │                 │
+│  URL Discovery  │────▶│ Category        │────▶│ Article URL     │────▶│ Article Content │────▶│  Data Storage   │
+│  Agent          │     │ Discovery       │     │ Discovery       │     │ Extraction      │     │                 │
+└─────────────────┘     └─────────────────┘     └─────────────────┘     └─────────────────┘     └─────────────────┘
+        │                       │                       │                       │                       │
+        ▼                       ▼                       ▼                       ▼                       ▼
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│ - Base URL      │     │ - Category      │     │ - Article URLs  │     │ - Content       │     │ - PostgreSQL    │
+│   Processing    │     │   Extraction    │     │   from Category │     │   Extraction    │     │ - JSON Format   │
+│ - Website       │     │ - Category URL  │     │ - URL Storage   │     │ - Metadata      │     │ - Relationships │
+│   Analysis      │     │   Storage       │     │   in Sitemaps   │     │   Enhancement   │     │ - Indexing      │
+└─────────────────┘     └─────────────────┘     └─────────────────┘     └─────────────────┘     └─────────────────┘
+```
+
+## AI Agent Integration
+
+The Naija News Hub scraping workflow leverages AI agents powered by large language models (LLMs) to enhance the scraping process. This approach provides greater adaptability to different website structures and improves content extraction quality.
+
+### Multi-Site Concurrent Scraping
+
+Our architecture supports concurrent scraping of multiple websites through Crawl4AI's `MemoryAdaptiveDispatcher` and efficient agent orchestration:
+
+1. **Resource-Aware Concurrency**: The `MemoryAdaptiveDispatcher` automatically adjusts concurrency based on system resources, preventing memory overload.
+
+2. **Website-Specific Agent Instances**: Each website gets its own set of agent instances to maintain context and state.
+
+3. **Domain-Based Rate Limiting**: Requests to the same domain are rate-limited to avoid triggering anti-scraping measures.
+
+4. **Progress Tracking**: Each website's scraping progress is tracked independently, allowing for resumption if interrupted.
+
+5. **Prioritization**: Websites can be prioritized based on importance or update frequency.
+
+This approach allows us to efficiently scrape multiple Nigerian news websites simultaneously while respecting system resources and website limitations.
+
+### Agent Architecture
+
+We implement a multi-agent system with specialized roles:
+
+1. **URL Discovery Agent** (GPT-4o-mini)
+   - Analyzes website structure to identify navigation patterns
+   - Determines the most effective discovery method for each website
+   - Adapts to changing website structures without code modifications
+
+2. **Content Extraction Agent** (GPT-4o)
+   - Extracts structured content from article pages
+   - Cleans content by removing ads, navigation, social media elements
+   - Enhances metadata through semantic understanding
+   - Formats content according to our JSON schema
+
+3. **Metadata Enhancement Agent** (GPT-4o-mini)
+   - Analyzes extracted content for additional metadata
+   - Improves categorization and tagging
+   - Prepares content for vectorization
+
+### Agent Workflow
+
+The agents operate in a sequential pipeline:
+
+1. **Category Discovery First**: The URL Discovery Agent identifies all categories and their URLs for a website
+2. **Article URL Discovery Second**: Using the category URLs, the agent discovers all article URLs and stores them in the sitemaps table
+3. **Article Extraction Last**: The Content Extraction Agent processes the discovered article URLs, extracting content and metadata
+
+This approach ensures comprehensive coverage while maintaining efficiency and tracking progress throughout the process.
+
 ## 1. URL Discovery Process
 
-The URL discovery process is the first step in the scraping workflow. It identifies article URLs from Nigerian news websites for later processing.
+The URL discovery process is the first step in the scraping workflow. It identifies article URLs from Nigerian news websites for later processing. This process is now enhanced with AI agent capabilities.
 
 ### Implementation
 
-**File:** `src/web_scraper/url_discovery.py`
+**File:** `src/web_scraper/url_discovery_agent.py`
 
 **Key Components:**
 
-1. **Input:** Base URL of a Nigerian news website
-2. **Discovery Methods:**
-   - **Sitemap Parsing:** Locates and parses sitemap.xml files
-   - **RSS Feed Discovery:** Identifies and processes RSS feeds
-   - **Category Page Crawling:** Extracts article links from category pages
-   - **Homepage Link Extraction:** Extracts article links from the homepage
+1. **URL Discovery Agent:** AI-powered agent for discovering categories and articles
+2. **Category Discovery:** Identifies all category pages on a website
+3. **Article URL Discovery:** Discovers article URLs from category pages
+4. **Sitemaps Storage:** Stores discovered article URLs in the sitemaps table
 
 ### Technical Implementation
 
 ```python
-# Simplified implementation
-async def discover_urls(base_url: str, config: dict) -> List[str]:
-    """Discover article URLs from a website."""
-    urls = []
+from agents import Agent, function_tool, Runner
+from crawl4ai import AsyncWebCrawler, CrawlerRunConfig
+from crawl4ai.deep_crawling import BestFirstCrawlingStrategy, KeywordRelevanceScorer
+from typing import List, Dict
 
-    # Try sitemap discovery
-    sitemap_urls = await discover_urls_from_sitemap(f"{base_url}/sitemap.xml", config)
-    urls.extend(sitemap_urls)
+@function_tool
+async def discover_categories(base_url: str) -> List[Dict]:
+    """Discover all category URLs from a website."""
+    config = CrawlerRunConfig(
+        deep_crawl_strategy=BestFirstCrawlingStrategy(
+            max_depth=1,
+            include_external=False,
+            url_scorer=KeywordRelevanceScorer(
+                keywords=["category", "section", "topic", "news"],
+                weight=0.7
+            )
+        ),
+        stream=True
+    )
 
-    # Try RSS discovery
-    rss_urls = await discover_urls_from_rss(f"{base_url}/feed", config)
-    urls.extend(rss_urls)
+    categories = []
+    async with AsyncWebCrawler() as crawler:
+        async for result in await crawler.arun(base_url, config=config):
+            # Use LLM to determine if this is a category page
+            if is_category_page(result):
+                categories.append({
+                    "name": extract_category_name(result),
+                    "url": result.url
+                })
 
-    # Try category page discovery
-    category_urls = await discover_category_urls(base_url, config)
+    # Store categories in database
+    await store_categories(categories, base_url)
+
+    return categories
+
+@function_tool
+async def discover_article_urls(category_url: str) -> List[str]:
+    """Discover article URLs from a category page and store in sitemaps table."""
+    config = CrawlerRunConfig(
+        deep_crawl_strategy=BestFirstCrawlingStrategy(
+            max_depth=2,
+            include_external=False,
+            url_scorer=KeywordRelevanceScorer(
+                keywords=["article", "story", "news", "post"],
+                weight=0.8
+            )
+        ),
+        stream=True
+    )
+
+    article_urls = []
+    async with AsyncWebCrawler() as crawler:
+        async for result in await crawler.arun(category_url, config=config):
+            # Use LLM to determine if this is an article page
+            if is_article_page(result):
+                article_urls.append(result.url)
+
+    # Store article URLs in sitemaps table
+    await store_article_urls(article_urls, category_url)
+
+    return article_urls
+```
+
+### Agent Creation and Execution
+
+We create and execute the URL Discovery Agent using the OpenAI Agents SDK:
+
+```python
+# Create the URL Discovery Agent
+url_discovery_agent = Agent(
+    name="URL Discovery Agent",
+    instructions="""You are an expert at discovering URLs from Nigerian news websites.
+    First, discover all category URLs from the base URL.
+    Then, for each category, discover all article URLs.
+    Store all discovered URLs in the database.
+    Track your progress so you can resume if interrupted.""",
+    model="gpt-4o-mini",
+    tools=[discover_categories, discover_article_urls]
+)
+
+async def run_url_discovery(base_url: str):
+    """Run the URL discovery agent on a website."""
+    result = await Runner.run(url_discovery_agent, f"Discover all categories and articles from {base_url}")
+    return result
+```
+
+### Multi-Site Concurrent Scraping Implementation
+
+We implement concurrent scraping of multiple websites using Crawl4AI's `MemoryAdaptiveDispatcher` and agent orchestration:
+
+```python
+from crawl4ai import AsyncWebCrawler, CrawlerRunConfig, MemoryAdaptiveDispatcher
+from crawl4ai.async_dispatcher import RateLimiter, CrawlerMonitor, DisplayMode
+from typing import List, Dict
+
+async def scrape_multiple_websites(website_urls: List[str]):
+    """Scrape multiple websites concurrently."""
+    # Configure memory-adaptive dispatcher for resource-aware concurrency
+    dispatcher = MemoryAdaptiveDispatcher(
+        memory_threshold_percent=70.0,  # Pause if memory exceeds 70%
+        check_interval=1.0,            # Check memory every second
+        max_session_permit=5,          # Maximum concurrent websites
+        rate_limiter=RateLimiter(
+            base_delay=(1.0, 2.0),     # Random delay between requests
+            max_delay=30.0,            # Maximum backoff delay
+            max_retries=3              # Maximum retry attempts
+        ),
+        monitor=CrawlerMonitor(
+            max_visible_rows=15,
+            display_mode=DisplayMode.DETAILED
+        )
+    )
+
+    # Create website-specific agent instances
+    website_agents = {}
+    for url in website_urls:
+        website_id = get_website_id(url)  # Get or create website ID in database
+        website_agents[url] = create_agents_for_website(website_id)
+
+    # Process websites concurrently
+    async with AsyncWebCrawler() as crawler:
+        # Use streaming mode to process results as they become available
+        config = CrawlerRunConfig(stream=True)
+
+        async for result in await crawler.arun_many(
+            urls=website_urls,
+            config=config,
+            dispatcher=dispatcher
+        ):
+            if result.success:
+                # Get the website-specific agents
+                agents = website_agents[result.url]
+
+                # Process the website with its dedicated agents
+                await process_website_with_agents(result.url, agents)
+            else:
+                print(f"Failed to process {result.url}: {result.error_message}")
+                # Log the failure and schedule retry if needed
+                await log_scraping_failure(result.url, result.error_message)
+
+async def process_website_with_agents(website_url: str, agents: Dict):
+    """Process a website using its dedicated agents."""
+    # Run URL Discovery Agent
+    discovery_result = await Runner.run(
+        agents["url_discovery"],
+        f"Discover all categories and articles from {website_url}"
+    )
+
+    # Get discovered category URLs
+    category_urls = await get_discovered_categories(website_url)
+
+    # Process each category to discover article URLs
     for category_url in category_urls:
-        category_article_urls = await discover_urls_from_category(category_url, config)
-        urls.extend(category_article_urls)
+        article_urls_result = await Runner.run(
+            agents["url_discovery"],
+            f"Discover all article URLs from category {category_url}"
+        )
 
-    # Try homepage discovery
-    homepage_urls = await discover_urls_from_homepage(base_url, config)
-    urls.extend(homepage_urls)
+        # Get discovered article URLs
+        article_urls = await get_discovered_article_urls(category_url)
 
-    # Filter and validate URLs
-    valid_urls = [url for url in urls if is_valid_article_url(url, base_url)]
+        # Process each article URL to extract content
+        for article_url in article_urls:
+            content_result = await Runner.run(
+                agents["content_extraction"],
+                f"Extract content from {article_url}"
+            )
 
-    return valid_urls
+            # Enhance metadata for the extracted article
+            article_id = await get_article_id_from_url(article_url)
+            if article_id:
+                metadata_result = await Runner.run(
+                    agents["metadata_enhancement"],
+                    f"Enhance metadata for article {article_id}"
+                )
 ```
 
 ### Crawl4AI Integration
@@ -88,15 +304,8 @@ We use Crawl4AI's `AsyncWebCrawler` for URL discovery, which provides:
 1. **JavaScript Rendering:** Handles dynamic content using Playwright
 2. **Asynchronous Processing:** Improves performance with async/await
 3. **Configurable Crawling:** Customizable depth, rate limiting, etc.
-
-```python
-async with AsyncWebCrawler(config=browser_config) as crawler:
-    result = await crawler.arun(
-        url=sitemap_url,
-        config=run_config
-    )
-    # Process the result to extract URLs
-```
+4. **Streaming Results:** Process results as they become available
+5. **Best-First Crawling:** Prioritize high-value pages using relevance scoring
 
 ### URL Validation and Storage
 
@@ -111,76 +320,132 @@ async with AsyncWebCrawler(config=browser_config) as crawler:
 
 ## 2. Article Extraction Process
 
-The article extraction process retrieves and processes content from discovered URLs.
+The article extraction process retrieves and processes content from discovered URLs. This process is now enhanced with AI agent capabilities.
 
 ### Implementation
 
-**File:** `src/web_scraper/article_extractor.py`
+**File:** `src/web_scraper/content_extraction_agent.py`
 
 **Key Components:**
 
-1. **Content Fetching:** Retrieves HTML content from article URLs
-2. **Content Extraction:** Extracts article components using various strategies
-3. **Metadata Extraction:** Extracts and processes article metadata
+1. **Content Extraction Agent:** AI-powered agent for extracting article content
+2. **LLM Extraction Strategy:** Uses language models to extract structured content
+3. **Content Cleaning:** Removes ads, navigation, and other non-article content
+4. **Metadata Enhancement:** Enriches article metadata through semantic understanding
 
 ### Technical Implementation
 
 ```python
-# Simplified implementation
-async def extract_article(url: str, website_id: int, config: dict) -> Dict[str, Any]:
-    """Extract article content and metadata from a URL."""
-    async with AsyncWebCrawler(config=browser_config) as crawler:
-        result = await crawler.arun(
-            url=url,
-            config=run_config
-        )
+from agents import Agent, function_tool, Runner
+from crawl4ai import AsyncWebCrawler, CrawlerRunConfig
+from crawl4ai.extraction_strategy import LLMExtractionStrategy
+from pydantic import BaseModel
+from typing import List, Dict, Optional, Any
 
-        # Extract article components
-        title = extract_title(result)
-        author = extract_author(result)
-        published_at = extract_published_date(result)
-        content_html = extract_content(result)
-        content_markdown = convert_to_markdown(content_html)
-        categories = extract_categories(result)
-        image_url = extract_main_image(result)
+class ArticleSchema(BaseModel):
+    """Schema for article extraction."""
+    title: str
+    author: Optional[str] = None
+    published_date: Optional[str] = None
+    content: str
+    categories: List[Dict[str, str]] = []
+    tags: List[str] = []
+    image_url: Optional[str] = None
 
-        # Calculate metadata
-        word_count = calculate_word_count(content_markdown)
+@function_tool
+async def extract_article_content(url: str, website_id: int) -> Dict[str, Any]:
+    """Extract structured content from an article URL using LLM extraction."""
+    # Configure LLM extraction strategy
+    extraction_strategy = LLMExtractionStrategy(
+        model="gpt-4o",
+        schema=ArticleSchema.schema(),
+        instructions="Extract the article content, removing ads, navigation, and social media elements."
+    )
+
+    config = CrawlerRunConfig(
+        extraction_strategy=extraction_strategy,
+        word_count_threshold=10,
+        excluded_tags=['nav', 'footer', 'aside', 'form'],
+        remove_overlay_elements=True
+    )
+
+    async with AsyncWebCrawler() as crawler:
+        result = await crawler.arun(url, config=config)
+
+        if not result.success:
+            return {"error": result.error_message}
+
+        # Extract structured content using LLM
+        article_data = result.extracted_content
+
+        # Calculate additional metadata
+        word_count = calculate_word_count(article_data["content"])
         reading_time = calculate_reading_time(word_count)
 
-        # Create article data
-        article_data = {
-            "title": title,
+        # Enhance the article data
+        enhanced_data = {
+            "title": article_data["title"],
             "url": url,
-            "content": content_markdown,
-            "content_html": content_html,
-            "content_markdown": content_markdown,
-            "author": author,
-            "published_at": published_at,
-            "image_url": image_url,
+            "content": article_data["content"],
+            "author": article_data.get("author"),
+            "published_date": article_data.get("published_date"),
+            "image_url": article_data.get("image_url"),
             "website_id": website_id,
             "article_metadata": {
                 "word_count": word_count,
                 "reading_time": reading_time,
-                "categories": categories,
-                "extraction_method": "strategy"
+                "categories": article_data.get("categories", []),
+                "tags": article_data.get("tags", []),
+                "extraction_method": "llm"
             }
         }
 
-        return article_data
+        # Store the article in the database
+        await store_article(enhanced_data)
+
+        return enhanced_data
+```
+
+### Agent Creation and Execution
+
+We create and execute the Content Extraction Agent using the OpenAI Agents SDK:
+
+```python
+# Create the Content Extraction Agent
+content_extraction_agent = Agent(
+    name="Content Extraction Agent",
+    instructions="""You are an expert at extracting content from Nigerian news articles.
+    Extract the title, author, publication date, content, categories, and tags.
+    Clean the content by removing ads, navigation, social media buttons, etc.
+    Store the extracted content in the database.""",
+    model="gpt-4o",
+    tools=[extract_article_content]
+)
+
+async def run_content_extraction(article_urls: List[str], website_id: int):
+    """Run the content extraction agent on a list of article URLs."""
+    results = []
+    for url in article_urls:
+        result = await Runner.run(
+            content_extraction_agent,
+            f"Extract content from {url} for website ID {website_id}"
+        )
+        results.append(result)
+    return results
 ```
 
 ### Extraction Strategies
 
 We implement multiple extraction strategies to handle different website structures:
 
-1. **CSS-based Extraction:** Uses CSS selectors to extract content
-   - Implemented with `JsonCssExtractionStrategy`
-   - Efficient for known website structures
-
-2. **LLM-based Extraction:** Uses language models for content extraction
+1. **LLM-based Extraction:** Primary strategy using language models for content extraction
    - Implemented with `LLMExtractionStrategy`
    - Robust for unknown or complex website structures
+   - Adapts to different website layouts without manual configuration
+
+2. **CSS-based Extraction:** Fallback strategy for known website structures
+   - Implemented with `JsonCssExtractionStrategy`
+   - More efficient but requires manual configuration
 
 3. **Fallback Mechanisms:** Implements fallbacks when primary strategies fail
    - Generic extraction based on common patterns
@@ -194,54 +459,114 @@ We implement multiple extraction strategies to handle different website structur
 4. **Date Normalization:** Standardizes date formats
 5. **Content Boundary Detection:** Identifies the start and end of the actual article content
 
-## 3. Category Handling
+## 3. Metadata Enhancement
 
-Category handling is a critical part of the workflow, ensuring articles are properly categorized for research and analysis.
+Metadata enhancement is a critical part of the workflow, ensuring articles are properly categorized and enriched for research and analysis. This process is now enhanced with AI agent capabilities.
 
 ### Implementation
 
-**File:** `src/web_scraper/category_extractor.py`
+**File:** `src/web_scraper/metadata_enhancement_agent.py`
 
 **Key Components:**
 
-1. **Category Extraction:** Extracts categories from article pages
-2. **Category Preservation:** Maintains original category names and URLs as found on the website
-3. **Category-Website Association:** Links categories to specific websites
+1. **Metadata Enhancement Agent:** AI-powered agent for enriching article metadata
+2. **Category Analysis:** Analyzes and enhances article categories
+3. **Tag Generation:** Generates relevant tags based on article content
+4. **Vectorization Preparation:** Prepares content for vectorization
 
 ### Technical Implementation
 
 ```python
-# Simplified implementation
-def categorize_article(article_data: Dict[str, Any], base_url: str) -> Dict[str, Any]:
-    """Categorize an article based on its content and metadata."""
-    # Try to extract categories from metadata
-    categories = article_data.get("article_metadata", {}).get("categories", [])
-    category_urls = article_data.get("article_metadata", {}).get("category_urls", [])
+from agents import Agent, function_tool, Runner
+from pydantic import BaseModel
+from typing import List, Dict, Optional, Any
 
-    # If no categories found, try to extract from content
-    if not categories and article_data.get("content_html"):
-        # Extract categories and their URLs directly from HTML
-        category_data = extract_categories_from_html(article_data["content_html"])
-        if category_data:
-            categories = [item["name"] for item in category_data]
-            category_urls = [item["url"] for item in category_data]
+class EnhancedMetadata(BaseModel):
+    """Schema for enhanced article metadata."""
+    categories: List[Dict[str, str]]
+    tags: List[str]
+    summary: str
+    keywords: List[str]
+    sentiment: Optional[str] = None
+    topics: List[str] = []
+    vectorization_ready: bool = True
 
-    # If still no categories, try to find them in the article URL structure
-    if not categories:
-        url_categories = extract_categories_from_url(article_data["url"], base_url)
-        if url_categories:
-            categories.extend(url_categories)
+@function_tool
+async def enhance_article_metadata(article_id: int) -> Dict[str, Any]:
+    """Enhance article metadata for better categorization and vectorization."""
+    # Retrieve article from database
+    article = await get_article_by_id(article_id)
 
-    # Preserve original category names and URLs as found on the website
-    # Do not normalize or modify the category names
+    if not article:
+        return {"error": "Article not found"}
 
-    # Update article metadata
-    metadata = article_data.get("article_metadata", {})
-    metadata["categories"] = categories
-    metadata["category_urls"] = category_urls
-    article_data["article_metadata"] = metadata
+    # Extract existing metadata
+    existing_metadata = article.get("article_metadata", {})
 
-    return article_data
+    # Analyze content to generate enhanced metadata
+    content = article.get("content", "")
+    title = article.get("title", "")
+
+    # Generate tags if not present or insufficient
+    tags = existing_metadata.get("tags", [])
+    if len(tags) < 5:
+        tags = generate_tags(content, title)
+
+    # Enhance categories with additional context
+    categories = existing_metadata.get("categories", [])
+    enhanced_categories = enhance_categories(categories, content)
+
+    # Generate summary for vectorization
+    summary = generate_summary(content)
+
+    # Extract keywords for improved search
+    keywords = extract_keywords(content, title)
+
+    # Identify main topics
+    topics = identify_topics(content)
+
+    # Create enhanced metadata
+    enhanced_metadata = {
+        "categories": enhanced_categories,
+        "tags": tags,
+        "summary": summary,
+        "keywords": keywords,
+        "topics": topics,
+        "vectorization_ready": True
+    }
+
+    # Update article in database
+    await update_article_metadata(article_id, enhanced_metadata)
+
+    return enhanced_metadata
+```
+
+### Agent Creation and Execution
+
+We create and execute the Metadata Enhancement Agent using the OpenAI Agents SDK:
+
+```python
+# Create the Metadata Enhancement Agent
+metadata_enhancement_agent = Agent(
+    name="Metadata Enhancement Agent",
+    instructions="""You are an expert at enhancing metadata for Nigerian news articles.
+    Analyze the article content to extract additional metadata.
+    Enhance categorization and tagging.
+    Prepare the content for vectorization.""",
+    model="gpt-4o-mini",
+    tools=[enhance_article_metadata]
+)
+
+async def run_metadata_enhancement(article_ids: List[int]):
+    """Run the metadata enhancement agent on a list of article IDs."""
+    results = []
+    for article_id in article_ids:
+        result = await Runner.run(
+            metadata_enhancement_agent,
+            f"Enhance metadata for article {article_id}"
+        )
+        results.append(result)
+    return results
 ```
 
 ### Website-Specific Categories
@@ -251,8 +576,9 @@ Categories are website-specific, meaning each website has its own set of categor
 1. **Database Schema:** Categories table includes `website_id` foreign key
 2. **Category Creation:** New categories are created with the website's ID
 3. **Category Lookup:** Categories are looked up by name and website ID
+4. **Category Enhancement:** The Metadata Enhancement Agent enriches categories with additional context
 
-This approach ensures that categories from different websites don't conflict, even if they have the same name.
+This approach ensures that categories from different websites don't conflict, even if they have the same name, while still providing rich metadata for vectorization.
 
 ## 4. Data Storage
 
@@ -412,12 +738,18 @@ The architecture prioritizes data quality, efficiency, and resilience, ensuring 
 
 ## Related Files
 
-- `src/web_scraper/url_discovery.py`: URL discovery implementation
-- `src/web_scraper/article_extractor.py`: Article extraction implementation
-- `src/web_scraper/category_extractor.py`: Category extraction implementation
+### Agent Implementation Files
+- `src/web_scraper/url_discovery_agent.py`: URL Discovery Agent implementation
+- `src/web_scraper/content_extraction_agent.py`: Content Extraction Agent implementation
+- `src/web_scraper/metadata_enhancement_agent.py`: Metadata Enhancement Agent implementation
+
+### Core Implementation Files
 - `src/service_layer/article_service.py`: Article service implementation
 - `src/database_management/models.py`: Database models
 - `src/database_management/repositories/`: Repository implementations
+
+### Documentation Files
 - `docs/dev/crawl4ai-integration.md`: Crawl4AI integration documentation
 - `docs/dev/efficient-scraping-architecture.md`: Scraping architecture documentation
 - `docs/dev/database-schema.md`: Database schema documentation
+- `docs/dev/crawl4ai-with-agent-transcript.md`: Crawl4AI with agent integration documentation

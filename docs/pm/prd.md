@@ -41,12 +41,19 @@ To create a reliable, scalable, and efficient platform for collecting, processin
 
 ## 3. Functional Requirements
 
-### 3.1 Crawl4AI Integration Module
+### 3.1 AI Agent Integration Module
+- Implement a multi-agent system with specialized roles for different scraping tasks
+- Configure agents using OpenAI Agents SDK with GPT-4o and GPT-4o-mini models
+- Integrate agents with Crawl4AI for web scraping capabilities
+- Implement agent communication and workflow orchestration
+- Provide agent monitoring and error handling
+
+### 3.2 Crawl4AI Integration Module
 - Implement Crawl4AI for URL discovery, article extraction, and dynamic content handling
 - Configure Crawl4AI for optimal performance and anti-scraping measures
 - Utilize Crawl4AI's LLM schema generation for extraction
 
-### 3.2 Sitemap Generator Module
+### 3.3 Sitemap Generator Module
 - User-friendly interface for inputting base URLs
 - Automated sitemap index detection and parsing using Crawl4AI
 - Extraction of article URLs from sitemap files using Crawl4AI
@@ -56,14 +63,14 @@ To create a reliable, scalable, and efficient platform for collecting, processin
 - Functionality to check for new articles based on last published date
 - Progress bar to indicate sitemap scraping progress
 
-### 3.3 Dynamic URL Discovery Module
+### 3.4 Dynamic URL Discovery Module
 - Category URL extraction and validation using Crawl4AI
 - Pagination pattern identification and URL generation using Crawl4AI
 - Storage of dynamically generated URLs in the sitemaps table
 - Way to save progress, so if script breaks it can restart from where it stopped
 - Progress bar to indicate category scraping progress
 
-### 3.4 Article Scraper Module
+### 3.5 Article Scraper Module
 - User interface for inputting CSS selectors or LLM generated selectors using Crawl4AI
 - Extraction of article metadata (title, author, publication date, categories, content) using Crawl4AI
 - Storage of scraped articles in the articles_data table
@@ -71,18 +78,18 @@ To create a reliable, scalable, and efficient platform for collecting, processin
 - Error logging and recovery
 - Progress bar to indicate article scraping progress
 
-### 3.5 LLM Integration Module
+### 3.6 LLM Integration Module
 - Integration with a suitable LLM for natural language querying
 - Vectorisation of article content for efficient retrieval
 - User-friendly interface for interacting with the LLM
 
-### 3.6 Automation and Monitoring Module
+### 3.7 Automation and Monitoring Module
 - Automated URL discovery and content updates
 - Error detection and resolution
 - Performance monitoring and reporting
 - Use of n8n for workflow orchestration
 
-### 3.7 Dashboard Module
+### 3.8 Dashboard Module
 - Display base URLs and the status of each scraping stage (category, sitemap, article)
 - Display the number of articles scraped per URL
 - Display the number of errors and their resolution status
@@ -104,10 +111,10 @@ To create a reliable, scalable, and efficient platform for collecting, processin
 - Provide a detailed breakdown of each setup step's status
 - Provide a detailed live status page for each website
 
-### 3.8 Data Compression
+### 3.9 Data Compression
 - Implement data compression for article content storage
 
-### 3.9 Database Schema
+### 3.10 Database Schema
 - websites table: id, website_name, website_url
 - sitemaps table: id, website_id, article_url, last_mod, created_at, is_valid, last_checked, status_code
 - categories table: id, website_id, category_name, category_url, created_at
@@ -124,6 +131,7 @@ To create a reliable, scalable, and efficient platform for collecting, processin
 
 ## 5. Technical Requirements
 - Programming Language: Python
+- AI Agents: OpenAI Agents SDK with GPT-4o and GPT-4o-mini models
 - Web Scraping: Crawl4AI
 - Database: PostgreSQL or similar
 - LLM: OpenAI API, or other suitable LLM

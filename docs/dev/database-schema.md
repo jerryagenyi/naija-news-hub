@@ -47,9 +47,8 @@ This document provides a comprehensive overview of the database schema for the N
                          | active         |
                          | created_at     |
                          | updated_at     |
-                         | content_markdc |
+                         | tags           |
                          | last_checked_at|
-                         | update_count   |
                          +----------------+
 ```
 
@@ -116,13 +115,12 @@ Stores scraped article content and metadata.
 | published_at     | TIMESTAMP      |                            | Publication date of the article            |
 | image_url        | VARCHAR(512)   |                            | URL of the article image                   |
 | website_id       | INTEGER        | FOREIGN KEY (websites.id)  | Reference to the website                   |
-| article_metadata | JSONB          |                            | Metadata and content of the article        |
+| article_metadata | JSONB          |                            | Structured content and metadata of the article |
 | active           | BOOLEAN        | DEFAULT TRUE               | Whether the article is active              |
 | created_at       | TIMESTAMP      | DEFAULT NOW()              | When the record was created                |
 | updated_at       | TIMESTAMP      | DEFAULT NOW()              | When the record was last updated           |
-| content_markdc   | TEXT           |                            | Markdown content of the article            |
+| tags             | JSONB          |                            | Article tags and their URLs                |
 | last_checked_at  | TIMESTAMP      |                            | When the article was last checked for updates |
-| update_count     | INTEGER        | DEFAULT 0                  | Number of times the article has been updated |
 
 ### 5. scraping_errors
 
@@ -187,9 +185,8 @@ CREATE TABLE articles (
     active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
-    content_markdc TEXT,
-    last_checked_at TIMESTAMP,
-    update_count INTEGER DEFAULT 0
+    tags JSONB,
+    last_checked_at TIMESTAMP
 );
 
 -- Create article_categories table
@@ -287,29 +284,24 @@ CREATE TABLE article_views (
 In May 2025, we optimized the articles table structure to improve performance and prepare for LLM training:
 
 ```sql
--- Migration script to optimize the articles table structure
+-- Revised migration script to optimize the articles table structure
 -- Date: May 16, 2025
 
--- 1. First, add a new column for content_markdc (if it doesn't exist already)
+-- 1. Add a tags column to store article tags
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                  WHERE table_name='articles' AND column_name='content_markdc') THEN
-        ALTER TABLE articles ADD COLUMN content_markdc TEXT;
+                  WHERE table_name='articles' AND column_name='tags') THEN
+        ALTER TABLE articles ADD COLUMN tags JSONB;
     END IF;
 END $$;
 
--- 2. Add columns for tracking content updates
+-- 2. Add last_checked_at column for tracking content updates
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns
                   WHERE table_name='articles' AND column_name='last_checked_at') THEN
         ALTER TABLE articles ADD COLUMN last_checked_at TIMESTAMP;
-    END IF;
-
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                  WHERE table_name='articles' AND column_name='update_count') THEN
-        ALTER TABLE articles ADD COLUMN update_count INTEGER DEFAULT 0;
     END IF;
 END $$;
 
@@ -319,8 +311,14 @@ CREATE TABLE articles_new (...);
 -- 4. Copy data from the old table to the new table
 INSERT INTO articles_new (...) SELECT ... FROM articles;
 
--- 5. For each record, create a JSON object with the content and add it to article_metadata
-UPDATE articles_new SET article_metadata = ...;
+-- 5. For each record, create a structured JSON object with the content
+UPDATE articles_new SET article_metadata = jsonb_build_object(
+    'content', jsonb_build_object(
+        'markdown', article_content,
+        'word_count', word_count,
+        'reading_time', reading_time
+    )
+);
 
 -- 6. Rename tables to swap them
 ALTER TABLE articles RENAME TO articles_old;
@@ -336,10 +334,10 @@ DROP TABLE articles_old;
 ```
 
 This migration:
-1. Moves large text content to the end of the table
-2. Stores HTML and plain text content in the JSON metadata
-3. Keeps only the Markdown content as a separate column for LLM training
-4. Adds tracking for content updates
+1. Stores content as structured JSON in the article_metadata field
+2. Adds a separate tags column for storing article tags and their URLs
+3. Adds tracking for content updates with last_checked_at
+4. Optimizes the database schema for LLM training and vectorization
 
 ## Data Backup and Recovery
 

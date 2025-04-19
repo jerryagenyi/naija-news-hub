@@ -115,7 +115,7 @@ Stores scraped article content and metadata.
 | published_at     | TIMESTAMP      |                            | Publication date of the article            |
 | image_url        | VARCHAR(512)   |                            | URL of the article image                   |
 | website_id       | INTEGER        | FOREIGN KEY (websites.id)  | Reference to the website                   |
-| article_metadata | JSONB          |                            | Structured content and metadata of the article |
+| article_metadata | JSONB          |                            | Structured content and complete metadata of the article |
 | active           | BOOLEAN        | DEFAULT TRUE               | Whether the article is active              |
 | created_at       | TIMESTAMP      | DEFAULT NOW()              | When the record was created                |
 | updated_at       | TIMESTAMP      | DEFAULT NOW()              | When the record was last updated           |
@@ -227,6 +227,7 @@ CREATE INDEX idx_categories_website_id ON categories(website_id);
 CREATE INDEX idx_articles_website_id ON articles(website_id);
 CREATE INDEX idx_articles_published_at ON articles(published_at);
 CREATE INDEX idx_articles_last_checked_at ON articles(last_checked_at);
+CREATE INDEX idx_articles_metadata_gin ON articles USING gin (article_metadata);
 CREATE INDEX idx_scraping_jobs_website_id ON scraping_jobs(website_id);
 CREATE INDEX idx_scraping_jobs_status ON scraping_jobs(status);
 CREATE INDEX idx_scraping_errors_job_id ON scraping_errors(job_id);
@@ -311,12 +312,21 @@ CREATE TABLE articles_new (...);
 -- 4. Copy data from the old table to the new table
 INSERT INTO articles_new (...) SELECT ... FROM articles;
 
--- 5. For each record, create a structured JSON object with the content
+-- 5. For each record, create a structured JSON object with the content and metadata
 UPDATE articles_new SET article_metadata = jsonb_build_object(
     'content', jsonb_build_object(
         'markdown', article_content,
         'word_count', word_count,
         'reading_time', reading_time
+    ),
+    'metadata', jsonb_build_object(
+        'title', title,
+        'author', author,
+        'published_date', published_at,
+        'source_website', website_name,
+        'source_url', url,
+        'image_url', image_url,
+        'categories', categories_json
     )
 );
 
@@ -334,10 +344,12 @@ DROP TABLE articles_old;
 ```
 
 This migration:
-1. Stores content as structured JSON in the article_metadata field
-2. Adds a separate tags column for storing article tags and their URLs
-3. Adds tracking for content updates with last_checked_at
-4. Optimizes the database schema for LLM training and vectorization
+1. Stores content as structured JSON in the article_metadata field with a complete structure
+2. Includes all metadata (title, author, date, categories) in the JSON structure
+3. Adds a separate tags column for storing article tags and their URLs
+4. Adds tracking for content updates with last_checked_at
+5. Creates a GIN index on the JSON data for efficient querying
+6. Optimizes the database schema for LLM training and vectorization
 
 ## Data Backup and Recovery
 

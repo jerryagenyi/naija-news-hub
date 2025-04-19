@@ -1,7 +1,7 @@
 ---
 description: 
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
 # Frontend Development Rules - Naija News Hub
 
@@ -11,6 +11,7 @@ alwaysApply: false
 - Ensure accessibility and performance
 - Maintain consistent styling and branding
 - Implement proper error handling and loading states
+- Always use context7 to check 
 
 ## Code Style and Structure
 

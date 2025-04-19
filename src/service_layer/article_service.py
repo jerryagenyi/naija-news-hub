@@ -157,7 +157,13 @@ class ArticleService:
                 status = "new"
 
             # Add categories if available
-            categories = article_data.get("categories", [])
+            categories = article_data.get("article_metadata", {}).get("categories", [])
+            category_urls = article_data.get("article_metadata", {}).get("category_urls", [])
+            
+            # If no categories in article_metadata, check top-level (for backward compatibility)
+            if not categories:
+                categories = article_data.get("categories", [])
+                category_urls = article_data.get("category_urls", [])
             category_urls = article_data.get("category_urls", [])
 
             # Ensure we have the same number of category URLs as categories

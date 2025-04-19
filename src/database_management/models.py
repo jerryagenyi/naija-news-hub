@@ -4,7 +4,7 @@ Database models for Naija News Hub.
 This module defines the SQLAlchemy ORM models for the database.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, ForeignKey, JSON, Enum
 from sqlalchemy.orm import DeclarativeBase, relationship
@@ -24,8 +24,8 @@ class Website(Base):
     logo_url = Column(String(255), nullable=True)
     sitemap_url = Column(String(255), nullable=True)
     active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(timezone.utc))
+    updated_at = Column(DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
 
     # Relationships
     articles = relationship("Article", back_populates="website")
@@ -43,8 +43,8 @@ class Category(Base):
     url = Column(String(255), nullable=False)
     website_id = Column(Integer, ForeignKey("websites.id"), nullable=False)
     active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(timezone.utc))
+    updated_at = Column(DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
 
     # Relationships
     website = relationship("Website", back_populates="categories")
@@ -69,9 +69,9 @@ class Article(Base):
     website_id = Column(Integer, ForeignKey("websites.id"), nullable=False)
     article_metadata = Column(JSON, nullable=True)
     active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    last_checked_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(timezone.utc))
+    updated_at = Column(DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+    last_checked_at = Column(DateTime, default=datetime.now(timezone.utc))
     update_count = Column(Integer, default=0)
 
     # Relationships
@@ -102,14 +102,14 @@ class ScrapingJob(Base):
     id = Column(Integer, primary_key=True)
     website_id = Column(Integer, ForeignKey("websites.id"), nullable=False)
     status = Column(String(50), nullable=False, default='pending')
-    start_time = Column(DateTime, default=datetime.utcnow)
+    start_time = Column(DateTime, default=datetime.now(timezone.utc))
     end_time = Column(DateTime)
     config = Column(JSON, nullable=True)
     error_message = Column(Text, nullable=True)
     articles_found = Column(Integer, default=0)
     articles_scraped = Column(Integer, default=0)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(timezone.utc))
+    updated_at = Column(DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
 
     # Relationships
     website = relationship("Website")
@@ -130,8 +130,8 @@ class ErrorLog(Base):
     recovery_actions = Column(Text)
     resolved_at = Column(DateTime)
     resolution_notes = Column(Text)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(timezone.utc))
+    updated_at = Column(DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
 
     # Relationships
     job = relationship("ScrapingJob", back_populates="errors")

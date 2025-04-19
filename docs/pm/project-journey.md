@@ -1,6 +1,6 @@
 # The Naija News Hub Journey: From Concept to Structure
 
-**Last Updated:** April 20, 2025
+**Last Updated:** May 15, 2025
 
 > **Note:** This document is updated regularly as the project evolves. The date above indicates when this document was last updated. Always check this date to determine if you need to review recent commits for additional developments.
 
@@ -282,7 +282,50 @@ As of April 2025, Naija News Hub has:
     - Ensured all components work with paginated data
     - Maintained test coverage for new features
 
+### May 15, 2025
+
+- **Backend Scraping Improvements**
+  - Fixed datetime handling issues
+    - Implemented proper timezone handling for article dates
+    - Created utility functions for date parsing and conversion
+    - Ensured consistent datetime formats across the application
+  - Implemented rate limiting and anti-ban measures
+    - Created rate limiter module with domain-specific limits
+    - Added exponential backoff for retries
+    - Implemented user agent rotation and header randomization
+  - Enhanced URL discovery
+    - Added support for RSS feed discovery
+    - Improved sitemap parsing with better error handling
+    - Implemented category page discovery
+    - Combined multiple discovery methods for better coverage
+  - Improved article extraction reliability
+    - Enhanced error handling with fallback mechanisms
+    - Implemented content validation
+    - Added support for different article formats
+    - Improved image URL extraction
+  - Created test scripts for enhanced functionality
+    - Added tests for URL discovery
+    - Added tests for article extraction
+    - Created implementation script for easy deployment
+
 ## Project Milestones
+
+### May 2025
+
+#### May 15, 2025 - Backend Scraping Architecture Improvements
+- Implemented comprehensive scraping reliability improvements:
+  - Fixed datetime handling issues with proper timezone support
+  - Created rate limiting module with domain-specific limits and exponential backoff
+  - Implemented anti-ban measures with user agent rotation and header randomization
+  - Enhanced URL discovery with multiple methods (sitemap, RSS, category pages)
+  - Improved article extraction reliability with better error handling and fallback mechanisms
+- Created utility modules for reusable functionality:
+  - rate_limiter.py for controlling request frequency
+  - anti_ban.py for avoiding detection and blocking
+  - enhanced_url_discovery.py for better URL discovery
+  - enhanced_article_extractor.py for more reliable content extraction
+- Updated project documentation to reflect new capabilities
+- Created test scripts for validating improvements
 
 ### April 2025
 

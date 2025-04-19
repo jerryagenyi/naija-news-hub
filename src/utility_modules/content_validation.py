@@ -7,8 +7,9 @@ This module provides functions to validate article content and ensure quality.
 import re
 import logging
 from typing import Dict, Any, List, Tuple, Optional
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from config.config import get_config
+from src.utility_modules.datetime_utils import parse_datetime, convert_to_db_datetime
 
 # Configure logging
 logging.basicConfig(
@@ -237,7 +238,7 @@ class ContentValidator:
         # Add additional metadata
         metadata["word_count"] = len(re.findall(r'\w+', main_content))
         metadata["paragraph_count"] = len(re.split(r'\n\s*\n', main_content))
-        metadata["validation_timestamp"] = datetime.utcnow().isoformat()
+        metadata["validation_timestamp"] = datetime.now(timezone.utc).isoformat()
 
         return ValidationResult(is_valid, score, issues, metadata)
 
@@ -396,38 +397,26 @@ class ContentValidator:
             score_penalty += 5
             return False, issues, score_penalty
 
-        # Convert string to datetime if needed
-        if isinstance(published_at, str):
-            try:
-                # Try ISO format first
-                published_date = datetime.fromisoformat(published_at.replace('Z', '+00:00'))
-            except ValueError:
-                try:
-                    # Try common formats
-                    for fmt in ["%Y-%m-%d", "%Y/%m/%d", "%d-%m-%Y", "%d/%m/%Y", "%B %d, %Y"]:
-                        try:
-                            published_date = datetime.strptime(published_at, fmt)
-                            break
-                        except ValueError:
-                            continue
-                    else:
-                        issues.append(f"Published date has invalid format: {published_at}")
-                        score_penalty += 5
-                        return False, issues, score_penalty
-                except Exception:
-                    issues.append(f"Published date has invalid format: {published_at}")
-                    score_penalty += 5
-                    return False, issues, score_penalty
-        else:
-            published_date = published_at
+        # Convert to datetime using our utility function
+        try:
+            published_date = parse_datetime(published_at)
+            if not published_date:
+                issues.append(f"Published date has invalid format: {published_at}")
+                score_penalty += 5
+                return False, issues, score_penalty
+        except Exception as e:
+            issues.append(f"Error parsing published date: {str(e)}")
+            score_penalty += 5
+            return False, issues, score_penalty
 
         # Check if date is in the future
-        if published_date > datetime.utcnow():
+        now = datetime.now(timezone.utc)
+        if published_date > now:
             issues.append(f"Published date is in the future: {published_date}")
             score_penalty += 10
 
         # Check if date is too old
-        max_age = datetime.utcnow() - timedelta(days=self.max_recent_date_days)
+        max_age = now - timedelta(days=self.max_recent_date_days)
         if published_date < max_age:
             issues.append(f"Published date is too old: {published_date}")
             score_penalty += 5

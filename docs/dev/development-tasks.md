@@ -11,6 +11,16 @@
 - [x] Update API documentation with dashboard endpoints
 - [x] Update user guide with dashboard features
 
+### Backend Development
+- [x] Fix datetime handling issues in article extraction
+- [x] Implement rate limiting for web scraping
+- [x] Implement anti-ban measures for web scraping
+- [x] Enhance URL discovery with multiple methods (sitemap, RSS, category pages)
+- [x] Improve article extraction reliability
+- [ ] Implement incremental updates for articles
+- [ ] Implement content validation
+- [ ] Improve category support
+
 ### Frontend Development
 - [x] Initialize Next.js project with TypeScript and Tailwind CSS
 - [x] Configure ESLint and Prettier
@@ -42,6 +52,19 @@
 5. [x] Update user guide with latest features
 6. [ ] Create installation guide
 7. [ ] Create configuration guide
+8. [ ] Document scraping architecture improvements
+
+### Backend Development
+1. [x] Fix datetime handling issues
+2. [x] Implement rate limiting and anti-ban measures
+3. [x] Enhance URL discovery
+4. [x] Improve article extraction reliability
+5. [ ] Implement incremental updates for articles
+6. [ ] Implement content validation
+7. [ ] Improve category support
+8. [ ] Create monitoring dashboard for scraping jobs
+9. [ ] Implement database compression for article content
+10. [ ] Set up scheduled tasks for automatic updates
 
 ### Frontend Development
 1. [x] Complete Next.js project setup
@@ -63,6 +86,17 @@
 - [x] Updated file naming conventions
 - [x] Updated file references
 - [x] Added foundational documentation section
+
+### Backend Development
+- [x] Fixed datetime handling issues in article extraction
+- [x] Implemented rate limiting for web scraping
+- [x] Implemented anti-ban measures for web scraping
+- [x] Enhanced URL discovery with multiple methods (sitemap, RSS, category pages)
+- [x] Improved article extraction reliability with better error handling
+- [x] Created utility modules for rate limiting and anti-ban measures
+- [x] Implemented enhanced article extractor with better content extraction
+- [x] Added support for RSS feed discovery
+- [x] Improved sitemap parsing for better URL discovery
 
 ### Frontend Development
 - [x] Initialized Next.js project with TypeScript and Tailwind CSS
@@ -108,4 +142,4 @@
 - Include "Last Updated" timestamps
 - Follow file relationship rules
 
-Last Updated: April 20, 2024
+Last Updated: May 15, 2024

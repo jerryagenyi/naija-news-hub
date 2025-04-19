@@ -9,7 +9,6 @@ import re
 from typing import Dict, Any, Optional
 from datetime import datetime, timezone
 from urllib.parse import urlparse, urljoin
-from src.utility_modules.datetime_utils import parse_datetime, convert_to_db_datetime
 from crawl4ai import (
     AsyncWebCrawler,
     BrowserConfig,
@@ -59,8 +58,9 @@ class ArticleExtractor:
         browser_config = BrowserConfig(
             headless=True,
             user_agent=config.get("user_agent", crawl_config.user_agent) if config else crawl_config.user_agent,
-            viewport_width=1280,
-            viewport_height=800
+            memory_limit="adaptive",  # Adaptive memory management
+            viewport={"width": 1280, "height": 800},
+            timeout=30000  # 30 seconds timeout
         )
 
         # Get extraction strategy for the website
@@ -73,9 +73,13 @@ class ArticleExtractor:
         crawler_run_config = CrawlerRunConfig(
             cache_mode=CacheMode.BYPASS,
             css_selector="article, .article, .post, .content, main",  # Common article selectors
-            excluded_tags=["script", "style", "noscript", "iframe", "nav", "footer", "header", ".sidebar", ".menu", ".navigation", ".comments", ".related", ".social", ".share"],
-            word_count_threshold=50,  # Minimum word count for content blocks
+            excluded_selector="nav, footer, header, .sidebar, .menu, .navigation, .comments, .related, .social, .share",
+            excluded_tags=["script", "style", "noscript", "iframe"],
+            scan_full_page=True,
+            wait_until="networkidle",
             extraction_strategy=extraction_strategy,
+            fit_markdown=True,  # Enable fit markdown for better content extraction
+            word_count_threshold=50,  # Minimum word count for content blocks
             screenshot=False,  # Set to True if you want screenshots
             exclude_external_images=False  # Include external images
         )
@@ -92,7 +96,7 @@ class ArticleExtractor:
 
                 # Extract content from the result
                 content_html = result.cleaned_html or ""
-
+                
                 # Use fit_markdown for better content extraction if available
                 content_markdown = result.markdown.fit_markdown if result.markdown and hasattr(result.markdown, 'fit_markdown') else \
                                   result.markdown.raw_markdown if result.markdown else ""
@@ -102,30 +106,7 @@ class ArticleExtractor:
                 reading_time = max(1, word_count // 200)  # Assuming 200 words per minute reading speed
 
                 # Get extracted data from the extraction strategy
-                extracted_data = {}
-                if hasattr(result, 'extracted_data') and result.extracted_data:
-                    if isinstance(result.extracted_data, dict):
-                        extracted_data = result.extracted_data
-                    elif isinstance(result.extracted_data, list) and len(result.extracted_data) > 0:
-                        # If it's a list, use the first item if it's a dict
-                        if isinstance(result.extracted_data[0], dict):
-                            extracted_data = result.extracted_data[0]
-                        else:
-                            logger.warning(f"extracted_data is a list but first item is not a dict: {type(result.extracted_data[0])}")
-                    else:
-                        logger.warning(f"extracted_data is not a dict or list: {type(result.extracted_data)}")
-                elif hasattr(result, 'extracted_content') and result.extracted_content:
-                    try:
-                        import json
-                        content = json.loads(result.extracted_content)
-                        if isinstance(content, dict):
-                            extracted_data = content
-                        elif isinstance(content, list) and len(content) > 0 and isinstance(content[0], dict):
-                            extracted_data = content[0]
-                        else:
-                            logger.warning(f"extracted_content parsed to {type(content)}, expected dict or list of dicts")
-                    except Exception as e:
-                        logger.warning(f"Failed to parse extracted_content as JSON: {str(e)}")
+                extracted_data = result.extracted_data or {}
 
                 # Get title from extraction strategy or fallback to HTML title
                 title = extracted_data.get("title")
@@ -143,10 +124,7 @@ class ArticleExtractor:
                 published_at = extracted_data.get("published_date")
                 if not published_at:
                     date_match = re.search(r'<meta\\s+property=["\']article:published_time["\'](\\s+content=|>)["\'](.*?)["\'](/?>|\\s)', result.html, re.IGNORECASE | re.DOTALL)
-                    published_at = date_match.group(2) if date_match else None
-
-                # Parse the published_at date to ensure it's in ISO format
-                published_at = parse_datetime(published_at)
+                    published_at = date_match.group(2) if date_match else datetime.now(timezone.utc).isoformat()
 
                 # Get image URL from extraction strategy or fallback to first image
                 image_url = extracted_data.get("image_url")
@@ -255,7 +233,7 @@ class ArticleExtractor:
                     "content_markdown": f"# {title}\n\n{content}",
                     "content_html": content_html,
                     "author": author,
-                    "published_at": parse_datetime(None),
+                    "published_at": datetime.now(timezone.utc).isoformat(),
                     "image_url": image_url,
                     "website_id": website_id,
                     "article_metadata": {
@@ -297,8 +275,10 @@ class ArticleExtractor:
         browser_config = BrowserConfig(
             headless=True,
             user_agent=config.get("user_agent", crawl_config.user_agent) if config else crawl_config.user_agent,
-            viewport_width=1280,
-            viewport_height=800
+            memory_limit="adaptive",
+            viewport={"width": 1280, "height": 800},
+            wait_until="networkidle",
+            timeout=30000
         )
 
         # Create crawler run config optimized for metadata extraction
@@ -306,7 +286,8 @@ class ArticleExtractor:
             cache_mode=CacheMode.BYPASS,
             css_selector="head, meta, title",  # Focus on metadata in the head
             excluded_tags=["script", "style", "noscript", "iframe"],
-            word_count_threshold=0  # No minimum word count for metadata
+            wait_until="networkidle",
+            scan_full_page=False  # No need to scan the full page for metadata
         )
 
         try:
@@ -324,14 +305,14 @@ class ArticleExtractor:
                     metadata = {
                         "title": result.metadata.get("title", ""),
                         "author": result.metadata.get("author", "Unknown"),
-                        "published_at": parse_datetime(result.metadata.get("published_date")),
+                        "published_at": result.metadata.get("published_date", datetime.now(timezone.utc).isoformat()),
                         "categories": result.metadata.get("categories", []),
                         "tags": result.metadata.get("tags", []),
                         "image_url": result.metadata.get("image_url", ""),
                         "description": result.metadata.get("description", ""),
                         "schema": result.metadata.get("schema", {})
                     }
-
+                    
                     logger.info(f"Successfully extracted metadata from {url} using Crawl4AI metadata")
                     return metadata
 
@@ -346,7 +327,7 @@ class ArticleExtractor:
 
                 # Try to extract publication date
                 date_match = re.search(r'<meta\\s+property=["\']article:published_time["\'](\\s+content=|>)["\'](.*?)["\'](/?>|\\s)', result.html, re.IGNORECASE | re.DOTALL)
-                published_at = parse_datetime(date_match.group(2) if date_match else None)
+                published_at = date_match.group(2) if date_match else datetime.now(timezone.utc).isoformat()
 
                 # Extract categories and tags using the category extractor
                 categories = extract_categories_from_html(result.html)

@@ -1,15 +1,24 @@
 """
-Article extraction module for Naija News Hub.
+Enhanced article extraction module for Naija News Hub.
 
-This module provides functions to extract article content from news websites.
+This module provides functions to extract article content from news websites
+with improved reliability, rate limiting, and anti-ban measures.
 """
 
 import logging
 import re
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from datetime import datetime, timezone
 from urllib.parse import urlparse, urljoin
+
 from src.utility_modules.datetime_utils import parse_datetime, convert_to_db_datetime
+from src.utility_modules.rate_limiter import execute_with_rate_limit
+from src.utility_modules.anti_ban import get_browser_config, get_crawler_config
+from src.utility_modules.error_handling import ScrapingErrorHandler
+from src.utility_modules.content_validation import validate_article_content
+from src.web_scraper.category_extractor import extract_categories_from_html, extract_tags_from_html, categorize_article
+from src.web_scraper.extraction_strategies_updated import get_extraction_strategy_for_website, get_fallback_extraction_strategy
+
 from crawl4ai import (
     AsyncWebCrawler,
     BrowserConfig,
@@ -18,34 +27,27 @@ from crawl4ai import (
 )
 from config.config import get_config
 from playwright.async_api import Error as PlaywrightError
-from src.utility_modules.error_handling import ScrapingErrorHandler
-from src.utility_modules.content_validation import validate_article_content
-from src.web_scraper.category_extractor import extract_categories_from_html, extract_tags_from_html, categorize_article
-from src.web_scraper.extraction_strategies_updated import get_extraction_strategy_for_website, get_fallback_extraction_strategy
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
 logger = logging.getLogger(__name__)
 
-class ArticleExtractor:
-    """Article extractor class."""
+class EnhancedArticleExtractor:
+    """Enhanced article extractor class with reliability improvements."""
 
     def __init__(self):
         """Initialize the article extractor."""
         self.error_handler = ScrapingErrorHandler()
+        self.config = get_config()
 
-    async def extract_article(self, url: str, website_id: int, config: Optional[Dict[str, Any]] = None) -> Optional[Dict[str, Any]]:
+    async def _extract_article_internal(self, url: str, website_id: int, config: Optional[Dict[str, Any]] = None) -> Optional[Dict[str, Any]]:
         """
-        Extract article content from a URL.
-
+        Internal method to extract article content from a URL.
+        
         Args:
             url: URL of the article
             website_id: ID of the website
             config: Optional configuration for article extraction
-
+            
         Returns:
             Optional[Dict[str, Any]]: Extracted article data if successful, None otherwise
         """
@@ -55,12 +57,15 @@ class ArticleExtractor:
         app_config = get_config()
         crawl_config = app_config.crawl4ai
 
+        # Get anti-ban browser configuration
+        anti_ban_browser_config = get_browser_config(url)
+        
         # Create browser config
         browser_config = BrowserConfig(
-            headless=True,
-            user_agent=config.get("user_agent", crawl_config.user_agent) if config else crawl_config.user_agent,
-            viewport_width=1280,
-            viewport_height=800
+            headless=anti_ban_browser_config.get("headless", True),
+            user_agent=config.get("user_agent", anti_ban_browser_config.get("user_agent", crawl_config.user_agent)),
+            viewport_width=anti_ban_browser_config.get("viewport_width", 1280),
+            viewport_height=anti_ban_browser_config.get("viewport_height", 800)
         )
 
         # Get extraction strategy for the website
@@ -69,6 +74,9 @@ class ArticleExtractor:
             logger.warning(f"No extraction strategy found for website ID {website_id}, using fallback strategy")
             extraction_strategy = get_fallback_extraction_strategy()
 
+        # Get anti-ban crawler configuration
+        anti_ban_crawler_config = get_crawler_config(url)
+        
         # Create crawler run config
         crawler_run_config = CrawlerRunConfig(
             cache_mode=CacheMode.BYPASS,
@@ -77,7 +85,8 @@ class ArticleExtractor:
             word_count_threshold=50,  # Minimum word count for content blocks
             extraction_strategy=extraction_strategy,
             screenshot=False,  # Set to True if you want screenshots
-            exclude_external_images=False  # Include external images
+            exclude_external_images=False,  # Include external images
+            **anti_ban_crawler_config  # Add any domain-specific crawler configuration
         )
 
         try:
@@ -144,7 +153,7 @@ class ArticleExtractor:
                 if not published_at:
                     date_match = re.search(r'<meta\\s+property=["\']article:published_time["\'](\\s+content=|>)["\'](.*?)["\'](/?>|\\s)', result.html, re.IGNORECASE | re.DOTALL)
                     published_at = date_match.group(2) if date_match else None
-
+                
                 # Parse the published_at date to ensure it's in ISO format
                 published_at = parse_datetime(published_at)
 
@@ -220,8 +229,12 @@ class ArticleExtractor:
                 import requests
                 from bs4 import BeautifulSoup
 
+                # Get anti-ban headers
+                from src.utility_modules.anti_ban import get_headers
+                headers = get_headers(url)
+
                 # Get the page content
-                response = requests.get(url, timeout=30)
+                response = requests.get(url, headers=headers, timeout=30)
                 response.raise_for_status()
                 soup = BeautifulSoup(response.text, 'html.parser')
 
@@ -276,14 +289,28 @@ class ArticleExtractor:
             logger.error(f"Failed to extract article from {url}")
             return None
 
-    async def extract_article_metadata(self, url: str, config: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    async def extract_article(self, url: str, website_id: int, config: Optional[Dict[str, Any]] = None) -> Optional[Dict[str, Any]]:
         """
-        Extract article metadata from a URL.
+        Extract article content from a URL with rate limiting and retries.
+        
+        Args:
+            url: URL of the article
+            website_id: ID of the website
+            config: Optional configuration for article extraction
+            
+        Returns:
+            Optional[Dict[str, Any]]: Extracted article data if successful, None otherwise
+        """
+        return await execute_with_rate_limit(self._extract_article_internal, url, website_id, config)
 
+    async def _extract_article_metadata_internal(self, url: str, config: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """
+        Internal method to extract article metadata from a URL.
+        
         Args:
             url: URL of the article
             config: Optional configuration for metadata extraction
-
+            
         Returns:
             Dict[str, Any]: Extracted metadata
         """
@@ -293,20 +320,27 @@ class ArticleExtractor:
         app_config = get_config()
         crawl_config = app_config.crawl4ai
 
+        # Get anti-ban browser configuration
+        anti_ban_browser_config = get_browser_config(url)
+        
         # Create browser config
         browser_config = BrowserConfig(
-            headless=True,
-            user_agent=config.get("user_agent", crawl_config.user_agent) if config else crawl_config.user_agent,
-            viewport_width=1280,
-            viewport_height=800
+            headless=anti_ban_browser_config.get("headless", True),
+            user_agent=config.get("user_agent", anti_ban_browser_config.get("user_agent", crawl_config.user_agent)),
+            viewport_width=anti_ban_browser_config.get("viewport_width", 1280),
+            viewport_height=anti_ban_browser_config.get("viewport_height", 800)
         )
 
+        # Get anti-ban crawler configuration
+        anti_ban_crawler_config = get_crawler_config(url)
+        
         # Create crawler run config optimized for metadata extraction
         crawler_run_config = CrawlerRunConfig(
             cache_mode=CacheMode.BYPASS,
             css_selector="head, meta, title",  # Focus on metadata in the head
             excluded_tags=["script", "style", "noscript", "iframe"],
-            word_count_threshold=0  # No minimum word count for metadata
+            word_count_threshold=0,  # No minimum word count for metadata
+            **anti_ban_crawler_config  # Add any domain-specific crawler configuration
         )
 
         try:
@@ -376,43 +410,56 @@ class ArticleExtractor:
             logger.error(f"Failed to extract metadata from {url}")
             return {}
 
+    async def extract_article_metadata(self, url: str, config: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """
+        Extract article metadata from a URL with rate limiting and retries.
+        
+        Args:
+            url: URL of the article
+            config: Optional configuration for metadata extraction
+            
+        Returns:
+            Dict[str, Any]: Extracted metadata
+        """
+        return await execute_with_rate_limit(self._extract_article_metadata_internal, url, config)
+
 # Create a singleton instance
-article_extractor = ArticleExtractor()
+enhanced_article_extractor = EnhancedArticleExtractor()
 
 async def extract_article(url: str, website_id: int, config: Optional[Dict[str, Any]] = None) -> Optional[Dict[str, Any]]:
     """
-    Extract article content from a URL.
-
+    Extract article content from a URL with rate limiting and retries.
+    
     Args:
         url: URL of the article
         website_id: ID of the website
         config: Optional configuration for article extraction
-
+        
     Returns:
         Optional[Dict[str, Any]]: Extracted article data if successful, None otherwise
     """
-    return await article_extractor.extract_article(url, website_id, config)
+    return await enhanced_article_extractor.extract_article(url, website_id, config)
 
 async def extract_article_metadata(url: str, config: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """
-    Extract article metadata from a URL.
-
+    Extract article metadata from a URL with rate limiting and retries.
+    
     Args:
         url: URL of the article
         config: Optional configuration for metadata extraction
-
+        
     Returns:
         Dict[str, Any]: Extracted metadata
     """
-    return await article_extractor.extract_article_metadata(url, config)
+    return await enhanced_article_extractor.extract_article_metadata(url, config)
 
 def clean_article_content(content: str) -> str:
     """
     Clean article content by removing ads, navigation, etc.
-
+    
     Args:
         content: Raw article content
-
+        
     Returns:
         Cleaned article content
     """

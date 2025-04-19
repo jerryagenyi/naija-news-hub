@@ -72,6 +72,18 @@ class WebsiteRepository:
         """
         return self.db.query(Website).filter(Website.base_url == base_url).first()
 
+    def get_website_by_base_url(self, base_url: str) -> Optional[Website]:
+        """
+        Get a website by base URL (alias for get_website_by_url).
+
+        Args:
+            base_url (str): Website base URL
+
+        Returns:
+            Optional[Website]: Website if found, None otherwise
+        """
+        return self.get_website_by_url(base_url)
+
     def get_all_websites(self, active_only: bool = True) -> List[Website]:
         """
         Get all websites.

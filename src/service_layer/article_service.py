@@ -9,6 +9,7 @@ import asyncio
 from typing import List, Dict, Any, Optional, Tuple
 from datetime import datetime
 from sqlalchemy.orm import Session
+from src.utility_modules.datetime_utils import convert_to_db_datetime
 
 from src.database_management.models import Article
 from src.database_management.connection import get_db
@@ -57,7 +58,7 @@ class ArticleService:
             if existing_article and not force_update:
                 # Update the last_checked_at timestamp
                 self.article_repo.update_article(existing_article.id, {
-                    "last_checked_at": datetime.utcnow()
+                    "last_checked_at": convert_to_db_datetime(None)
                 })
 
                 logger.info(f"Article already exists: {url}")
@@ -66,7 +67,7 @@ class ArticleService:
                     "title": existing_article.title,
                     "url": existing_article.url,
                     "status": "existing",
-                    "last_checked_at": datetime.utcnow()
+                    "last_checked_at": convert_to_db_datetime(None)
                 }
 
             # Extract article
@@ -83,11 +84,11 @@ class ArticleService:
                 "content_markdown": article_data.get("content_markdown", ""),
                 "content_html": article_data.get("content_html", ""),
                 "author": article_data.get("author", "Unknown"),
-                "published_at": article_data.get("published_at", datetime.utcnow()),
+                "published_at": convert_to_db_datetime(article_data.get("published_at")),
                 "image_url": article_data.get("image_url", ""),
                 "website_id": website_id,
                 "article_metadata": article_data.get("article_metadata", {}),
-                "last_checked_at": datetime.utcnow()
+                "last_checked_at": convert_to_db_datetime(None)
             }
 
             # Check if article metadata contains validation results

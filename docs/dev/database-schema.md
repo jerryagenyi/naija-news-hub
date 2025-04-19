@@ -39,17 +39,17 @@ This document provides a comprehensive overview of the database schema for the N
         +--------------->| id             |<----->| article_id     |     |
                          | title          |       | category_id    |-----+
                          | url            |       +----------------+
-                         | content        |
-                         | content_markdown|
-                         | content_html   |
                          | author         |
                          | published_at   |
                          | image_url      |
                          | website_id     |
-                         | metadata       |
+                         | article_metadata|
                          | active         |
                          | created_at     |
                          | updated_at     |
+                         | content_markdc |
+                         | last_checked_at|
+                         | update_count   |
                          +----------------+
 ```
 
@@ -112,17 +112,17 @@ Stores scraped article content and metadata.
 | id               | SERIAL         | PRIMARY KEY                | Unique identifier for the article          |
 | title            | VARCHAR(512)   | NOT NULL                   | Title of the article                       |
 | url              | VARCHAR(512)   | NOT NULL, UNIQUE           | URL of the article                         |
-| content          | TEXT           |                            | Content of the article                     |
-| content_markdown | TEXT           |                            | Markdown content of the article            |
-| content_html     | TEXT           |                            | HTML content of the article                |
 | author           | VARCHAR(255)   |                            | Author of the article                      |
 | published_at     | TIMESTAMP      |                            | Publication date of the article            |
 | image_url        | VARCHAR(512)   |                            | URL of the article image                   |
 | website_id       | INTEGER        | FOREIGN KEY (websites.id)  | Reference to the website                   |
-| metadata         | JSON           |                            | Metadata of the article                    |
+| article_metadata | JSONB          |                            | Metadata and content of the article        |
 | active           | BOOLEAN        | DEFAULT TRUE               | Whether the article is active              |
 | created_at       | TIMESTAMP      | DEFAULT NOW()              | When the record was created                |
 | updated_at       | TIMESTAMP      | DEFAULT NOW()              | When the record was last updated           |
+| content_markdc   | TEXT           |                            | Markdown content of the article            |
+| last_checked_at  | TIMESTAMP      |                            | When the article was last checked for updates |
+| update_count     | INTEGER        | DEFAULT 0                  | Number of times the article has been updated |
 
 ### 5. scraping_errors
 
@@ -179,17 +179,17 @@ CREATE TABLE articles (
     id SERIAL PRIMARY KEY,
     title VARCHAR(512) NOT NULL,
     url VARCHAR(512) NOT NULL UNIQUE,
-    content TEXT,
-    content_markdown TEXT,
-    content_html TEXT,
     author VARCHAR(255),
     published_at TIMESTAMP,
     image_url VARCHAR(512),
     website_id INTEGER REFERENCES websites(id) ON DELETE CASCADE,
-    metadata JSONB,
+    article_metadata JSONB,
     active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+    updated_at TIMESTAMP DEFAULT NOW(),
+    content_markdc TEXT,
+    last_checked_at TIMESTAMP,
+    update_count INTEGER DEFAULT 0
 );
 
 -- Create article_categories table
@@ -229,6 +229,7 @@ CREATE TABLE scraping_errors (
 CREATE INDEX idx_categories_website_id ON categories(website_id);
 CREATE INDEX idx_articles_website_id ON articles(website_id);
 CREATE INDEX idx_articles_published_at ON articles(published_at);
+CREATE INDEX idx_articles_last_checked_at ON articles(last_checked_at);
 CREATE INDEX idx_scraping_jobs_website_id ON scraping_jobs(website_id);
 CREATE INDEX idx_scraping_jobs_status ON scraping_jobs(status);
 CREATE INDEX idx_scraping_errors_job_id ON scraping_errors(job_id);
@@ -280,6 +281,65 @@ CREATE TABLE article_views (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 ```
+
+### Recent Migration: Optimize Articles Table
+
+In May 2025, we optimized the articles table structure to improve performance and prepare for LLM training:
+
+```sql
+-- Migration script to optimize the articles table structure
+-- Date: May 16, 2025
+
+-- 1. First, add a new column for content_markdc (if it doesn't exist already)
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                  WHERE table_name='articles' AND column_name='content_markdc') THEN
+        ALTER TABLE articles ADD COLUMN content_markdc TEXT;
+    END IF;
+END $$;
+
+-- 2. Add columns for tracking content updates
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                  WHERE table_name='articles' AND column_name='last_checked_at') THEN
+        ALTER TABLE articles ADD COLUMN last_checked_at TIMESTAMP;
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                  WHERE table_name='articles' AND column_name='update_count') THEN
+        ALTER TABLE articles ADD COLUMN update_count INTEGER DEFAULT 0;
+    END IF;
+END $$;
+
+-- 3. Create a temporary table with the new structure
+CREATE TABLE articles_new (...);
+
+-- 4. Copy data from the old table to the new table
+INSERT INTO articles_new (...) SELECT ... FROM articles;
+
+-- 5. For each record, create a JSON object with the content and add it to article_metadata
+UPDATE articles_new SET article_metadata = ...;
+
+-- 6. Rename tables to swap them
+ALTER TABLE articles RENAME TO articles_old;
+ALTER TABLE articles_new RENAME TO articles;
+
+-- 7. Update foreign key constraints
+ALTER TABLE article_categories DROP CONSTRAINT article_categories_article_id_fkey;
+ALTER TABLE article_categories ADD CONSTRAINT article_categories_article_id_fkey
+    FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE;
+
+-- 8. Drop the old table
+DROP TABLE articles_old;
+```
+
+This migration:
+1. Moves large text content to the end of the table
+2. Stores HTML and plain text content in the JSON metadata
+3. Keeps only the Markdown content as a separate column for LLM training
+4. Adds tracking for content updates
 
 ## Data Backup and Recovery
 

@@ -69,6 +69,8 @@ This document defines the relationships between project files and establishes ru
 |--------------|---------------|----------------|
 | `src/scraper/url_discovery.py` | `docs/dev/crawl4ai-integration.md` | When URL discovery code is updated, ensure Crawl4AI integration documentation is updated. |
 | `src/scraper/article_extractor.py` | `docs/dev/crawl4ai-integration.md` | When article extraction code is updated, ensure Crawl4AI integration documentation is updated. |
+| `src/scraper/url_discovery.py` | `docs/dev/scraping-workflow-architecture.mdc` | When URL discovery code is updated, ensure scraping workflow architecture documentation is updated. |
+| `src/scraper/article_extractor.py` | `docs/dev/scraping-workflow-architecture.mdc` | When article extraction code is updated, ensure scraping workflow architecture documentation is updated. |
 | `src/scraper/url_discovery.py` | `tests/test_scraper.py` | When URL discovery code is updated, ensure tests are updated to cover the changes. |
 | `src/scraper/article_extractor.py` | `tests/test_scraper.py` | When article extraction code is updated, ensure tests are updated to cover the changes. |
 | `src/scraper/url_discovery.py` | `docs/dev/testing-checklist.md` | When URL discovery features are added/changed, ensure testing checklist is updated. |
@@ -138,6 +140,7 @@ This document defines the relationships between project files and establishes ru
 
 5. **Crawl4AI Integration**: When updating Crawl4AI integration:
    - Update `docs/dev/crawl4ai-integration.md` to reflect implementation changes
+   - Update `docs/dev/scraping-workflow-architecture.mdc` to reflect workflow changes
    - Update `src/scraper/url_discovery.py` and `src/scraper/article_extractor.py` to maintain consistency
    - Update configuration in `config/config_template.py` if needed
    - Update tests to cover the changes

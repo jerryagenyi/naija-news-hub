@@ -1,6 +1,6 @@
 ---
 description: Comprehensive documentation of the Naija News Hub scraping workflow and architecture
-globs: 
+globs:
 alwaysApply: true
 ---
 
@@ -56,28 +56,28 @@ The URL discovery process is the first step in the scraping workflow. It identif
 async def discover_urls(base_url: str, config: dict) -> List[str]:
     """Discover article URLs from a website."""
     urls = []
-    
+
     # Try sitemap discovery
     sitemap_urls = await discover_urls_from_sitemap(f"{base_url}/sitemap.xml", config)
     urls.extend(sitemap_urls)
-    
+
     # Try RSS discovery
     rss_urls = await discover_urls_from_rss(f"{base_url}/feed", config)
     urls.extend(rss_urls)
-    
+
     # Try category page discovery
     category_urls = await discover_category_urls(base_url, config)
     for category_url in category_urls:
         category_article_urls = await discover_urls_from_category(category_url, config)
         urls.extend(category_article_urls)
-    
+
     # Try homepage discovery
     homepage_urls = await discover_urls_from_homepage(base_url, config)
     urls.extend(homepage_urls)
-    
+
     # Filter and validate URLs
     valid_urls = [url for url in urls if is_valid_article_url(url, base_url)]
-    
+
     return valid_urls
 ```
 
@@ -134,7 +134,7 @@ async def extract_article(url: str, website_id: int, config: dict) -> Dict[str, 
             url=url,
             config=run_config
         )
-        
+
         # Extract article components
         title = extract_title(result)
         author = extract_author(result)
@@ -143,11 +143,11 @@ async def extract_article(url: str, website_id: int, config: dict) -> Dict[str, 
         content_markdown = convert_to_markdown(content_html)
         categories = extract_categories(result)
         image_url = extract_main_image(result)
-        
+
         # Calculate metadata
         word_count = calculate_word_count(content_markdown)
         reading_time = calculate_reading_time(word_count)
-        
+
         # Create article data
         article_data = {
             "title": title,
@@ -166,7 +166,7 @@ async def extract_article(url: str, website_id: int, config: dict) -> Dict[str, 
                 "extraction_method": "strategy"
             }
         }
-        
+
         return article_data
 ```
 
@@ -188,10 +188,11 @@ We implement multiple extraction strategies to handle different website structur
 
 ### Content Processing
 
-1. **HTML Cleaning:** Removes ads, navigation, and other non-article content
-2. **Markdown Conversion:** Converts HTML to Markdown for better processing
+1. **HTML Cleaning:** Removes ads, navigation, social media buttons, sharing options, tag sections, and other non-article content
+2. **Markdown Conversion:** Converts HTML to Markdown for better processing and LLM training
 3. **Image Handling:** Extracts and processes article images
 4. **Date Normalization:** Standardizes date formats
+5. **Content Boundary Detection:** Identifies the start and end of the actual article content
 
 ## 3. Category Handling
 
@@ -204,7 +205,7 @@ Category handling is a critical part of the workflow, ensuring articles are prop
 **Key Components:**
 
 1. **Category Extraction:** Extracts categories from article pages
-2. **Category Normalization:** Standardizes category names
+2. **Category Preservation:** Maintains original category names and URLs as found on the website
 3. **Category-Website Association:** Links categories to specific websites
 
 ### Technical Implementation
@@ -215,27 +216,31 @@ def categorize_article(article_data: Dict[str, Any], base_url: str) -> Dict[str,
     """Categorize an article based on its content and metadata."""
     # Try to extract categories from metadata
     categories = article_data.get("article_metadata", {}).get("categories", [])
-    
+    category_urls = article_data.get("article_metadata", {}).get("category_urls", [])
+
     # If no categories found, try to extract from content
     if not categories and article_data.get("content_html"):
-        categories = extract_categories_from_html(article_data["content_html"])
-    
-    # If still no categories, infer from content
+        # Extract categories and their URLs directly from HTML
+        category_data = extract_categories_from_html(article_data["content_html"])
+        if category_data:
+            categories = [item["name"] for item in category_data]
+            category_urls = [item["url"] for item in category_data]
+
+    # If still no categories, try to find them in the article URL structure
     if not categories:
-        categories = infer_categories_from_content(article_data["content"])
-    
-    # Generate category URLs
-    category_urls = []
-    for category in categories:
-        category_url = f"{base_url}/category/{category.lower().replace(' ', '-')}"
-        category_urls.append(category_url)
-    
+        url_categories = extract_categories_from_url(article_data["url"], base_url)
+        if url_categories:
+            categories.extend(url_categories)
+
+    # Preserve original category names and URLs as found on the website
+    # Do not normalize or modify the category names
+
     # Update article metadata
     metadata = article_data.get("article_metadata", {})
     metadata["categories"] = categories
     metadata["category_urls"] = category_urls
     article_data["article_metadata"] = metadata
-    
+
     return article_data
 ```
 
@@ -271,33 +276,33 @@ def extract_and_store_article(self, url: str, website_id: int) -> Optional[Artic
     """Extract and store an article from a URL."""
     # Extract article data
     article_data = self.article_extractor.extract_article(url, website_id)
-    
+
     if not article_data:
         return None
-    
+
     # Create article in database
     article = self.article_repo.create_article(article_data)
-    
+
     # Add categories if available
     categories = article_data.get("article_metadata", {}).get("categories", [])
     category_urls = article_data.get("article_metadata", {}).get("category_urls", [])
-    
+
     for i, category_name in enumerate(categories):
         category_url = category_urls[i] if i < len(category_urls) else None
-        
+
         # Try to find existing category
         category = self.website_repo.get_category_by_name(website_id, category_name)
-        
+
         if not category:
             # Create new category
             category = self.website_repo.create_category(website_id, {
                 "name": category_name,
                 "url": category_url or f"{base_url}/category/{category_name.lower().replace(' ', '-')}"
             })
-        
+
         # Add category to article
         self.article_repo.add_article_category(article.id, category.id)
-    
+
     return article
 ```
 

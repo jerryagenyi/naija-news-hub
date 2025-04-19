@@ -80,7 +80,9 @@ async def create_website(website: WebsiteCreate, db: Session = Depends(get_db)):
         Created website
     """
     # Check if website with same base_url already exists
-    existing_website = db.query(Website).filter(Website.base_url == website.base_url).first()
+    # Convert HttpUrl to string for database comparison
+    base_url_str = str(website.base_url)
+    existing_website = db.query(Website).filter(Website.base_url == base_url_str).first()
     if existing_website:
         raise HTTPException(status_code=400, detail="Website with this base URL already exists")
 

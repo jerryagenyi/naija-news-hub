@@ -61,6 +61,23 @@ To scrape all active websites:
 python main.py scrape --all
 ```
 
+### Using the utility scripts
+
+#### Adding websites to the database
+
+To add Blueprint.ng and Daily Trust to the database:
+```
+python scripts/add_websites.py
+```
+
+#### Triggering scraping via the API
+
+To trigger scraping for websites via the API:
+```
+python scripts/trigger_scraping.py
+```
+This script provides an interactive interface to scrape specific websites or all websites.
+
 ### Command-line help
 
 ```

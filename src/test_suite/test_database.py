@@ -29,9 +29,9 @@ def db_session():
     connection = engine.connect()
     transaction = connection.begin()
     session = TestingSessionLocal(bind=connection)
-    
+
     yield session
-    
+
     session.close()
     transaction.rollback()
     connection.close()
@@ -46,7 +46,7 @@ def test_create_website(db_session):
     )
     db_session.add(website)
     db_session.commit()
-    
+
     # Check that the website was created
     db_website = db_session.query(Website).filter(Website.name == "Test Website").first()
     assert db_website is not None
@@ -66,7 +66,7 @@ def test_create_category(db_session):
     )
     db_session.add(website)
     db_session.commit()
-    
+
     # Then, create a category
     category = Category(
         name="Test Category",
@@ -76,7 +76,7 @@ def test_create_category(db_session):
     )
     db_session.add(category)
     db_session.commit()
-    
+
     # Check that the category was created
     db_category = db_session.query(Category).filter(Category.name == "Test Category").first()
     assert db_category is not None
@@ -96,7 +96,7 @@ def test_create_article(db_session):
     )
     db_session.add(website)
     db_session.commit()
-    
+
     # Then, create an article
     article = Article(
         title="Test Article",
@@ -110,7 +110,7 @@ def test_create_article(db_session):
     )
     db_session.add(article)
     db_session.commit()
-    
+
     # Check that the article was created
     db_article = db_session.query(Article).filter(Article.title == "Test Article").first()
     assert db_article is not None
@@ -132,7 +132,7 @@ def test_article_category_relationship(db_session):
     )
     db_session.add(website)
     db_session.commit()
-    
+
     # Then, create a category
     category = Category(
         name="Test Category",
@@ -142,7 +142,7 @@ def test_article_category_relationship(db_session):
     )
     db_session.add(category)
     db_session.commit()
-    
+
     # Then, create an article
     article = Article(
         title="Test Article",
@@ -153,7 +153,7 @@ def test_article_category_relationship(db_session):
     )
     db_session.add(article)
     db_session.commit()
-    
+
     # Finally, create the relationship
     article_category = ArticleCategory(
         article_id=article.id,
@@ -161,13 +161,13 @@ def test_article_category_relationship(db_session):
     )
     db_session.add(article_category)
     db_session.commit()
-    
+
     # Check that the relationship was created
     db_article = db_session.query(Article).filter(Article.title == "Test Article").first()
     assert db_article is not None
     assert len(db_article.categories) == 1
     assert db_article.categories[0].category_id == category.id
-    
+
     db_category = db_session.query(Category).filter(Category.name == "Test Category").first()
     assert db_category is not None
     assert len(db_category.articles) == 1

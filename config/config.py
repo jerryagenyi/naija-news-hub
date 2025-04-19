@@ -30,8 +30,8 @@ def load_config() -> Config:
         host=os.getenv("NAIJA_NEWS_DB_HOST", "localhost"),
         port=int(os.getenv("NAIJA_NEWS_DB_PORT", "5432")),
         database=db_name,
-        user=os.getenv("NAIJA_NEWS_DB_USER", "postgres"),
-        password=os.getenv("NAIJA_NEWS_DB_PASSWORD", ""),
+        user=os.getenv("NAIJA_NEWS_DB_USER", "jeremiah"),
+        password=os.getenv("NAIJA_NEWS_DB_PASSWORD", "naija1"),
     )
 
     # Create API configuration

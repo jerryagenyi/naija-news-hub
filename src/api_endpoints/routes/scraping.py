@@ -6,6 +6,7 @@ This module provides API routes for managing scraping jobs.
 
 import logging
 from typing import List, Optional
+from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 
@@ -34,26 +35,26 @@ async def get_scraping_jobs(
 ):
     """
     Get all scraping jobs.
-    
+
     Args:
         skip: Number of jobs to skip
         limit: Maximum number of jobs to return
         website_id: Filter by website ID
         status: Filter by job status
         db: Database session
-        
+
     Returns:
         List of scraping jobs
     """
     query = db.query(ScrapingJob)
-    
+
     # Apply filters
     if website_id:
         query = query.filter(ScrapingJob.website_id == website_id)
-    
+
     if status:
         query = query.filter(ScrapingJob.status == status)
-    
+
     # Get jobs
     jobs = query.order_by(ScrapingJob.created_at.desc()).offset(skip).limit(limit).all()
     return jobs
@@ -62,11 +63,11 @@ async def get_scraping_jobs(
 async def get_scraping_job(job_id: int, db: Session = Depends(get_db)):
     """
     Get a scraping job by ID.
-    
+
     Args:
         job_id: ID of the job
         db: Database session
-        
+
     Returns:
         Scraping job
     """
@@ -84,13 +85,13 @@ async def start_website_scraping(
 ):
     """
     Start scraping a website.
-    
+
     Args:
         website_id: ID of the website to scrape
         background_tasks: FastAPI background tasks
         job: Optional scraping job configuration
         db: Database session
-        
+
     Returns:
         Created scraping job
     """
@@ -98,13 +99,13 @@ async def start_website_scraping(
     website = db.query(Website).filter(Website.id == website_id).first()
     if not website:
         raise HTTPException(status_code=404, detail="Website not found")
-    
+
     # Create scraping job
-    config = job.dict() if job else {}
-    
+    config = job.model_dump() if job else {}
+
     # Start scraping in background
     background_tasks.add_task(scrape_website, website_id, config)
-    
+
     # Return initial job status
     return {
         "id": 0,  # Placeholder ID
@@ -113,6 +114,8 @@ async def start_website_scraping(
         "articles_found": 0,
         "articles_scraped": 0,
         "config": config,
+        "created_at": datetime.now(),
+        "updated_at": datetime.now(),
     }
 
 @router.post("/all", response_model=List[ScrapingJobResponse])
@@ -123,24 +126,24 @@ async def start_all_websites_scraping(
 ):
     """
     Start scraping all active websites.
-    
+
     Args:
         background_tasks: FastAPI background tasks
         job: Optional scraping job configuration
         db: Database session
-        
+
     Returns:
         List of created scraping jobs
     """
     # Get all active websites
     websites = db.query(Website).filter(Website.active == True).all()
-    
+
     # Create scraping jobs
-    config = job.dict() if job else {}
-    
+    config = job.model_dump() if job else {}
+
     # Start scraping in background
     background_tasks.add_task(scrape_all_websites, config)
-    
+
     # Return initial job statuses
     return [
         {
@@ -150,6 +153,8 @@ async def start_all_websites_scraping(
             "articles_found": 0,
             "articles_scraped": 0,
             "config": config,
+            "created_at": datetime.now(),
+            "updated_at": datetime.now(),
         }
         for website in websites
     ]

@@ -88,7 +88,7 @@ def test_get_website():
         },
     )
     website_id = create_response.json()["id"]
-    
+
     # Then, get the website
     response = client.get(f"/api/websites/{website_id}")
     assert response.status_code == 200
@@ -110,7 +110,7 @@ def test_update_website():
         },
     )
     website_id = create_response.json()["id"]
-    
+
     # Then, update the website
     response = client.put(
         f"/api/websites/{website_id}",
@@ -139,12 +139,12 @@ def test_delete_website():
         },
     )
     website_id = create_response.json()["id"]
-    
+
     # Then, delete the website
     response = client.delete(f"/api/websites/{website_id}")
     assert response.status_code == 200
     assert response.json() == {"message": "Website deleted successfully"}
-    
+
     # Verify that the website is deleted
     get_response = client.get(f"/api/websites/{website_id}")
     assert get_response.status_code == 404

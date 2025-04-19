@@ -236,7 +236,7 @@ def main():
     if args.command == "api":
         logger.info(f"Starting API server on {args.host}:{args.port}")
         uvicorn.run(
-            "src.api-endpoints.main:app",
+            "src.api_endpoints.main:app",
             host=args.host,
             port=args.port,
             reload=args.reload,

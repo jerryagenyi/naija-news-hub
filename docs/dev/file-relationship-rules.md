@@ -73,6 +73,11 @@ This document defines the relationships between project files and establishes ru
 | `src/scraper/article_extractor.py` | `tests/test_scraper.py` | When article extraction code is updated, ensure tests are updated to cover the changes. |
 | `src/scraper/url_discovery.py` | `docs/dev/testing-checklist.md` | When URL discovery features are added/changed, ensure testing checklist is updated. |
 | `src/scraper/article_extractor.py` | `docs/dev/testing-checklist.md` | When article extraction features are added/changed, ensure testing checklist is updated. |
+| `src/scraper/url_discovery.py` | `docs/dev/efficient-scraping-architecture.md` | When URL discovery code is updated, ensure it follows the efficient scraping principles. |
+| `src/scraper/article_extractor.py` | `docs/dev/efficient-scraping-architecture.md` | When article extraction code is updated, ensure it follows the efficient scraping principles. |
+| `src/scheduler/job_scheduler.py` | `docs/dev/efficient-scraping-architecture.md` | When job scheduler is updated, ensure it follows the batch processing principles. |
+| `src/utils/compression.py` | `docs/dev/efficient-scraping-architecture.md` | When compression utilities are updated, ensure they align with the content compression strategy. |
+| `src/services/archive_service.py` | `docs/dev/efficient-scraping-architecture.md` | When archive service is updated, ensure it follows the data retention policies. |
 
 ### API Components
 

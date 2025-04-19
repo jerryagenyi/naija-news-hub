@@ -1,6 +1,6 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
 # Frontend Development Rules - Naija News Hub
@@ -11,7 +11,7 @@ alwaysApply: true
 - Ensure accessibility and performance
 - Maintain consistent styling and branding
 - Implement proper error handling and loading states
-- Always use context7 to check 
+- Always use Context7 to check for the most up-to-date documentation and library versions before implementing new features or updating dependencies
 
 ## Code Style and Structure
 
@@ -69,4 +69,4 @@ alwaysApply: true
 
 ## Conclusion
 
-By following these rules and guidelines, you can create a high-quality, user-friendly, and maintainable frontend interface for the Naija News Hub. 
+By following these rules and guidelines, you can create a high-quality, user-friendly, and maintainable frontend interface for the Naija News Hub.

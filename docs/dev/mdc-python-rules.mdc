@@ -1,6 +1,6 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
 # Python Development Rules - Naija News Hub
@@ -12,6 +12,7 @@ alwaysApply: true
 - Follow PEP 8 style guidelines
 - Respect website terms of service and robots.txt
 - Use appropriate tools for different scraping scenarios
+- Always use Context7 to check for the most up-to-date documentation and library versions before implementing new features or updating dependencies
 
 ## Code Style and Structure
 

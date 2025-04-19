@@ -736,20 +736,119 @@ The Naija News Hub scraping workflow is designed to handle the complexities of N
 
 The architecture prioritizes data quality, efficiency, and resilience, ensuring that the collected data is suitable for vectorization and LLM training. Ongoing improvements focus on enhancing extraction accuracy, optimizing resource usage, and improving monitoring capabilities.
 
+## Ongoing Maintenance Strategy
+
+After the initial scraping of websites, we implement an efficient maintenance strategy to keep the content up-to-date while minimizing resource usage and API costs.
+
+### Incremental Crawling
+
+1. **Change Detection**:
+   - Store checksums or hashes of previously crawled category pages
+   - Compare current page hash with stored hash to detect changes
+   - Only process pages that have changed since the last crawl
+
+2. **Optimized Crawling Frequency**:
+   - **High-Activity Sites** (multiple updates per day): Every 6 hours
+   - **Medium-Activity Sites** (daily updates): Once per day
+   - **Low-Activity Sites** (weekly updates): Twice per week
+   - Dynamically adjust based on observed update patterns
+
+3. **Resource-Efficient Implementation**:
+   - Use lightweight HEAD requests to check for changes before full crawling
+   - Implement exponential backoff for sites with no changes
+   - Schedule crawls during off-peak hours (e.g., midnight to 5 AM)
+
+### Implementation
+
+```python
+async def check_for_updates(website_id: int):
+    """Check if a website has new content since the last crawl."""
+    website = await get_website_by_id(website_id)
+    categories = await get_categories_by_website_id(website_id)
+
+    updates_found = False
+
+    for category in categories:
+        # Get stored hash and last check time
+        stored_hash = category.get("page_hash")
+        last_checked = category.get("last_checked_at")
+
+        # Check if we need to crawl based on the site's update frequency
+        if not should_check_category(category, last_checked):
+            continue
+
+        # Make a lightweight HEAD request to check Last-Modified header
+        headers = await make_head_request(category["url"])
+        if not has_changed(headers, last_checked):
+            # Update last checked time but don't crawl
+            await update_category_check_time(category["id"])
+            continue
+
+        # Get the current page and calculate its hash
+        page_content = await fetch_category_page(category["url"])
+        current_hash = calculate_hash(page_content)
+
+        # Compare with stored hash
+        if current_hash != stored_hash:
+            # Page has changed, discover new articles
+            new_articles = await discover_new_articles(category, page_content)
+            if new_articles:
+                updates_found = True
+                # Process new articles
+                await process_new_articles(new_articles, website_id)
+
+            # Update the stored hash and last checked time
+            await update_category_hash(category["id"], current_hash)
+
+    return updates_found
+
+async def process_new_articles(article_urls: List[str], website_id: int):
+    """Process newly discovered articles."""
+    # Extract content using Content Extraction Agent
+    for url in article_urls:
+        article_data = await extract_article_content(url, website_id)
+
+        # Store article in database
+        article_id = await store_article(article_data)
+
+        # Enhance metadata using Metadata Enhancement Agent
+        enhanced_metadata = await enhance_article_metadata(article_id)
+
+        # Vectorize article for LLM training
+        await vectorize_article(article_id)
+```
+
+### Vectorization Integration
+
+Newly discovered articles are automatically vectorized and added to the vector database for LLM training:
+
+1. **Vectorization Process**:
+   - Extract key content from the article
+   - Generate embeddings using appropriate model
+   - Store embeddings in vector database
+
+2. **LLM Integration**:
+   - Periodically update LLM training data with new vectors
+   - Implement incremental training to incorporate new content
+   - Track performance metrics to ensure quality
+
 ## Related Files
 
 ### Agent Implementation Files
 - `src/web_scraper/url_discovery_agent.py`: URL Discovery Agent implementation
 - `src/web_scraper/content_extraction_agent.py`: Content Extraction Agent implementation
 - `src/web_scraper/metadata_enhancement_agent.py`: Metadata Enhancement Agent implementation
+- `src/web_scraper/maintenance_agent.py`: Maintenance Agent implementation
 
 ### Core Implementation Files
 - `src/service_layer/article_service.py`: Article service implementation
 - `src/database_management/models.py`: Database models
 - `src/database_management/repositories/`: Repository implementations
+- `src/vectorization/article_vectorizer.py`: Article vectorization implementation
 
 ### Documentation Files
 - `docs/dev/crawl4ai-integration.md`: Crawl4AI integration documentation
 - `docs/dev/efficient-scraping-architecture.md`: Scraping architecture documentation
 - `docs/dev/database-schema.md`: Database schema documentation
 - `docs/dev/crawl4ai-with-agent-transcript.md`: Crawl4AI with agent integration documentation
+- `docs/dev/maintenance-strategy.md`: Maintenance strategy documentation

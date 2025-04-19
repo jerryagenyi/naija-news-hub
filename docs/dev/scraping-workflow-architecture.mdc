@@ -1,0 +1,418 @@
+---
+description: Comprehensive documentation of the Naija News Hub scraping workflow and architecture
+globs: 
+alwaysApply: true
+---
+
+# Naija News Hub - Scraping Workflow Architecture
+
+**Last Updated:** May 16, 2024
+
+## Overview
+
+This document provides a comprehensive overview of the scraping workflow architecture used in the Naija News Hub project. It maps out the entire process from URL discovery to data storage, highlighting the key components, challenges, and solutions implemented in the system.
+
+Naija News Hub is a news aggregation platform that collects Nigerian news articles for research and analysis. The scraped articles will be vectorized and used to train an LLM for a chat interface. This document focuses on the technical implementation of the scraping pipeline.
+
+## Workflow Diagram
+
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│                 │     │                 │     │                 │     │                 │
+│  URL Discovery  │────▶│ Article Scraping│────▶│  Data Processing│────▶│  Data Storage   │
+│                 │     │                 │     │                 │     │                 │
+└─────────────────┘     └─────────────────┘     └─────────────────┘     └─────────────────┘
+        │                       │                       │                       │
+        ▼                       ▼                       ▼                       ▼
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│ - Sitemap       │     │ - Content       │     │ - Cleaning      │     │ - PostgreSQL    │
+│ - RSS           │     │   Extraction    │     │ - Normalization │     │ - Compression   │
+│ - Category Pages│     │ - Metadata      │     │ - Categorization│     │ - Relationships │
+│ - Homepage Links│     │   Extraction    │     │ - Markdown      │     │ - Indexing      │
+└─────────────────┘     └─────────────────┘     └─────────────────┘     └─────────────────┘
+```
+
+## 1. URL Discovery Process
+
+The URL discovery process is the first step in the scraping workflow. It identifies article URLs from Nigerian news websites for later processing.
+
+### Implementation
+
+**File:** `src/web_scraper/url_discovery.py`
+
+**Key Components:**
+
+1. **Input:** Base URL of a Nigerian news website
+2. **Discovery Methods:**
+   - **Sitemap Parsing:** Locates and parses sitemap.xml files
+   - **RSS Feed Discovery:** Identifies and processes RSS feeds
+   - **Category Page Crawling:** Extracts article links from category pages
+   - **Homepage Link Extraction:** Extracts article links from the homepage
+
+### Technical Implementation
+
+```python
+# Simplified implementation
+async def discover_urls(base_url: str, config: dict) -> List[str]:
+    """Discover article URLs from a website."""
+    urls = []
+    
+    # Try sitemap discovery
+    sitemap_urls = await discover_urls_from_sitemap(f"{base_url}/sitemap.xml", config)
+    urls.extend(sitemap_urls)
+    
+    # Try RSS discovery
+    rss_urls = await discover_urls_from_rss(f"{base_url}/feed", config)
+    urls.extend(rss_urls)
+    
+    # Try category page discovery
+    category_urls = await discover_category_urls(base_url, config)
+    for category_url in category_urls:
+        category_article_urls = await discover_urls_from_category(category_url, config)
+        urls.extend(category_article_urls)
+    
+    # Try homepage discovery
+    homepage_urls = await discover_urls_from_homepage(base_url, config)
+    urls.extend(homepage_urls)
+    
+    # Filter and validate URLs
+    valid_urls = [url for url in urls if is_valid_article_url(url, base_url)]
+    
+    return valid_urls
+```
+
+### Crawl4AI Integration
+
+We use Crawl4AI's `AsyncWebCrawler` for URL discovery, which provides:
+
+1. **JavaScript Rendering:** Handles dynamic content using Playwright
+2. **Asynchronous Processing:** Improves performance with async/await
+3. **Configurable Crawling:** Customizable depth, rate limiting, etc.
+
+```python
+async with AsyncWebCrawler(config=browser_config) as crawler:
+    result = await crawler.arun(
+        url=sitemap_url,
+        config=run_config
+    )
+    # Process the result to extract URLs
+```
+
+### URL Validation and Storage
+
+1. **Validation:** URLs are validated to ensure they point to actual articles
+   - Check URL patterns (e.g., `/news/`, `/article/`, etc.)
+   - Filter out non-article pages (e.g., category pages, tag pages)
+   - Verify URL accessibility
+
+2. **Storage:** Valid URLs are stored in the database for later processing
+   - Store in `sitemaps` table with status "pending"
+   - Track discovery method and timestamp
+
+## 2. Article Extraction Process
+
+The article extraction process retrieves and processes content from discovered URLs.
+
+### Implementation
+
+**File:** `src/web_scraper/article_extractor.py`
+
+**Key Components:**
+
+1. **Content Fetching:** Retrieves HTML content from article URLs
+2. **Content Extraction:** Extracts article components using various strategies
+3. **Metadata Extraction:** Extracts and processes article metadata
+
+### Technical Implementation
+
+```python
+# Simplified implementation
+async def extract_article(url: str, website_id: int, config: dict) -> Dict[str, Any]:
+    """Extract article content and metadata from a URL."""
+    async with AsyncWebCrawler(config=browser_config) as crawler:
+        result = await crawler.arun(
+            url=url,
+            config=run_config
+        )
+        
+        # Extract article components
+        title = extract_title(result)
+        author = extract_author(result)
+        published_at = extract_published_date(result)
+        content_html = extract_content(result)
+        content_markdown = convert_to_markdown(content_html)
+        categories = extract_categories(result)
+        image_url = extract_main_image(result)
+        
+        # Calculate metadata
+        word_count = calculate_word_count(content_markdown)
+        reading_time = calculate_reading_time(word_count)
+        
+        # Create article data
+        article_data = {
+            "title": title,
+            "url": url,
+            "content": content_markdown,
+            "content_html": content_html,
+            "content_markdown": content_markdown,
+            "author": author,
+            "published_at": published_at,
+            "image_url": image_url,
+            "website_id": website_id,
+            "article_metadata": {
+                "word_count": word_count,
+                "reading_time": reading_time,
+                "categories": categories,
+                "extraction_method": "strategy"
+            }
+        }
+        
+        return article_data
+```
+
+### Extraction Strategies
+
+We implement multiple extraction strategies to handle different website structures:
+
+1. **CSS-based Extraction:** Uses CSS selectors to extract content
+   - Implemented with `JsonCssExtractionStrategy`
+   - Efficient for known website structures
+
+2. **LLM-based Extraction:** Uses language models for content extraction
+   - Implemented with `LLMExtractionStrategy`
+   - Robust for unknown or complex website structures
+
+3. **Fallback Mechanisms:** Implements fallbacks when primary strategies fail
+   - Generic extraction based on common patterns
+   - Heuristic-based content identification
+
+### Content Processing
+
+1. **HTML Cleaning:** Removes ads, navigation, and other non-article content
+2. **Markdown Conversion:** Converts HTML to Markdown for better processing
+3. **Image Handling:** Extracts and processes article images
+4. **Date Normalization:** Standardizes date formats
+
+## 3. Category Handling
+
+Category handling is a critical part of the workflow, ensuring articles are properly categorized for research and analysis.
+
+### Implementation
+
+**File:** `src/web_scraper/category_extractor.py`
+
+**Key Components:**
+
+1. **Category Extraction:** Extracts categories from article pages
+2. **Category Normalization:** Standardizes category names
+3. **Category-Website Association:** Links categories to specific websites
+
+### Technical Implementation
+
+```python
+# Simplified implementation
+def categorize_article(article_data: Dict[str, Any], base_url: str) -> Dict[str, Any]:
+    """Categorize an article based on its content and metadata."""
+    # Try to extract categories from metadata
+    categories = article_data.get("article_metadata", {}).get("categories", [])
+    
+    # If no categories found, try to extract from content
+    if not categories and article_data.get("content_html"):
+        categories = extract_categories_from_html(article_data["content_html"])
+    
+    # If still no categories, infer from content
+    if not categories:
+        categories = infer_categories_from_content(article_data["content"])
+    
+    # Generate category URLs
+    category_urls = []
+    for category in categories:
+        category_url = f"{base_url}/category/{category.lower().replace(' ', '-')}"
+        category_urls.append(category_url)
+    
+    # Update article metadata
+    metadata = article_data.get("article_metadata", {})
+    metadata["categories"] = categories
+    metadata["category_urls"] = category_urls
+    article_data["article_metadata"] = metadata
+    
+    return article_data
+```
+
+### Website-Specific Categories
+
+Categories are website-specific, meaning each website has its own set of categories:
+
+1. **Database Schema:** Categories table includes `website_id` foreign key
+2. **Category Creation:** New categories are created with the website's ID
+3. **Category Lookup:** Categories are looked up by name and website ID
+
+This approach ensures that categories from different websites don't conflict, even if they have the same name.
+
+## 4. Data Storage
+
+The final step in the workflow is storing the extracted and processed data in the database.
+
+### Implementation
+
+**File:** `src/service_layer/article_service.py`
+
+**Key Components:**
+
+1. **Database Models:** ORM models for articles, websites, categories, etc.
+2. **Repository Layer:** Data access methods for each entity
+3. **Service Layer:** Business logic for storing and retrieving data
+
+### Technical Implementation
+
+```python
+# Simplified implementation
+def extract_and_store_article(self, url: str, website_id: int) -> Optional[Article]:
+    """Extract and store an article from a URL."""
+    # Extract article data
+    article_data = self.article_extractor.extract_article(url, website_id)
+    
+    if not article_data:
+        return None
+    
+    # Create article in database
+    article = self.article_repo.create_article(article_data)
+    
+    # Add categories if available
+    categories = article_data.get("article_metadata", {}).get("categories", [])
+    category_urls = article_data.get("article_metadata", {}).get("category_urls", [])
+    
+    for i, category_name in enumerate(categories):
+        category_url = category_urls[i] if i < len(category_urls) else None
+        
+        # Try to find existing category
+        category = self.website_repo.get_category_by_name(website_id, category_name)
+        
+        if not category:
+            # Create new category
+            category = self.website_repo.create_category(website_id, {
+                "name": category_name,
+                "url": category_url or f"{base_url}/category/{category_name.lower().replace(' ', '-')}"
+            })
+        
+        # Add category to article
+        self.article_repo.add_article_category(article.id, category.id)
+    
+    return article
+```
+
+### Database Schema
+
+The database schema includes the following tables:
+
+1. **websites:** Stores information about news websites
+2. **articles:** Stores article content and metadata
+3. **categories:** Stores category information (website-specific)
+4. **article_categories:** Junction table linking articles to categories
+5. **scraping_jobs:** Tracks scraping job status and progress
+6. **scraping_errors:** Logs errors encountered during scraping
+
+### Data Optimization
+
+1. **Compression:** Compresses article content to reduce storage requirements
+2. **Indexing:** Creates appropriate indexes for efficient querying
+3. **Archiving:** Implements data retention policies for older content
+
+## Challenges and Solutions
+
+### 1. Inconsistent Website Structures
+
+**Challenge:** Nigerian news websites have varying structures, URL formats, and content organization.
+
+**Solution:**
+- Implement multiple discovery methods (sitemap, RSS, category pages)
+- Use adaptive extraction strategies based on website patterns
+- Implement website-specific configurations when necessary
+
+### 2. Dynamic Content and JavaScript
+
+**Challenge:** Many websites use JavaScript to load content dynamically.
+
+**Solution:**
+- Use Crawl4AI with Playwright for browser automation
+- Configure appropriate wait times for content loading
+- Implement content verification to ensure complete extraction
+
+### 3. Anti-Scraping Measures
+
+**Challenge:** Websites implement various anti-scraping measures.
+
+**Solution:**
+- Implement rate limiting and request throttling
+- Use proxy rotation for high-volume scraping
+- Respect robots.txt and implement polite scraping practices
+- Use realistic user agents and browser fingerprints
+
+### 4. Complex Data Relationships
+
+**Challenge:** Maintaining proper relationships between websites, articles, and categories.
+
+**Solution:**
+- Implement robust database schema with appropriate foreign keys
+- Use transaction management to ensure data consistency
+- Implement validation before database operations
+- Create utility scripts to fix data inconsistencies
+
+### 5. Error Handling and Resilience
+
+**Challenge:** Many potential points of failure in the scraping process.
+
+**Solution:**
+- Implement comprehensive error logging
+- Use retry mechanisms with exponential backoff
+- Implement circuit breakers for failing endpoints
+- Create monitoring and alerting for critical failures
+
+### 6. Resource Constraints
+
+**Challenge:** Limited resources on standard VPS hosting.
+
+**Solution:**
+- Implement scheduled batch processing instead of continuous scraping
+- Use intelligent crawling to only process changed content
+- Implement content compression to reduce storage requirements
+- Separate compute and storage concerns for flexibility
+
+## Vectorization Preparation
+
+To prepare the scraped data for vectorization and LLM training:
+
+1. **Content Quality:** Ensure high-quality, clean content without ads or irrelevant elements
+2. **Metadata Enrichment:** Include rich metadata for context (categories, publication date, source)
+3. **Structured Format:** Store content in a consistent, structured format
+4. **Text Normalization:** Standardize text formatting, encoding, and special characters
+5. **Language Detection:** Identify and tag the language of each article
+6. **Content Deduplication:** Identify and handle duplicate or near-duplicate content
+
+## Monitoring and Management
+
+The dashboard provides tools for monitoring and managing the scraping process:
+
+1. **Job Management:** Start, stop, and monitor scraping jobs
+2. **Error Tracking:** View and analyze scraping errors
+3. **Performance Metrics:** Track scraping performance and resource usage
+4. **Content Statistics:** View statistics on scraped content
+5. **URL Management:** Add and manage URLs for scraping
+
+## Conclusion
+
+The Naija News Hub scraping workflow is designed to handle the complexities of Nigerian news websites while efficiently collecting and processing content for research and analysis. By implementing multiple discovery methods, adaptive extraction strategies, and robust error handling, the system can reliably scrape content from diverse sources.
+
+The architecture prioritizes data quality, efficiency, and resilience, ensuring that the collected data is suitable for vectorization and LLM training. Ongoing improvements focus on enhancing extraction accuracy, optimizing resource usage, and improving monitoring capabilities.
+
+## Related Files
+
+- `src/web_scraper/url_discovery.py`: URL discovery implementation
+- `src/web_scraper/article_extractor.py`: Article extraction implementation
+- `src/web_scraper/category_extractor.py`: Category extraction implementation
+- `src/service_layer/article_service.py`: Article service implementation
+- `src/database_management/models.py`: Database models
+- `src/database_management/repositories/`: Repository implementations
+- `docs/dev/crawl4ai-integration.md`: Crawl4AI integration documentation
+- `docs/dev/efficient-scraping-architecture.md`: Scraping architecture documentation
+- `docs/dev/database-schema.md`: Database schema documentation

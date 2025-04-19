@@ -1,6 +1,6 @@
 # The Naija News Hub Journey: From Concept to Structure
 
-**Last Updated:** May 15, 2025
+**Last Updated:** May 16, 2025
 
 > **Note:** This document is updated regularly as the project evolves. The date above indicates when this document was last updated. Always check this date to determine if you need to review recent commits for additional developments.
 
@@ -313,6 +313,24 @@ As of April 2025, Naija News Hub has:
 ## Project Milestones
 
 ### May 2025
+
+#### May 16, 2025 - Comprehensive Scraping Workflow Documentation
+- Created detailed scraping workflow architecture documentation:
+  - Mapped the entire scraping process from URL discovery to data storage
+  - Documented the technical implementation of each component
+  - Identified challenges and implemented solutions
+  - Prepared data for vectorization and LLM training
+  - Created comprehensive workflow diagrams
+- Fixed category handling in the scraping process:
+  - Ensured categories are properly extracted and stored
+  - Implemented website-specific category handling
+  - Created utility scripts for fixing data inconsistencies
+  - Updated service layer to properly handle categories
+- Updated project documentation to clarify project purpose:
+  - Explicitly stated that the platform is for LLM training, not browsing
+  - Added LLM integration tasks to development roadmap
+  - Updated development rules with project purpose
+  - Ensured consistency across all documentation files
 
 #### May 15, 2025 - Backend Scraping Architecture Improvements
 - Implemented comprehensive scraping reliability improvements:

@@ -52,7 +52,7 @@
 5. [x] Update user guide with latest features
 6. [ ] Create installation guide
 7. [ ] Create configuration guide
-8. [ ] Document scraping architecture improvements
+8. [x] Document scraping architecture improvements
 
 ### Backend Development
 1. [x] Fix datetime handling issues

@@ -1,5 +1,5 @@
 -- Revised migration script to optimize the articles table structure
--- Date: May 16, 2025
+-- Date: April 19, 2025
 
 -- 1. Add a tags column to store article tags
 DO $$

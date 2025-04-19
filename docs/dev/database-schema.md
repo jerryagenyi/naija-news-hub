@@ -282,11 +282,11 @@ CREATE TABLE article_views (
 
 ### Recent Migration: Optimize Articles Table
 
-In May 2025, we optimized the articles table structure to improve performance and prepare for LLM training:
+In April 2025, we optimized the articles table structure to improve performance and prepare for LLM training:
 
 ```sql
 -- Revised migration script to optimize the articles table structure
--- Date: May 16, 2025
+-- Date: April 19, 2025
 
 -- 1. Add a tags column to store article tags
 DO $$

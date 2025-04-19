@@ -1,10 +1,10 @@
 -- Migration script to optimize the articles table structure
--- Date: May 16, 2025
+-- Date: April 19, 2025
 
 -- 1. First, add a new column for content_markdc (if it doesn't exist already)
 DO $$
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns
                   WHERE table_name='articles' AND column_name='content_markdc') THEN
         ALTER TABLE articles ADD COLUMN content_markdc TEXT;
     END IF;
@@ -13,20 +13,20 @@ END $$;
 -- 2. Add columns for tracking content updates
 DO $$
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns
                   WHERE table_name='articles' AND column_name='last_checked_at') THEN
         ALTER TABLE articles ADD COLUMN last_checked_at TIMESTAMP;
     END IF;
-    
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns
                   WHERE table_name='articles' AND column_name='update_count') THEN
         ALTER TABLE articles ADD COLUMN update_count INTEGER DEFAULT 0;
     END IF;
 END $$;
 
 -- 3. Copy content_markdown to content_markdc for existing records
-UPDATE articles 
-SET content_markdc = content_markdown 
+UPDATE articles
+SET content_markdc = content_markdown
 WHERE content_markdc IS NULL AND content_markdown IS NOT NULL;
 
 -- 4. Create a temporary table with the new structure
@@ -49,11 +49,11 @@ CREATE TABLE articles_new (
 
 -- 5. Copy data from the old table to the new table
 INSERT INTO articles_new (
-    id, title, url, author, published_at, image_url, website_id, 
+    id, title, url, author, published_at, image_url, website_id,
     active, created_at, updated_at, content_markdc, last_checked_at, update_count
 )
-SELECT 
-    id, title, url, author, published_at, image_url, website_id, 
+SELECT
+    id, title, url, author, published_at, image_url, website_id,
     active, created_at, updated_at, content_markdc, last_checked_at, update_count
 FROM articles;
 
@@ -79,7 +79,7 @@ ALTER TABLE articles_new RENAME TO articles;
 
 -- 9. Update foreign key constraints in article_categories
 ALTER TABLE article_categories DROP CONSTRAINT article_categories_article_id_fkey;
-ALTER TABLE article_categories ADD CONSTRAINT article_categories_article_id_fkey 
+ALTER TABLE article_categories ADD CONSTRAINT article_categories_article_id_fkey
     FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE;
 
 -- 10. Drop the old table

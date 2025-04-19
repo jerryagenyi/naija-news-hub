@@ -1,5 +1,5 @@
 -- Reset database script
--- Date: May 16, 2025
+-- Date: April 19, 2025
 
 -- Drop existing tables if they exist (in reverse order of dependencies)
 DROP TABLE IF EXISTS scraping_errors CASCADE;
@@ -108,7 +108,7 @@ VALUES ('Blueprint News', 'https://blueprint.ng', 'Nigerian news website coverin
 
 -- Insert some test categories
 INSERT INTO categories (name, url, website_id, active)
-VALUES 
+VALUES
 ('Politics', 'https://blueprint.ng/category/politics', 1, TRUE),
 ('Business', 'https://blueprint.ng/category/business', 1, TRUE),
 ('Entertainment', 'https://blueprint.ng/category/entertainment', 1, TRUE);

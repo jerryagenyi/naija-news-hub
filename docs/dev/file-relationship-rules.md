@@ -62,6 +62,10 @@ This document defines the relationships between project files and establishes ru
 | `models/database.py` | `docs/dev/database-schema.md` | When database models are updated, ensure database schema documentation is updated to match. |
 | `models/database.py` | `migrations/` | When database models are updated, ensure a new migration is created to update the database schema. |
 | `models/database.py` | `repositories/` | When database models are updated, ensure repository classes are updated to handle the changes. |
+| `src/database_management/models.py` | `src/web_scraper/url_discovery_agent.py` | When sitemaps table is updated, ensure URL Discovery Agent is updated to handle the changes. |
+| `src/database_management/models.py` | `src/web_scraper/content_extraction_agent.py` | When sitemaps table is updated, ensure Content Extraction Agent is updated to handle the changes. |
+| `src/database_management/repositories/sitemap_repository.py` | `src/web_scraper/url_discovery_agent.py` | When sitemap repository is updated, ensure URL Discovery Agent is updated to handle the changes. |
+| `src/database_management/repositories/sitemap_repository.py` | `src/web_scraper/content_extraction_agent.py` | When sitemap repository is updated, ensure Content Extraction Agent is updated to handle the changes. |
 
 ### Scraper Components
 
@@ -73,6 +77,8 @@ This document defines the relationships between project files and establishes ru
 | `src/web_scraper/url_discovery_agent.py` | `docs/dev/scraping-workflow-architecture.mdc` | When URL Discovery Agent code is updated, ensure scraping workflow architecture documentation is updated. |
 | `src/web_scraper/content_extraction_agent.py` | `docs/dev/scraping-workflow-architecture.mdc` | When Content Extraction Agent code is updated, ensure scraping workflow architecture documentation is updated. |
 | `src/web_scraper/metadata_enhancement_agent.py` | `docs/dev/scraping-workflow-architecture.mdc` | When Metadata Enhancement Agent code is updated, ensure scraping workflow architecture documentation is updated. |
+| `src/web_scraper/url_discovery_agent.py` | `src/database_management/models.py` | When URL Discovery Agent code is updated, ensure database models (especially sitemaps table) are compatible. |
+| `src/web_scraper/content_extraction_agent.py` | `src/database_management/models.py` | When Content Extraction Agent code is updated, ensure database models are compatible. |
 | `src/web_scraper/url_discovery_agent.py` | `tests/test_scraper.py` | When URL Discovery Agent code is updated, ensure tests are updated to cover the changes. |
 | `src/web_scraper/content_extraction_agent.py` | `tests/test_scraper.py` | When Content Extraction Agent code is updated, ensure tests are updated to cover the changes. |
 | `src/web_scraper/metadata_enhancement_agent.py` | `tests/test_scraper.py` | When Metadata Enhancement Agent code is updated, ensure tests are updated to cover the changes. |
@@ -151,7 +157,16 @@ This document defines the relationships between project files and establishes ru
    - Update tests to cover the changes
    - Update development tasks to reflect completed tasks
 
-6. **AI Agent Integration**: When updating AI agent integration:
+6. **Scraping Architecture**: When updating scraping architecture:
+   - Update `docs/dev/scraping-workflow-architecture.mdc` to reflect workflow changes
+   - Update `docs/dev/efficient-scraping-architecture.md` to ensure resource optimization principles are maintained
+   - Ensure both documents remain aligned but focused on their specific purposes:
+     - `scraping-workflow-architecture.mdc`: Workflow, agent architecture, implementation details
+     - `efficient-scraping-architecture.md`: Resource optimization, VPS deployment, cost-efficiency
+   - Update agent implementation files to maintain consistency with both documents
+   - Update tests to cover the changes
+
+7. **AI Agent Integration**: When updating AI agent integration:
    - Update `docs/dev/scraping-workflow-architecture.mdc` to reflect agent workflow changes
    - Update `docs/dev/crawl4ai-with-agent-transcript.md` to reflect agent implementation details
    - Update agent implementation files in `src/web_scraper/` to maintain consistency
@@ -159,7 +174,7 @@ This document defines the relationships between project files and establishes ru
    - Update tests to cover agent functionality
    - Update development tasks to reflect completed tasks
 
-7. **Database Integration**: When updating database integration:
+8. **Database Integration**: When updating database integration:
    - Update `docs/dev/database-integration.md` to reflect implementation changes
    - Update repository classes in `src/database/repositories/` to maintain consistency
    - Update service classes in `src/services/` to reflect the changes
@@ -167,7 +182,7 @@ This document defines the relationships between project files and establishes ru
    - Update tests to cover the changes
    - Update development tasks to reflect completed tasks
 
-7. **Time and Date References**: When adding time or date references:
+9. **Time and Date References**: When adding time or date references:
    - Use the MCP time module (`utils/mcp/time.py`) to get the current date/time
    - Follow the format YYYY-MM-DD for dates
    - Update the "Last Updated" timestamp in documentation files

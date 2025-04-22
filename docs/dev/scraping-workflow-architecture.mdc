@@ -37,19 +37,19 @@ Naija News Hub is a news aggregation platform that collects Nigerian news articl
 ### Agent-Enhanced Workflow
 
 ```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│                 │     │                 │     │                 │     │                 │     │                 │
-│  URL Discovery  │────▶│ Category        │────▶│ Article URL     │────▶│ Article Content │────▶│  Data Storage   │
-│  Agent          │     │ Discovery       │     │ Discovery       │     │ Extraction      │     │                 │
-└─────────────────┘     └─────────────────┘     └─────────────────┘     └─────────────────┘     └─────────────────┘
-        │                       │                       │                       │                       │
-        ▼                       ▼                       ▼                       ▼                       ▼
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│ - Base URL      │     │ - Category      │     │ - Article URLs  │     │ - Content       │     │ - PostgreSQL    │
-│   Processing    │     │   Extraction    │     │   from Category │     │   Extraction    │     │ - JSON Format   │
-│ - Website       │     │ - Category URL  │     │ - URL Storage   │     │ - Metadata      │     │ - Relationships │
-│   Analysis      │     │   Storage       │     │   in Sitemaps   │     │   Enhancement   │     │ - Indexing      │
-└─────────────────┘     └─────────────────┘     └─────────────────┘     └─────────────────┘     └─────────────────┘
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│                 │     │                 │     │                 │     │                 │     │                 │     │                 │
+│    Agent-1:     │────▶│    Category     │────▶│   Article URL   │────▶│    Agent-2:     │────▶│    Agent-3:     │────▶│  Data Storage   │
+│ URL Discovery   │     │    Discovery    │     │    Discovery    │     │Content Extraction│     │Metadata Enhance.│     │                 │
+└─────────────────┘     └─────────────────┘     └─────────────────┘     └─────────────────┘     └─────────────────┘     └─────────────────┘
+        │                       │                       │                       │                       │                       │
+        ▼                       ▼                       ▼                       ▼                       ▼                       ▼
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│ - Base URL      │     │ - Category      │     │ - Article URLs  │     │ - Content       │     │ - Enhanced      │     │ - PostgreSQL    │
+│   Processing    │     │   Extraction    │     │   from Category │     │   Extraction    │     │   Metadata      │     │ - JSON Format   │
+│ - Website       │     │ - Category URL  │     │ - URL Storage   │     │ - Basic Metadata │     │ - Vectorization │     │ - Relationships │
+│   Analysis      │     │   Storage       │     │   in Sitemaps   │     │   Extraction    │     │   Preparation   │     │ - Indexing      │
+└─────────────────┘     └─────────────────┘     └─────────────────┘     └─────────────────┘     └─────────────────┘     └─────────────────┘
 ```
 
 ## AI Agent Integration
@@ -74,33 +74,43 @@ This approach allows us to efficiently scrape multiple Nigerian news websites si
 
 ### Agent Architecture
 
-We implement a multi-agent system with specialized roles:
+We implement a centralized multi-agent system with task-specific roles:
 
-1. **URL Discovery Agent** (GPT-4o-mini)
+1. **Agent-1: URL Discovery** (GPT-4o-mini)
    - Analyzes website structure to identify navigation patterns
-   - Determines the most effective discovery method for each website
-   - Adapts to changing website structures without code modifications
+   - Discovers categories and their URLs for all websites
+   - Discovers article URLs from category pages
+   - Stores URLs in the database for processing by other agents
+   - Uses a single agent instance to handle all websites
 
-2. **Content Extraction Agent** (GPT-4o)
-   - Extracts structured content from article pages
+2. **Agent-2: Content Extraction** (GPT-4o)
+   - Extracts structured content from article URLs in the sitemaps table
    - Cleans content by removing ads, navigation, social media elements
-   - Enhances metadata through semantic understanding
    - Formats content according to our JSON schema
+   - Updates article status in the sitemaps table
+   - Uses a single agent instance to process all articles
 
-3. **Metadata Enhancement Agent** (GPT-4o-mini)
+3. **Agent-3: Metadata Enhancement** (GPT-4o-mini)
    - Analyzes extracted content for additional metadata
    - Improves categorization and tagging
    - Prepares content for vectorization
+   - Uses a single agent instance to process all articles
+
+This centralized approach reduces the number of agent instances needed while maintaining specialization for each task, allowing for better resource management and simplifying the codebase.
 
 ### Agent Workflow
 
-The agents operate in a sequential pipeline:
+The agents operate in a sequential pipeline with database coordination:
 
-1. **Category Discovery First**: The URL Discovery Agent identifies all categories and their URLs for a website
-2. **Article URL Discovery Second**: Using the category URLs, the agent discovers all article URLs and stores them in the sitemaps table
-3. **Article Extraction Last**: The Content Extraction Agent processes the discovered article URLs, extracting content and metadata
+1. **Category Discovery First**: The URL Discovery Agent identifies all categories and their URLs for a website and stores them in the `categories` table (linked to website_id)
 
-This approach ensures comprehensive coverage while maintaining efficiency and tracking progress throughout the process.
+2. **Article URL Discovery Second**: The URL Discovery Agent processes each category to discover article URLs and stores them in the `sitemaps` table with status "pending"
+
+3. **Content Extraction Third**: The Content Extraction Agent pulls URLs with "pending" status from the `sitemaps` table, extracts content, stores it in the `articles` table, and updates the status in `sitemaps` to "scraped"
+
+4. **Metadata Enhancement Last**: The Metadata Enhancement Agent processes newly scraped articles to enhance metadata, update article records, and prepare content for vectorization
+
+This database-coordinated approach ensures comprehensive coverage while maintaining efficiency, enabling resumability, and providing robust tracking throughout the process. The shared database tables serve as coordination points between agents, allowing for better error handling and progress monitoring.
 
 ## 1. URL Discovery Process
 
@@ -208,12 +218,46 @@ async def run_url_discovery(base_url: str):
 
 ### Multi-Site Concurrent Scraping Implementation
 
-We implement concurrent scraping of multiple websites using Crawl4AI's `MemoryAdaptiveDispatcher` and agent orchestration:
+We implement concurrent scraping of multiple websites using Crawl4AI's `MemoryAdaptiveDispatcher` and centralized agent orchestration:
 
 ```python
 from crawl4ai import AsyncWebCrawler, CrawlerRunConfig, MemoryAdaptiveDispatcher
 from crawl4ai.async_dispatcher import RateLimiter, CrawlerMonitor, DisplayMode
 from typing import List, Dict
+from agents import Agent, Runner
+
+# Create the centralized agents
+url_discovery_agent = Agent(
+    name="URL Discovery Agent",
+    instructions="""You are an expert at discovering URLs from Nigerian news websites.
+    First, discover all category URLs from the base URL.
+    Then, for each category, discover all article URLs.
+    Store all discovered URLs in the database.
+    Track your progress so you can resume if interrupted.""",
+    model="gpt-4o-mini",
+    tools=[discover_categories, discover_article_urls]
+)
+
+content_extraction_agent = Agent(
+    name="Content Extraction Agent",
+    instructions="""You are an expert at extracting content from Nigerian news articles.
+    Extract the title, author, publication date, content, categories, and tags.
+    Clean the content by removing ads, navigation, social media buttons, etc.
+    Store the extracted content in the database.
+    Update the status in the sitemaps table.""",
+    model="gpt-4o",
+    tools=[extract_article_content]
+)
+
+metadata_enhancement_agent = Agent(
+    name="Metadata Enhancement Agent",
+    instructions="""You are an expert at enhancing metadata for Nigerian news articles.
+    Analyze the article content to extract additional metadata.
+    Enhance categorization and tagging.
+    Prepare the content for vectorization.""",
+    model="gpt-4o-mini",
+    tools=[enhance_article_metadata]
+)
 
 async def scrape_multiple_websites(website_urls: List[str]):
     """Scrape multiple websites concurrently."""
@@ -233,13 +277,7 @@ async def scrape_multiple_websites(website_urls: List[str]):
         )
     )
 
-    # Create website-specific agent instances
-    website_agents = {}
-    for url in website_urls:
-        website_id = get_website_id(url)  # Get or create website ID in database
-        website_agents[url] = create_agents_for_website(website_id)
-
-    # Process websites concurrently
+    # Process websites in batches
     async with AsyncWebCrawler() as crawler:
         # Use streaming mode to process results as they become available
         config = CrawlerRunConfig(stream=True)
@@ -250,51 +288,73 @@ async def scrape_multiple_websites(website_urls: List[str]):
             dispatcher=dispatcher
         ):
             if result.success:
-                # Get the website-specific agents
-                agents = website_agents[result.url]
-
-                # Process the website with its dedicated agents
-                await process_website_with_agents(result.url, agents)
+                # Process the website with the centralized agents
+                await process_website(result.url)
             else:
                 print(f"Failed to process {result.url}: {result.error_message}")
                 # Log the failure and schedule retry if needed
                 await log_scraping_failure(result.url, result.error_message)
 
-async def process_website_with_agents(website_url: str, agents: Dict):
-    """Process a website using its dedicated agents."""
-    # Run URL Discovery Agent
+async def process_website(website_url: str):
+    """Process a website using the centralized agents."""
+    # Get or create website ID
+    website_id = await get_website_id(website_url)
+
+    # Step 1: Discover categories
     discovery_result = await Runner.run(
-        agents["url_discovery"],
-        f"Discover all categories and articles from {website_url}"
+        url_discovery_agent,
+        f"Discover all categories from {website_url}"
     )
 
-    # Get discovered category URLs
-    category_urls = await get_discovered_categories(website_url)
+    # Get discovered category URLs from database
+    categories = await get_categories_by_website_id(website_id)
 
-    # Process each category to discover article URLs
-    for category_url in category_urls:
+    # Step 2: Discover article URLs for each category
+    for category in categories:
         article_urls_result = await Runner.run(
-            agents["url_discovery"],
-            f"Discover all article URLs from category {category_url}"
+            url_discovery_agent,
+            f"Discover all article URLs from category {category['url']}"
         )
 
-        # Get discovered article URLs
-        article_urls = await get_discovered_article_urls(category_url)
+    # Step 3: Process pending articles from sitemaps table
+    await process_pending_articles(website_id)
+
+async def process_pending_articles(website_id: int, batch_size: int = 10):
+    """Process pending articles from the sitemaps table."""
+    while True:
+        # Get a batch of pending articles
+        pending_articles = await get_pending_articles(website_id, batch_size)
+
+        if not pending_articles:
+            break  # No more pending articles
 
         # Process each article URL to extract content
-        for article_url in article_urls:
-            content_result = await Runner.run(
-                agents["content_extraction"],
-                f"Extract content from {article_url}"
-            )
-
-            # Enhance metadata for the extracted article
-            article_id = await get_article_id_from_url(article_url)
-            if article_id:
-                metadata_result = await Runner.run(
-                    agents["metadata_enhancement"],
-                    f"Enhance metadata for article {article_id}"
+        for article in pending_articles:
+            try:
+                # Extract content
+                content_result = await Runner.run(
+                    content_extraction_agent,
+                    f"Extract content from {article['url']} for website ID {website_id}"
                 )
+
+                # Get the article ID from the extraction result
+                article_id = await get_article_id_from_url(article['url'])
+
+                if article_id:
+                    # Enhance metadata
+                    metadata_result = await Runner.run(
+                        metadata_enhancement_agent,
+                        f"Enhance metadata for article {article_id}"
+                    )
+
+                    # Mark as scraped in sitemaps table
+                    await update_article_status(article['id'], "scraped")
+                else:
+                    # Mark as failed in sitemaps table
+                    await update_article_status(article['id'], "failed", "Article ID not found")
+            except Exception as e:
+                # Mark as failed in sitemaps table
+                await update_article_status(article['id'], "failed", str(e))
 ```
 
 ### Crawl4AI Integration
@@ -634,14 +694,84 @@ def extract_and_store_article(self, url: str, website_id: int) -> Optional[Artic
 
 ### Database Schema
 
-The database schema includes the following tables:
+The database schema is designed to efficiently store and retrieve scraped content, with the `sitemaps` table serving as a coordination point between agents:
 
-1. **websites:** Stores information about news websites
-2. **articles:** Stores article content and metadata
-3. **categories:** Stores category information (website-specific)
-4. **article_categories:** Junction table linking articles to categories
-5. **scraping_jobs:** Tracks scraping job status and progress
-6. **scraping_errors:** Logs errors encountered during scraping
+```sql
+-- Websites table
+CREATE TABLE websites (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    url TEXT NOT NULL UNIQUE,
+    description TEXT,
+    logo_url TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_checked_at TIMESTAMP,
+    status TEXT DEFAULT 'active'
+);
+
+-- Categories table
+CREATE TABLE categories (
+    id SERIAL PRIMARY KEY,
+    website_id INTEGER REFERENCES websites(id),
+    name TEXT NOT NULL,
+    url TEXT,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    page_hash TEXT,  -- For change detection
+    last_checked_at TIMESTAMP,
+    UNIQUE(website_id, name)
+);
+
+-- Sitemaps table (coordination between agents)
+CREATE TABLE sitemaps (
+    id SERIAL PRIMARY KEY,
+    website_id INTEGER REFERENCES websites(id),
+    category_id INTEGER REFERENCES categories(id),
+    url TEXT NOT NULL,
+    status TEXT DEFAULT 'pending', -- 'pending', 'scraped', 'failed', 'skipped'
+    discovered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_checked_at TIMESTAMP,
+    error_message TEXT,
+    UNIQUE(website_id, url)
+);
+
+-- Articles table
+CREATE TABLE articles (
+    id SERIAL PRIMARY KEY,
+    website_id INTEGER REFERENCES websites(id),
+    title TEXT NOT NULL,
+    url TEXT NOT NULL UNIQUE,
+    author TEXT,
+    published_date TIMESTAMP,
+    image_url TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_checked_at TIMESTAMP,
+    content TEXT
+);
+
+-- Article metadata table
+CREATE TABLE article_metadata (
+    id SERIAL PRIMARY KEY,
+    article_id INTEGER REFERENCES articles(id),
+    metadata JSONB NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Article categories junction table
+CREATE TABLE article_categories (
+    article_id INTEGER REFERENCES articles(id),
+    category_id INTEGER REFERENCES categories(id),
+    PRIMARY KEY (article_id, category_id)
+);
+```
+
+The `sitemaps` table plays a crucial role in the agent workflow:
+
+1. The URL Discovery Agent stores discovered article URLs in this table with status "pending"
+2. The Content Extraction Agent pulls URLs with "pending" status, processes them, and updates their status to "scraped"
+3. If extraction fails, the status is updated to "failed" with an error message
+4. The table enables resumability, progress tracking, and error handling
 
 ### Data Optimization
 

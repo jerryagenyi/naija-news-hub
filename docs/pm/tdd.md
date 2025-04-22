@@ -38,28 +38,31 @@
 
 **3. AI Agent Integration Module**
 
-* **Agent Architecture:**
-  * Implement a multi-agent system with specialized roles:
-    * URL Discovery Agent (GPT-4o-mini)
-    * Content Extraction Agent (GPT-4o)
-    * Metadata Enhancement Agent (GPT-4o-mini)
+* **Centralized Agent Architecture:**
+  * Implement a centralized multi-agent system with task-specific roles:
+    * URL Discovery Agent (GPT-4o-mini) - single instance for all websites
+    * Content Extraction Agent (GPT-4o) - single instance for all articles
+    * Metadata Enhancement Agent (GPT-4o-mini) - single instance for all articles
   * Configure agent instructions and tools using OpenAI Agents SDK
-  * Implement agent communication and workflow orchestration
+  * Implement database-coordinated workflow using the sitemaps table
   * Integrate with Crawl4AI for web scraping capabilities
 
 * **URL Discovery Agent:**
   * Analyze website structure to identify navigation patterns
-  * Discover category URLs from base website URL
-  * Discover article URLs from category pages
-  * Store discovered URLs in the database
-  * Track progress for resumability
+  * Discover category URLs from base website URL and store in categories table
+  * Discover article URLs from category pages and store in sitemaps table with status "pending"
+  * Track progress for resumability using database tables
+  * Use a single agent instance to handle all websites
 
 * **Content Extraction Agent:**
+  * Pull URLs with "pending" status from the sitemaps table
   * Extract structured content from article URLs
   * Clean content by removing ads, navigation, and social media elements
   * Extract metadata (title, author, date, categories, tags)
   * Format content according to JSON schema
-  * Store extracted content in the database
+  * Store extracted content in the articles table
+  * Update status in sitemaps table to "scraped"
+  * Use a single agent instance to process all articles
 
 * **Metadata Enhancement Agent:**
   * Analyze extracted content for additional metadata
@@ -67,6 +70,7 @@
   * Generate summaries and keywords
   * Prepare content for vectorization
   * Update article metadata in the database
+  * Use a single agent instance to process all articles
 
 **4. Crawl4AI Integration Module**
 
@@ -93,9 +97,11 @@
 
 * **Database Schema (PostgreSQL):**
   * **websites table**: id (SERIAL PRIMARY KEY), website_name (VARCHAR NOT NULL), website_url (VARCHAR NOT NULL UNIQUE), sitemap_index_url (VARCHAR), first_archive_url (VARCHAR), last_archive_url (VARCHAR), created_at (TIMESTAMP DEFAULT NOW()), updated_at (TIMESTAMP)
-  * **sitemaps table**: id (SERIAL PRIMARY KEY), website_id (INTEGER REFERENCES websites), article_url (VARCHAR NOT NULL UNIQUE), last_mod (TIMESTAMP), created_at (TIMESTAMP DEFAULT NOW()), is_valid (BOOLEAN), last_checked (TIMESTAMP), status_code (INTEGER), retry_count (INTEGER DEFAULT 0), last_error (TEXT)
-  * **categories table**: id (SERIAL PRIMARY KEY), website_id (INTEGER REFERENCES websites), category_name (VARCHAR NOT NULL), category_url (VARCHAR NOT NULL), created_at (TIMESTAMP DEFAULT NOW()), is_valid (BOOLEAN), last_checked (TIMESTAMP), UNIQUE(website_id, category_name)
-  * **articles_data table**: id (SERIAL PRIMARY KEY), website_id (INTEGER REFERENCES websites), article_id (VARCHAR NOT NULL UNIQUE), article_title (TEXT NOT NULL), article_category (INTEGER REFERENCES categories), author (TEXT), article_url (TEXT NOT NULL), pub_date (TIMESTAMP), created_at (TIMESTAMP DEFAULT NOW()), article_content (TEXT), scraping_status (VARCHAR DEFAULT 'pending'), retry_count (INTEGER DEFAULT 0), last_error (TEXT)
+  * **categories table**: id (SERIAL PRIMARY KEY), website_id (INTEGER REFERENCES websites), category_name (VARCHAR NOT NULL), category_url (VARCHAR NOT NULL), created_at (TIMESTAMP DEFAULT NOW()), page_hash (TEXT), last_checked_at (TIMESTAMP), UNIQUE(website_id, category_name)
+  * **sitemaps table**: id (SERIAL PRIMARY KEY), website_id (INTEGER REFERENCES websites), category_id (INTEGER REFERENCES categories), url (TEXT NOT NULL), status (TEXT DEFAULT 'pending'), discovered_at (TIMESTAMP DEFAULT NOW()), last_checked_at (TIMESTAMP), error_message (TEXT), UNIQUE(website_id, url)
+  * **articles table**: id (SERIAL PRIMARY KEY), website_id (INTEGER REFERENCES websites), title (TEXT NOT NULL), url (TEXT NOT NULL UNIQUE), author (TEXT), published_date (TIMESTAMP), image_url (TEXT), created_at (TIMESTAMP DEFAULT NOW()), last_checked_at (TIMESTAMP), content (TEXT)
+  * **article_metadata table**: id (SERIAL PRIMARY KEY), article_id (INTEGER REFERENCES articles), metadata (JSONB NOT NULL), created_at (TIMESTAMP DEFAULT NOW()), updated_at (TIMESTAMP DEFAULT NOW())
+  * **article_categories table**: article_id (INTEGER REFERENCES articles), category_id (INTEGER REFERENCES categories), PRIMARY KEY (article_id, category_id)
   * **error_logs table**: id (SERIAL PRIMARY KEY), website_id (INTEGER REFERENCES websites), error_message (TEXT NOT NULL), error_type (VARCHAR NOT NULL), created_at (TIMESTAMP DEFAULT NOW()), resolved_at (TIMESTAMP), resolution_notes (TEXT), retry_count (INTEGER DEFAULT 0)
   * **progress_tracking table**: id (SERIAL PRIMARY KEY), website_id (INTEGER REFERENCES websites UNIQUE), category_scraping_status (BOOLEAN DEFAULT FALSE), sitemap_scraping_status (BOOLEAN DEFAULT FALSE), articles_scraping_status (BOOLEAN DEFAULT FALSE), current_step (INTEGER DEFAULT 0), last_checked (TIMESTAMP), new_articles_discovered (INTEGER DEFAULT 0), new_articles_added (INTEGER DEFAULT 0), last_article_added (TIMESTAMP), last_check_status (VARCHAR), checkpoint_data (JSONB)
   * **See full schema details in [Database Schema Documentation](../dev/database-schema.md)**
@@ -159,10 +165,10 @@
 **10. Data Flow**
 
 * User input via the frontend triggers the AI agent workflow:
-  * URL Discovery Agent analyzes the website and discovers category URLs
-  * URL Discovery Agent processes each category to discover article URLs
-  * Content Extraction Agent processes each article URL to extract content
-  * Metadata Enhancement Agent enriches the extracted content
+  * URL Discovery Agent analyzes the website and discovers category URLs, storing them in the categories table
+  * URL Discovery Agent processes each category to discover article URLs, storing them in the sitemaps table with status "pending"
+  * Content Extraction Agent pulls URLs with "pending" status from the sitemaps table, extracts content, stores it in the articles table, and updates the status to "scraped"
+  * Metadata Enhancement Agent processes newly scraped articles to enhance metadata and prepare for vectorization
 * Scraped and enhanced data is stored in the database and vector database
 * User queries via the frontend are sent to the LLM API
 * LLM responses are displayed in the frontend

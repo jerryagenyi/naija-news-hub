@@ -42,10 +42,13 @@ To create a reliable, scalable, and efficient platform for collecting, processin
 ## 3. Functional Requirements
 
 ### 3.1 AI Agent Integration Module
-- Implement a multi-agent system with specialized roles for different scraping tasks
+- Implement a centralized multi-agent system with task-specific roles:
+  - URL Discovery Agent (GPT-4o-mini) - single instance for all websites
+  - Content Extraction Agent (GPT-4o) - single instance for all articles
+  - Metadata Enhancement Agent (GPT-4o-mini) - single instance for all articles
 - Configure agents using OpenAI Agents SDK with GPT-4o and GPT-4o-mini models
+- Implement database-coordinated workflow using the sitemaps table
 - Integrate agents with Crawl4AI for web scraping capabilities
-- Implement agent communication and workflow orchestration
 - Provide agent monitoring and error handling
 
 ### 3.2 Crawl4AI Integration Module
@@ -115,11 +118,13 @@ To create a reliable, scalable, and efficient platform for collecting, processin
 - Implement data compression for article content storage
 
 ### 3.10 Database Schema
-- websites table: id, website_name, website_url
-- sitemaps table: id, website_id, article_url, last_mod, created_at, is_valid, last_checked, status_code
-- categories table: id, website_id, category_name, category_url, created_at
-- articles_data table: id, website_id, article_id, article_title, article_category, author, article_url, pub_date, created_at, article_content
-- error_logs: id, website_id, error_message, created_at, resolved_at
+- websites table: id, website_name, website_url, created_at, last_checked_at, status
+- categories table: id, website_id, name, url, description, created_at, page_hash, last_checked_at
+- sitemaps table: id, website_id, category_id, url, status, discovered_at, last_checked_at, error_message
+- articles table: id, website_id, title, url, author, published_date, image_url, created_at, last_checked_at, content
+- article_metadata table: id, article_id, metadata, created_at, updated_at
+- article_categories table: article_id, category_id
+- error_logs: id, website_id, error_message, error_type, created_at, resolved_at, resolution_notes
 
 ## 4. Non-Functional Requirements
 - Performance: The system should be able to process a large volume of data efficiently, with minimal resource consumption

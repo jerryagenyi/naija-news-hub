@@ -4,7 +4,25 @@ This document outlines the architecture and strategies for implementing an effic
 
 ## Core Architecture Principles
 
-### 1. Scheduled Batch Processing
+### 1. Centralized Agent Architecture
+
+We implement a centralized multi-agent system with task-specific roles to optimize resource usage:
+
+| Component | Implementation | Related Files |
+|-----------|----------------|---------------|
+| Agent-1: URL Discovery | Single agent instance for all websites | `src/web_scraper/url_discovery_agent.py` |
+| Agent-2: Content Extraction | Single agent instance for all articles | `src/web_scraper/content_extraction_agent.py` |
+| Agent-3: Metadata Enhancement | Single agent instance for all articles | `src/web_scraper/metadata_enhancement_agent.py` |
+| Database Coordination | Sitemaps table for agent workflow coordination | `src/database_management/models.py` |
+
+#### Implementation Rules:
+- Use a single agent instance per task type instead of per-website agents
+- Implement database-coordinated workflow using the sitemaps table
+- Process websites in batches to manage resource usage
+- Implement domain-based rate limiting to avoid triggering anti-scraping measures
+- Use efficient LLM models (GPT-4o-mini where possible, GPT-4o for complex extraction)
+
+### 2. Scheduled Batch Processing
 
 Instead of continuous scraping, we implement scheduled batch processing to optimize resource usage:
 
@@ -88,7 +106,7 @@ Design the system to scale compute and storage independently:
 
 For deployment on a standard VPS (Hostinger/Ionos) with Cloudflare:
 
-### Resource Allocation for Text-Only Scraping
+### Resource Allocation for Text-Only Scraping with AI Agents
 
 | Resource | Allocation | Monitoring | Optimization Strategy |
 |----------|------------|------------|----------------------|
@@ -96,18 +114,21 @@ For deployment on a standard VPS (Hostinger/Ionos) with Cloudflare:
 | Memory | Implement memory limits for scraping processes | `src/utils/resource_monitor.py` | Use streaming parsers for large pages |
 | Storage | Monitor growth rate and implement compression | `src/services/maintenance_service.py` | Compress text content, implement retention policies |
 | Bandwidth | Schedule scraping to distribute bandwidth usage | `src/scheduler/job_scheduler.py` | Use conditional GET requests (ETag/Last-Modified) |
+| API Tokens | Monitor token usage for LLM API calls | `src/monitoring/token_monitor.py` | Use GPT-4o-mini where possible, batch similar requests |
+| Agent Concurrency | Limit concurrent agent operations | `src/web_scraper/agent_manager.py` | Process websites in batches, implement adaptive concurrency |
 
 ### Cost-Efficient VPS Configuration
 
-For text-only scraping of up to 5 sources, a standard VPS with the following specifications is sufficient:
+For text-only scraping of up to 5 sources with AI agents, a standard VPS with the following specifications is sufficient:
 
 | Component | Recommended Specification | Purpose |
 |-----------|---------------------------|--------|
 | CPU | 2-4 vCPU cores | Handle concurrent scraping tasks |
-| Memory | 2-4GB RAM | Process and parse content |
-| Storage | 50-100GB SSD | Store articles and metadata |
+| Memory | 4-8GB RAM | Process content and run agent coordination |
+| Storage | 50-100GB SSD | Store articles, metadata, and agent state |
 | Bandwidth | 2-4TB monthly | Handle scraping and serving content |
 | Cost Range | $20-25/month | Hostinger or Ionos VPS plans |
+| API Budget | $50-100/month | OpenAI API for GPT-4o and GPT-4o-mini |
 
 ### Deployment Architecture
 
@@ -118,13 +139,22 @@ For text-only scraping of up to 5 sources, a standard VPS with the following spe
                                              │
                                              ▼
 ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│ PostgreSQL  │◀───│ Worker      │◀───│ Job Handler │
+│ Agent       │◀───│ Job Handler │◀───│ Agent       │
+│ Manager     │    └─────────────┘    │ Coordinator │
+└─────────────┘           │           └─────────────┘
+      │                    │                  │
+      ▼                    ▼                  ▼
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│ Agent-1:    │    │ Agent-2:    │    │ Agent-3:    │
+│ URL Discovery│    │ Content Ext.│    │ Metadata Enh.│
 └─────────────┘    └─────────────┘    └─────────────┘
-      │                  │
-      │                  ▼
-      │           ┌─────────────┐
-      └──────────▶│ Maintenance │
-                  └─────────────┘
+      │                    │                  │
+      │                    │                  │
+      ▼                    ▼                  ▼
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│ PostgreSQL  │◀───│ Maintenance │───▶│ Token       │
+│ Database    │    │ Service     │    │ Monitor     │
+└─────────────┘    └─────────────┘    └─────────────┘
 ```
 
 ### Cloudflare Integration
@@ -164,18 +194,31 @@ When implementing the efficient scraping architecture, follow these relationship
 
 | Primary File | Related Files | Integrity Rule |
 |--------------|---------------|----------------|
-| `src/scheduler/job_scheduler.py` | `src/scraper/url_discovery.py` | When scheduler is updated, ensure URL discovery is compatible with the scheduling approach. |
-| `src/scheduler/job_scheduler.py` | `src/scraper/article_extractor.py` | When scheduler is updated, ensure article extractor is compatible with the scheduling approach. |
-| `src/utils/compression.py` | `src/database/models.py` | When compression utilities are updated, ensure database models handle compressed content correctly. |
-| `src/utils/hash_utils.py` | `src/scraper/url_discovery.py` | When hash utilities are updated, ensure URL discovery uses the correct hashing methods. |
-| `src/services/archive_service.py` | `src/database/models.py` | When archive service is updated, ensure database models support archiving functionality. |
+| `src/web_scraper/url_discovery_agent.py` | `src/database_management/models.py` | When URL Discovery Agent is updated, ensure it's compatible with the sitemaps table schema. |
+| `src/web_scraper/content_extraction_agent.py` | `src/database_management/models.py` | When Content Extraction Agent is updated, ensure it's compatible with the articles table schema. |
+| `src/web_scraper/metadata_enhancement_agent.py` | `src/database_management/models.py` | When Metadata Enhancement Agent is updated, ensure it's compatible with the article_metadata table schema. |
+| `src/scheduler/job_scheduler.py` | `src/web_scraper/url_discovery_agent.py` | When scheduler is updated, ensure URL Discovery Agent is compatible with the scheduling approach. |
+| `src/scheduler/job_scheduler.py` | `src/web_scraper/content_extraction_agent.py` | When scheduler is updated, ensure Content Extraction Agent is compatible with the scheduling approach. |
+| `src/utils/compression.py` | `src/database_management/models.py` | When compression utilities are updated, ensure database models handle compressed content correctly. |
+| `src/utils/hash_utils.py` | `src/web_scraper/url_discovery_agent.py` | When hash utilities are updated, ensure URL Discovery Agent uses the correct hashing methods. |
+| `src/services/archive_service.py` | `src/database_management/models.py` | When archive service is updated, ensure database models support archiving functionality. |
 | `src/services/maintenance_service.py` | `docs/dev/database-schema.md` | When maintenance service is updated, ensure database schema documentation reflects maintenance operations. |
 
 ## Implementation Checklist
 
 When implementing the efficient scraping architecture:
 
-### 1. Scheduled Batch Processing
+### 1. Centralized Agent Architecture
+- [ ] Implement Agent-1: URL Discovery with GPT-4o-mini
+- [ ] Implement Agent-2: Content Extraction with GPT-4o
+- [ ] Implement Agent-3: Metadata Enhancement with GPT-4o-mini
+- [ ] Create sitemaps table for agent workflow coordination
+- [ ] Implement batch processing for websites
+- [ ] Add domain-based rate limiting
+- [ ] Implement agent monitoring and error handling
+- [ ] Optimize token usage for cost efficiency
+
+### 2. Scheduled Batch Processing
 - [ ] Create scheduler component with configurable job frequency per source
 - [ ] Implement job queue for managing scraping tasks
 - [ ] Configure cron jobs to run during off-peak hours
@@ -221,13 +264,14 @@ When implementing the efficient scraping architecture:
 
 This efficient scraping architecture is designed to minimize resource usage while maintaining scalability for text-only news scraping. Our analysis shows that for scraping up to 5 news sources with text-only content, a standard VPS ($20-25/month) from providers like Hostinger or Ionos, combined with Cloudflare's free tier, offers the most cost-effective solution compared to cloud services like AWS or Google Cloud.
 
-By implementing the five core principles:
+By implementing the six core principles:
 
-1. **Scheduled batch processing** instead of continuous scraping
-2. **Intelligent crawling** to only process changed content
-3. **Content compression** to minimize storage requirements
-4. **Data retention policies** to manage growth over time
-5. **Separation of compute and storage concerns** for flexibility
+1. **Centralized agent architecture** with task-specific AI agents
+2. **Scheduled batch processing** instead of continuous scraping
+3. **Intelligent crawling** to only process changed content
+4. **Content compression** to minimize storage requirements
+5. **Data retention policies** to manage growth over time
+6. **Separation of compute and storage concerns** for flexibility
 
 We can build a highly efficient scraping system that runs well within the resource constraints of a standard VPS while maintaining the ability to scale if requirements change in the future.
 
@@ -238,4 +282,4 @@ This approach provides several advantages over cloud services for our specific u
 - Lower overall cost for the required functionality
 - Easier maintenance and monitoring
 
-Last Updated: 2024-05-15
+Last Updated: 2024-05-16

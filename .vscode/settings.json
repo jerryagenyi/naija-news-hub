@@ -2,8 +2,8 @@
     "$schema": "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/vscode-settings.json",
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
-        "source.fixAll": true,
-        "source.organizeImports": true
+        "source.fixAll": "explicit",
+        "source.organizeImports": "explicit"
     },
     "python.linting.enabled": true,
     "python.linting.pylintEnabled": true,
